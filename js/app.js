@@ -9,10 +9,10 @@ let activeUser = null;
 function showToast(message, type = 'info') {
     const container = document.getElementById('toast-container');
     if (!container) return;
-    
+
     const toast = document.createElement('div');
     toast.className = `flex items-center p-4 rounded-xl shadow-lg border text-xs sm:text-sm font-semibold transform translate-y-2 opacity-0 transition-all duration-300 pointer-events-auto max-w-sm w-full `;
-    
+
     if (type === 'success') {
         toast.className += 'bg-emerald-50 border-emerald-200 text-emerald-800';
         toast.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500 mr-3 text-lg"></i><span>${message}</span>`;
@@ -38,16 +38,16 @@ function showToast(message, type = 'info') {
 function initApp() {
     loadState();
     activeUser = getCurrentUser();
-    
+
     // Keamanan session
     if (!activeUser) {
         window.location.href = "login.html";
         return;
     }
-    
+
     initClock();
     setupUIForUserRole();
-    
+
     // Sinkronisasi data awal dari cloud (Google Sheets) jika dikonfigurasi
     if (state.cloudSyncUrl) {
         fetchDataFromCloud().then(() => {
@@ -96,20 +96,20 @@ function setupUIForUserRole() {
     const navName = document.getElementById('nav-active-name');
     const navRole = document.getElementById('nav-active-role');
     const navPhoto = document.getElementById('nav-active-photo');
-    
+
     if (navName) navName.innerText = activeUser.name;
     if (navRole) navRole.innerText = activeUser.role;
     if (navPhoto) {
         navPhoto.src = activeUser.photo;
-        navPhoto.onerror = function() {
+        navPhoto.onerror = function () {
             this.src = `https://placehold.co/100/0f2d59/ffffff?text=${activeUser.name[0]}`;
         };
     }
-    
+
     // Tampilkan / Sembunyikan Tab berdasarkan Role
     const tabPresensi = document.getElementById('tab-btn-presensi');
     const tabAdmin = document.getElementById('tab-btn-admin');
-    
+
     if (activeUser.type === 'dpl') {
         // DPL: sembunyikan formulir presensi, tampilkan panel DPL
         if (tabPresensi) tabPresensi.classList.add('hidden');
@@ -119,12 +119,12 @@ function setupUIForUserRole() {
         // Mahasiswa: tampilkan presensi, sembunyikan panel DPL
         if (tabPresensi) tabPresensi.classList.remove('hidden');
         if (tabAdmin) tabAdmin.classList.add('hidden');
-        
+
         // Load data profil presensi mandiri
         setupPresensiProfile();
         switchTab('dashboard');
     }
-    
+
     // Populate filter logbook di tab Logbook
     populateLogbookFilters();
 }
@@ -135,14 +135,14 @@ function setupPresensiProfile() {
     const memberNim = document.getElementById('member-nim');
     const memberRole = document.getElementById('member-role');
     const memberAvatar = document.getElementById('member-avatar');
-    
+
     if (memberName) memberName.innerText = activeUser.name;
     if (memberNim) memberNim.innerText = `NIM. ${activeUser.id}`;
     if (memberRole) memberRole.innerText = activeUser.role;
     if (memberAvatar) {
-        memberAvatar.innerHTML = `<img src="${activeUser.photo}" alt="${activeUser.name}" class="w-full h-full object-cover rounded-full" onerror="this.remove(); document.getElementById('member-avatar').innerText='${activeUser.name.split(' ').map(n=>n[0]).slice(0,2).join('')}'">`;
+        memberAvatar.innerHTML = `<img src="${activeUser.photo}" alt="${activeUser.name}" class="w-full h-full object-cover rounded-full" onerror="this.remove(); document.getElementById('member-avatar').innerText='${activeUser.name.split(' ').map(n => n[0]).slice(0, 2).join('')}'">`;
     }
-    
+
     const member = state.members.find(m => m.id === activeUser.id);
     if (member) {
         updateMemberStatusDisplay(member);
@@ -153,12 +153,12 @@ function setupPresensiProfile() {
 function updateMemberStatusDisplay(member) {
     const statusBox = document.getElementById('member-status-box');
     const clockInBox = document.getElementById('member-clock-in');
-    
+
     if (!statusBox || !clockInBox) return;
-    
+
     const todayInLog = state.logs.find(l => String(l.memberId) === String(member.id) && (l.type === 'hadir' || l.type === 'clock_in') && isLogFromToday(l));
     statusBox.className = "font-semibold text-xs py-0.5 px-2 rounded ";
-    
+
     if (todayInLog) {
         statusBox.innerText = "Hadir";
         statusBox.className += "bg-emerald-100 text-emerald-800";
@@ -189,7 +189,7 @@ function switchTab(tabId) {
 
     const targetSection = document.getElementById(`tab-${tabId}`);
     if (targetSection) targetSection.classList.remove('hidden');
-    
+
     const activeBtn = document.getElementById(`tab-btn-${tabId}`);
     if (activeBtn) {
         activeBtn.classList.add('active', 'border-unair-blue', 'text-unair-blue');
@@ -235,7 +235,7 @@ function renderDashboard() {
     const statBelum = document.getElementById('stat-belum');
     const statLogbook = document.getElementById('stat-logbook');
     const statVerifikasi = document.getElementById('stat-terverifikasi');
-    
+
     if (statHadir) statHadir.innerText = `${totalHadir} / 10`;
     if (statBelum) statBelum.innerText = `${totalBelum}`;
     if (statLogbook) statLogbook.innerText = totalLogbooks;
@@ -246,7 +246,7 @@ function renderDashboard() {
     // Render Aktivitas Terkini
     const container = document.getElementById('recent-logs-container');
     if (!container) return;
-    
+
     container.innerHTML = '';
 
     if (state.logs.length === 0) {
@@ -264,8 +264,8 @@ function renderDashboard() {
     sortedLogs.forEach(log => {
         const icon = log.type === 'hadir' || log.type === 'clock_in' ? 'fa-circle-check text-emerald-500' : 'fa-circle-arrow-up text-red-500';
         const actionLabel = log.type === 'hadir' || log.type === 'clock_in' ? 'Kehadiran & Logbook' : 'Clock-Out (Pulang)';
-        const badgeVerified = log.verified 
-            ? `<span class="bg-emerald-50 text-emerald-700 text-[9px] px-2 py-0.5 rounded border border-emerald-200 font-bold flex items-center gap-1"><i class="fa-solid fa-certificate"></i> Terverifikasi DPL</span>` 
+        const badgeVerified = log.verified
+            ? `<span class="bg-emerald-50 text-emerald-700 text-[9px] px-2 py-0.5 rounded border border-emerald-200 font-bold flex items-center gap-1"><i class="fa-solid fa-certificate"></i> Terverifikasi DPL</span>`
             : `<span class="bg-amber-50 text-amber-700 text-[9px] px-2 py-0.5 rounded border border-amber-200 font-bold flex items-center gap-1"><i class="fa-solid fa-spinner animate-spin"></i> Menunggu DPL</span>`;
 
         const member = KKN_MEMBERS.find(m => String(m.id) === String(log.memberId));
@@ -301,9 +301,9 @@ function renderDashboard() {
 function drawPresenceChart(hadir, izin, belum) {
     const chartEl = document.getElementById('presenceChart');
     if (!chartEl) return;
-    
+
     const ctx = chartEl.getContext('2d');
-    
+
     if (presenceChart) {
         presenceChart.destroy();
     }
@@ -338,10 +338,10 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
     const deltaPhi = (lat2 - lat1) * Math.PI / 180;
     const deltaLambda = (lon2 - lon1) * Math.PI / 180;
 
-    const a = Math.sin(deltaPhi/2) * Math.sin(deltaPhi/2) +
-              Math.cos(phi1) * Math.cos(phi2) *
-              Math.sin(deltaLambda/2) * Math.sin(deltaLambda/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const a = Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+        Math.cos(phi1) * Math.cos(phi2) *
+        Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
     return R * c; // jarak dalam meter
 }
@@ -350,12 +350,12 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 function detectLocation() {
     const coordsEl = document.getElementById('gps-coords');
     const distEl = document.getElementById('gps-distance');
-    
+
     if (!coordsEl || !distEl) return;
-    
+
     coordsEl.innerText = "Mendeteksi GPS...";
     distEl.innerText = "Menghitung jarak...";
-    
+
     const targetLat = -8.5553034;
     const targetLon = 114.1111788;
 
@@ -365,21 +365,21 @@ function detectLocation() {
                 const lat = position.coords.latitude;
                 const lon = position.coords.longitude;
                 const distance = calculateDistance(lat, lon, targetLat, targetLon);
-                
+
                 state.mockLocation = {
                     latitude: lat,
                     longitude: lon,
-                    distance: distance >= 1000 
-                        ? `${(distance / 1000).toFixed(2)} km di luar posko KKN` 
-                        : `${Math.round(distance)} meter dari Balai Desa Siliragung`
+                    distance: distance >= 1000
+                        ? `${(distance / 1000).toFixed(2)} km di luar posko KKN`
+                        : `${Math.round(distance)} meter dari Posko BBK Desa Siliragung`
                 };
-                
+
                 if (distance <= 1000) {
                     showToast("GPS Lokasi Anda berhasil tervalidasi!", "success");
                 } else {
-                    showToast(`Gagal: Anda berada di luar radius posko KKN (${(distance/1000).toFixed(1)} km).`, "error");
+                    showToast(`Gagal: Anda berada di luar radius posko KKN (${(distance / 1000).toFixed(1)} km).`, "error");
                 }
-                
+
                 coordsEl.innerText = `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
                 distEl.innerText = state.mockLocation.distance;
             },
@@ -397,13 +397,13 @@ function detectLocation() {
 // Simulasi fallback jika GPS browser tidak aktif atau memakai file:///
 function runFallbackSimulation(coordsEl, distEl, targetLat, targetLon) {
     const isWithinRange = Math.random() > 0.05; // 95% tervalidasi masuk target 1km
-    
+
     if (isWithinRange) {
         // Koordinat simulasi acak dalam radius 1km (latitude/longitude deviasi kecil)
         const lat = targetLat + (Math.random() - 0.5) * 0.006;
         const lon = targetLon + (Math.random() - 0.5) * 0.006;
         const distance = calculateDistance(lat, lon, targetLat, targetLon);
-        
+
         state.mockLocation = {
             latitude: lat,
             longitude: lon,
@@ -427,19 +427,19 @@ function runFallbackSimulation(coordsEl, distEl, targetLat, targetLon) {
 function compressImage(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.onload = function(event) {
+        reader.onload = function (event) {
             const img = new Image();
             img.src = event.target.result;
-            img.onload = function() {
+            img.onload = function () {
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
-                
+
                 // Set resolusi maksimum (180x180 pixel sangat cukup untuk verifikasi wajah DPL)
                 const MAX_WIDTH = 180;
                 const MAX_HEIGHT = 180;
                 let width = img.width;
                 let height = img.height;
-                
+
                 if (width > height) {
                     if (width > MAX_WIDTH) {
                         height *= MAX_WIDTH / width;
@@ -451,11 +451,11 @@ function compressImage(file) {
                         height = MAX_HEIGHT;
                     }
                 }
-                
+
                 canvas.width = width;
                 canvas.height = height;
                 ctx.drawImage(img, 0, 0, width, height);
-                
+
                 // Gunakan format JPEG dengan kualitas 60% untuk kompresi maksimal
                 const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6);
                 resolve(compressedBase64);
@@ -485,11 +485,11 @@ async function previewPhoto(event) {
     try {
         const compressedBase64 = await compressImage(file);
         state.temporaryPhoto = compressedBase64;
-        
+
         // Sembunyikan dashed trigger box di HP setelah foto terunggah
         const trigger = document.getElementById('camera-trigger');
         if (trigger) trigger.classList.add('hidden');
-        
+
         const previewImg = document.getElementById('camera-preview');
         const container = document.getElementById('camera-preview-container');
         if (previewImg && container) {
@@ -509,13 +509,13 @@ function resetPhoto(event) {
     state.temporaryPhoto = null;
     const input = document.getElementById('photo-input');
     if (input) input.value = '';
-    
+
     // Tampilkan kembali dashed trigger box
     const trigger = document.getElementById('camera-trigger');
     if (trigger) {
         trigger.classList.remove('hidden');
     }
-    
+
     const placeholder = document.getElementById('camera-placeholder');
     if (placeholder) {
         placeholder.innerHTML = `
@@ -528,7 +528,7 @@ function resetPhoto(event) {
             <p class="text-[10px] text-slate-400 font-sans">Sistem keamanan HP Anda akan mengaktifkan kamera atau galeri secara resmi</p>
         `;
     }
-    
+
     const container = document.getElementById('camera-preview-container');
     if (container) container.classList.add('hidden');
 }
@@ -536,7 +536,7 @@ function resetPhoto(event) {
 // Handler Submit Form Absensi
 function handleAttendanceSubmit(event) {
     event.preventDefault();
-    
+
     const logbookTextEl = document.getElementById('logbook-text');
     const logbookText = logbookTextEl ? logbookTextEl.value.trim() : '';
 
@@ -556,7 +556,7 @@ function handleAttendanceSubmit(event) {
     }
 
     if (distanceInMeters > 1000) {
-        showToast(`Gagal: Anda berada di luar radius posko KKN (${(distanceInMeters/1000).toFixed(1)} km). Batas maksimal absensi adalah 1 km!`, "error");
+        showToast(`Gagal: Anda berada di luar radius posko KKN (${(distanceInMeters / 1000).toFixed(1)} km). Batas maksimal absensi adalah 1 km!`, "error");
         return;
     }
 
@@ -600,14 +600,14 @@ function handleAttendanceSubmit(event) {
     }
 
     showToast("Laporan Kehadiran & Logbook Berhasil Dikirim!", "success");
-    
+
     if (logbookTextEl) logbookTextEl.value = '';
     resetPhoto();
-    
+
     if (localMember) {
         updateMemberStatusDisplay(localMember);
     }
-    
+
     setTimeout(() => { switchTab('dashboard'); }, 500);
 }
 
@@ -615,9 +615,9 @@ function handleAttendanceSubmit(event) {
 function populateLogbookFilters() {
     const logFilter = document.getElementById('logbook-filter');
     if (!logFilter) return;
-    
+
     logFilter.innerHTML = '<option value="all">Semua Anggota</option>';
-    
+
     KKN_MEMBERS.forEach(m => {
         const optFilter = document.createElement('option');
         optFilter.value = m.id;
@@ -631,10 +631,10 @@ function renderLogbooks() {
     const container = document.getElementById('logbook-list-container');
     const filterEl = document.getElementById('logbook-filter');
     if (!container || !filterEl) return;
-    
+
     const filterVal = filterEl.value;
     container.innerHTML = '';
-    
+
     const filteredLogs = state.logs.filter(log => {
         if (filterVal === 'all') return log.text && log.text.length > 5;
         return String(log.memberId) === String(filterVal) && log.text && log.text.length > 5;
@@ -654,7 +654,7 @@ function renderLogbooks() {
         const member = KKN_MEMBERS.find(m => String(m.id) === String(log.memberId));
         const role = member ? member.role : 'Anggota';
         const profilePhoto = member ? member.photo : 'https://placehold.co/100/0f2d59/ffffff';
-        const statusBadge = log.verified 
+        const statusBadge = log.verified
             ? `<span class="bg-emerald-100 text-emerald-800 text-[10px] px-2.5 py-1 rounded-full font-bold flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> Terverifikasi DPL</span>`
             : `<span class="bg-amber-100 text-amber-800 text-[10px] px-2.5 py-1 rounded-full font-bold flex items-center gap-1"><i class="fa-solid fa-hourglass-start animate-pulse"></i> Menunggu DPL</span>`;
 
@@ -699,15 +699,15 @@ function formatWhatsAppNumber(phone) {
 function renderMembersList() {
     const tableBody = document.getElementById('members-table-body');
     const cardsContainer = document.getElementById('members-cards-container');
-    
+
     if (!tableBody || !cardsContainer) return;
-    
+
     tableBody.innerHTML = '';
     cardsContainer.innerHTML = '';
 
     state.members.forEach(member => {
         const initials = member.name.split(' ').map(n => n[0]).slice(0, 2).join('');
-        
+
         const badgeMap = {
             "Hadir": "bg-emerald-100 text-emerald-800",
             "Izin": "bg-amber-100 text-amber-800",
@@ -782,18 +782,18 @@ function renderMembersList() {
 function renderAdminMemberList() {
     const container = document.getElementById('admin-member-list');
     if (!container) return;
-    
+
     container.innerHTML = '';
 
     state.members.forEach(member => {
         const todayInLog = state.logs.find(l => String(l.memberId) === String(member.id) && (l.type === 'hadir' || l.type === 'clock_in') && isLogFromToday(l));
-        
+
         const isVerified = todayInLog ? todayInLog.verified : false;
         const checkboxAttr = isVerified ? 'checked disabled' : (todayInLog ? '' : 'disabled');
-        const verifyActionText = isVerified 
-            ? '<span class="text-emerald-600 font-bold text-xs flex items-center justify-end gap-1"><i class="fa-solid fa-square-check"></i> Berhasil Verifikasi</span>' 
-            : (todayInLog 
-                ? `<button onclick="verifyLogbook('${todayInLog.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1 px-2.5 rounded text-[10px] transition">Verifikasi</button>` 
+        const verifyActionText = isVerified
+            ? '<span class="text-emerald-600 font-bold text-xs flex items-center justify-end gap-1"><i class="fa-solid fa-square-check"></i> Berhasil Verifikasi</span>'
+            : (todayInLog
+                ? `<button onclick="verifyLogbook('${todayInLog.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1 px-2.5 rounded text-[10px] transition">Verifikasi</button>`
                 : '<span class="text-slate-400 italic">Belum Ada Berkas</span>');
 
         const overrideOptions = ["Hadir", "Izin", "Sakit", "Belum Absen"].map(opt => {
@@ -846,10 +846,10 @@ function verifyLogbook(logId) {
     if (log) {
         log.verified = true;
         saveStateToLocalStorage();
-        
+
         // Verifikasi di cloud jika diset
         verifyLogbookOnCloud(logId);
-        
+
         showToast(`Logbook milik ${log.name} berhasil divalidasi!`, "success");
         renderAdminMemberList();
         renderDashboard();
@@ -876,7 +876,7 @@ function triggerManualRefresh() {
     if (refreshBtn) {
         refreshBtn.classList.add('animate-spin');
     }
-    
+
     fetchDataFromCloud().then(success => {
         if (success) {
             renderActiveTabContent('dashboard');
@@ -891,12 +891,12 @@ function triggerManualRefresh() {
 function exportToCSV() {
     let csvContent = "data:text/csv;charset=utf-8,";
     csvContent += "NIM,Nama Mahasiswa,Fakultas,Program Studi,Jabatan Kelompok,Status Hari Ini,Logbook Aktivitas,Waktu Presensi\n";
-    
+
     state.members.forEach(m => {
         const logToday = state.logs.find(l => String(l.memberId) === String(m.id) && (l.type === 'hadir' || l.type === 'clock_in') && isLogFromToday(l));
         const cleanLogText = logToday ? logToday.text.replace(/"/g, '""') : 'Tidak ada laporan';
         const timeLog = logToday ? logToday.time : '--';
-        
+
         csvContent += `"${m.id}","${m.name}","${m.faculty}","${m.studyProgram}","${m.role}","${m.initialStatus}","${cleanLogText}","${timeLog}"\n`;
     });
 
@@ -915,7 +915,7 @@ function exportToCSV() {
 function copyWeeklySummary() {
     let textSummary = `📋 RINGKASAN PRESENSI HARIAN KKN-BBK 8 UNAIR DESA SILIRAGUNG 2026\n`;
     textSummary += `========================================================\n\n`;
-    
+
     state.members.forEach((m, idx) => {
         const logToday = state.logs.find(l => String(l.memberId) === String(m.id) && (l.type === 'hadir' || l.type === 'clock_in') && isLogFromToday(l));
         const logText = logToday ? `- Logbook: "${logToday.text.substring(0, 80)}..."` : "- Logbook: Belum diisi";
@@ -928,7 +928,7 @@ function copyWeeklySummary() {
     tempTextarea.value = textSummary;
     document.body.appendChild(tempTextarea);
     tempTextarea.select();
-    
+
     try {
         const success = document.execCommand('copy');
         if (success) {
@@ -939,7 +939,7 @@ function copyWeeklySummary() {
     } catch (err) {
         console.error("Gagal menyalin", err);
     }
-    
+
     document.body.removeChild(tempTextarea);
 }
 
@@ -966,9 +966,9 @@ function confirmResetAllData() {
     resetAllStateData();
     resetCloudData();
     closeResetModal();
-    
+
     showToast("Semua database presensi & logbook kelompok telah berhasil dibersihkan!", "success");
-    
+
     // Refresh Tampilan UI
     setupUIForUserRole();
     renderActiveTabContent('dashboard');
@@ -979,7 +979,7 @@ function viewVerificationPhoto(photoBase64, studentName) {
     const modal = document.getElementById('photo-preview-modal');
     const modalImg = document.getElementById('photo-modal-img');
     const modalTitle = document.getElementById('photo-modal-title');
-    
+
     if (modal && modalImg && modalTitle) {
         modalTitle.innerText = `Bukti Kehadiran: ${studentName}`;
         modalImg.src = photoBase64;

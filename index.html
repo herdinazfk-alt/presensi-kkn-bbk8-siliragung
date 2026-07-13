@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="id" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Presensi KKN-BBK 8 UNAIR Siliragung 2026</title>
-    
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -34,7 +37,7 @@
             }
         }
     </script>
-    
+
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Chart.js -->
@@ -43,24 +46,34 @@
     <!-- External Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body class="text-slate-800 min-h-screen flex flex-col antialiased">
 
     <!-- Custom Toast Notification System -->
-    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3 max-w-md w-full px-4 sm:px-0 pointer-events-none"></div>
+    <div id="toast-container"
+        class="fixed top-5 right-5 z-50 flex flex-col gap-3 max-w-md w-full px-4 sm:px-0 pointer-events-none"></div>
 
     <!-- MODAL KONFIRMASI RESET (KUSTOM) -->
-    <div id="reset-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-100 text-center space-y-4 transform scale-95 transition-all duration-200">
-            <div class="w-16 h-16 bg-red-50 text-red-600 rounded-full flex items-center justify-center text-2xl mx-auto">
+    <div id="reset-modal"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div
+            class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-100 text-center space-y-4 transform scale-95 transition-all duration-200">
+            <div
+                class="w-16 h-16 bg-red-50 text-red-600 rounded-full flex items-center justify-center text-2xl mx-auto">
                 <i class="fa-solid fa-triangle-exclamation"></i>
             </div>
             <div class="space-y-1">
                 <h3 class="font-heading font-extrabold text-slate-800 text-base">Hapus Seluruh Data?</h3>
-                <p class="text-xs text-slate-400 leading-relaxed font-sans">Tindakan ini akan menghapus semua riwayat presensi harian, berkas logbook di local storage, dan mengembalikan status seluruh anggota menjadi "Belum Absen". Tindakan ini tidak bisa dibatalkan.</p>
+                <p class="text-xs text-slate-400 leading-relaxed font-sans">Tindakan ini akan menghapus semua riwayat
+                    presensi harian, berkas logbook di local storage, dan mengembalikan status seluruh anggota menjadi
+                    "Belum Absen". Tindakan ini tidak bisa dibatalkan.</p>
             </div>
             <div class="grid grid-cols-2 gap-3 pt-2">
-                <button onclick="closeResetModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs transition">Batal</button>
-                <button onclick="confirmResetAllData()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl text-xs transition">Ya, Hapus Semua</button>
+                <button onclick="closeResetModal()"
+                    class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs transition">Batal</button>
+                <button onclick="confirmResetAllData()"
+                    class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl text-xs transition">Ya,
+                    Hapus Semua</button>
             </div>
         </div>
     </div>
@@ -69,26 +82,38 @@
     <header class="unair-gradient text-white shadow-lg sticky top-0 z-40 border-b-4 border-unair-gold">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20">
-                
+
                 <!-- Brand Identity and Logo -->
                 <div class="flex items-center space-x-3">
-                    <img src="Logo BBK Siliragung.png" alt="Logo BBK Siliragung" class="w-14 h-14 object-contain drop-shadow-md hover:scale-105 transition duration-200" onerror="this.src='https://placehold.co/150/0F2D59/E5A823?text=UNAIR+BBK+8'">
+                    <img src="Logo BBK Siliragung.png" alt="Logo BBK Siliragung"
+                        class="w-14 h-14 object-contain drop-shadow-md hover:scale-105 transition duration-200"
+                        onerror="this.src='https://placehold.co/150/0F2D59/E5A823?text=UNAIR+BBK+8'">
                     <div>
-                        <h1 class="font-heading font-extrabold text-sm sm:text-base leading-tight tracking-wide text-unair-gold flex items-center gap-1.5">
-                            KKN-BBK 8 UNAIR <span class="bg-amber-500 text-slate-950 text-[10px] px-2 py-0.5 rounded-full font-sans font-bold">2026</span>
+                        <h1
+                            class="font-heading font-extrabold text-sm sm:text-base leading-tight tracking-wide text-unair-gold flex items-center gap-1.5">
+                            KKN-BBK 8 UNAIR <span
+                                class="bg-amber-500 text-slate-950 text-[10px] px-2 py-0.5 rounded-full font-sans font-bold">2026</span>
                         </h1>
-                        <p class="text-[10px] sm:text-xs text-slate-200 font-medium tracking-wide">Desa Siliragung, Kecamatan Siliragung, Banyuwangi</p>
+                        <p class="text-[10px] sm:text-xs text-slate-200 font-medium tracking-wide">Desa Siliragung,
+                            Kecamatan Siliragung, Banyuwangi</p>
                     </div>
                 </div>
 
                 <!-- Active User Profile and Logout -->
-                <div class="flex items-center space-x-3 bg-slate-950/40 p-2.5 rounded-2xl border border-slate-700/60 shadow-inner">
-                    <img id="nav-active-photo" src="" alt="Avatar" class="w-10 h-10 object-cover rounded-xl border border-unair-gold bg-slate-800" onerror="this.src='https://placehold.co/100/0f2d59/ffffff'">
+                <div
+                    class="flex items-center space-x-3 bg-slate-950/40 p-2.5 rounded-2xl border border-slate-700/60 shadow-inner">
+                    <img id="nav-active-photo" src="" alt="Avatar"
+                        class="w-10 h-10 object-cover rounded-xl border border-unair-gold bg-slate-800"
+                        onerror="this.src='https://placehold.co/100/0f2d59/ffffff'">
                     <div class="hidden sm:block text-left leading-tight pr-1">
-                        <span id="nav-active-name" class="block text-xs font-bold text-white tracking-wide truncate max-w-[150px]">Memuat...</span>
-                        <span id="nav-active-role" class="block text-[9px] text-unair-gold font-bold uppercase tracking-wider">Memuat...</span>
+                        <span id="nav-active-name"
+                            class="block text-xs font-bold text-white tracking-wide truncate max-w-[150px]">Memuat...</span>
+                        <span id="nav-active-role"
+                            class="block text-[9px] text-unair-gold font-bold uppercase tracking-wider">Memuat...</span>
                     </div>
-                    <button onclick="logoutUser()" class="bg-red-600/10 hover:bg-red-600 text-red-400 hover:text-white p-2 rounded-xl transition duration-200 flex items-center justify-center" title="Keluar">
+                    <button onclick="logoutUser()"
+                        class="bg-red-600/10 hover:bg-red-600 text-red-400 hover:text-white p-2 rounded-xl transition duration-200 flex items-center justify-center"
+                        title="Keluar">
                         <i class="fa-solid fa-right-from-bracket text-sm"></i>
                     </button>
                 </div>
@@ -99,23 +124,28 @@
     <!-- TAB NAVIGATION -->
     <div class="bg-white border-b border-slate-200 shadow-sm sticky top-20 z-30 overflow-x-auto scrollbar-none">
         <div class="max-w-7xl mx-auto px-4 flex space-x-1 sm:space-x-4">
-            <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="tab-btn active px-3 py-3.5 border-b-2 border-unair-blue text-unair-blue font-semibold text-xs sm:text-sm flex items-center space-x-2 whitespace-nowrap">
+            <button onclick="switchTab('dashboard')" id="tab-btn-dashboard"
+                class="tab-btn active px-3 py-3.5 border-b-2 border-unair-blue text-unair-blue font-semibold text-xs sm:text-sm flex items-center space-x-2 whitespace-nowrap">
                 <i class="fa-solid fa-chart-line text-base"></i>
                 <span>Beranda</span>
             </button>
-            <button onclick="switchTab('presensi')" id="tab-btn-presensi" class="tab-btn px-3 py-3.5 border-b-2 border-transparent text-slate-500 hover:text-unair-blue hover:border-slate-300 font-medium text-xs sm:text-sm flex items-center space-x-2 whitespace-nowrap">
+            <button onclick="switchTab('presensi')" id="tab-btn-presensi"
+                class="tab-btn px-3 py-3.5 border-b-2 border-transparent text-slate-500 hover:text-unair-blue hover:border-slate-300 font-medium text-xs sm:text-sm flex items-center space-x-2 whitespace-nowrap">
                 <i class="fa-solid fa-signature text-base"></i>
                 <span>Presensi & Logbook</span>
             </button>
-            <button onclick="switchTab('logbook')" id="tab-btn-logbook" class="tab-btn px-3 py-3.5 border-b-2 border-transparent text-slate-500 hover:text-unair-blue hover:border-slate-300 font-medium text-xs sm:text-sm flex items-center space-x-2 whitespace-nowrap">
+            <button onclick="switchTab('logbook')" id="tab-btn-logbook"
+                class="tab-btn px-3 py-3.5 border-b-2 border-transparent text-slate-500 hover:text-unair-blue hover:border-slate-300 font-medium text-xs sm:text-sm flex items-center space-x-2 whitespace-nowrap">
                 <i class="fa-solid fa-book-open text-base"></i>
                 <span>Daftar Logbook</span>
             </button>
-            <button onclick="switchTab('anggota')" id="tab-btn-anggota" class="tab-btn px-3 py-3.5 border-b-2 border-transparent text-slate-500 hover:text-unair-blue hover:border-slate-300 font-medium text-xs sm:text-sm flex items-center space-x-2 whitespace-nowrap">
+            <button onclick="switchTab('anggota')" id="tab-btn-anggota"
+                class="tab-btn px-3 py-3.5 border-b-2 border-transparent text-slate-500 hover:text-unair-blue hover:border-slate-300 font-medium text-xs sm:text-sm flex items-center space-x-2 whitespace-nowrap">
                 <i class="fa-solid fa-users text-base"></i>
                 <span>Data Anggota</span>
             </button>
-            <button onclick="switchTab('admin')" id="tab-btn-admin" class="tab-btn hidden px-3 py-3.5 border-b-2 border-transparent text-slate-500 hover:text-unair-blue hover:border-slate-300 font-medium text-xs sm:text-sm flex items-center space-x-2 whitespace-nowrap">
+            <button onclick="switchTab('admin')" id="tab-btn-admin"
+                class="tab-btn hidden px-3 py-3.5 border-b-2 border-transparent text-slate-500 hover:text-unair-blue hover:border-slate-300 font-medium text-xs sm:text-sm flex items-center space-x-2 whitespace-nowrap">
                 <i class="fa-solid fa-shield-halved text-base"></i>
                 <span>Panel Monitoring DPL</span>
             </button>
@@ -124,28 +154,37 @@
 
     <!-- MAIN CONTENT CONTAINER -->
     <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
-        
+
         <!-- ================== TAB: DASHBOARD ================== -->
         <section id="tab-dashboard" class="tab-content block space-y-6">
             <!-- Welcome Banner -->
-            <div class="unair-gradient text-white rounded-2xl p-6 sm:p-8 shadow-md relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div
+                class="unair-gradient text-white rounded-2xl p-6 sm:p-8 shadow-md relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div class="absolute -right-16 -bottom-16 w-64 h-64 bg-white/10 rounded-full blur-2xl"></div>
                 <div class="space-y-2 z-10">
-                    <span class="bg-amber-400 text-slate-900 font-bold text-[10px] px-3 py-1 rounded-full uppercase tracking-wider">Aktivitas Hari Ini</span>
-                    <h2 class="text-xl sm:text-2xl font-heading font-bold" id="dashboard-welcome-msg">Selamat Datang Rekan Mahasiswa</h2>
-                    <p class="text-xs sm:text-sm text-slate-200 max-w-2xl font-sans">Silakan lakukan presensi harian secara tepat waktu (Clock-In maks. 08.00 WIB) dan isi logbook harian sebagai bukti verifikasi aktivitas KKN kepada DPL.</p>
+                    <span
+                        class="bg-amber-400 text-slate-900 font-bold text-[10px] px-3 py-1 rounded-full uppercase tracking-wider">Aktivitas
+                        Hari Ini</span>
+                    <h2 class="text-xl sm:text-2xl font-heading font-bold" id="dashboard-welcome-msg">Selamat Datang
+                        Rekan Mahasiswa</h2>
+                    <p class="text-xs sm:text-sm text-slate-200 max-w-2xl font-sans">Silakan lakukan presensi harian
+                        secara tepat waktu (Clock-In maks. 08.00 WIB) dan isi logbook harian sebagai bukti verifikasi
+                        aktivitas KKN kepada DPL.</p>
                 </div>
-                <div class="flex items-center space-x-4 bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20 z-10 self-start md:self-auto">
+                <div
+                    class="flex items-center space-x-4 bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20 z-10 self-start md:self-auto">
                     <div class="text-center">
                         <span class="block text-[10px] uppercase text-slate-300 tracking-wider">Jam Sistem</span>
-                        <span id="digital-clock" class="text-xl sm:text-2xl font-mono font-bold text-unair-gold">00:00:00</span>
+                        <span id="digital-clock"
+                            class="text-xl sm:text-2xl font-mono font-bold text-unair-gold">00:00:00</span>
                     </div>
                 </div>
             </div>
 
             <!-- Fast Stats Cards -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center space-x-4">
+                <div
+                    class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center space-x-4">
                     <div class="p-3 bg-blue-100 text-unair-blue rounded-xl">
                         <i class="fa-solid fa-user-check text-lg sm:text-xl"></i>
                     </div>
@@ -154,7 +193,8 @@
                         <span id="stat-hadir" class="text-base sm:text-2xl font-bold text-slate-800">0 / 10</span>
                     </div>
                 </div>
-                <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center space-x-4">
+                <div
+                    class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center space-x-4">
                     <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
                         <i class="fa-solid fa-circle-question text-lg sm:text-xl"></i>
                     </div>
@@ -163,7 +203,8 @@
                         <span id="stat-belum" class="text-base sm:text-2xl font-bold text-slate-800">10 / 10</span>
                     </div>
                 </div>
-                <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center space-x-4">
+                <div
+                    class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center space-x-4">
                     <div class="p-3 bg-green-100 text-green-600 rounded-xl">
                         <i class="fa-solid fa-book text-lg sm:text-xl"></i>
                     </div>
@@ -172,7 +213,8 @@
                         <span id="stat-logbook" class="text-base sm:text-2xl font-bold text-slate-800">0</span>
                     </div>
                 </div>
-                <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center space-x-4">
+                <div
+                    class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center space-x-4">
                     <div class="p-3 bg-indigo-100 text-indigo-600 rounded-xl">
                         <i class="fa-solid fa-list-check text-lg sm:text-xl"></i>
                     </div>
@@ -186,7 +228,8 @@
             <!-- Dashboard Analytics Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Presence Rate Chart -->
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 lg:col-span-1 flex flex-col justify-between">
+                <div
+                    class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 lg:col-span-1 flex flex-col justify-between">
                     <div>
                         <h3 class="font-heading font-bold text-slate-800 text-sm mb-4 flex items-center gap-1.5">
                             <i class="fa-solid fa-pie-chart text-unair-gold"></i> Persentase Kehadiran Kelompok
@@ -217,7 +260,8 @@
                         <h3 class="font-heading font-bold text-slate-800 text-sm flex items-center gap-1.5">
                             <i class="fa-solid fa-receipt text-unair-gold"></i> Aktivitas Terkini Anggota
                         </h3>
-                        <button onclick="triggerManualRefresh()" class="text-[10px] bg-slate-50 hover:bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-xl text-slate-600 font-bold flex items-center gap-1.5 transition">
+                        <button onclick="triggerManualRefresh()"
+                            class="text-[10px] bg-slate-50 hover:bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-xl text-slate-600 font-bold flex items-center gap-1.5 transition">
                             <i id="refresh-btn" class="fa-solid fa-rotate"></i> Sinkronisasi Cloud
                         </button>
                     </div>
@@ -228,18 +272,21 @@
             </div>
 
             <!-- Geofencing & Map Banner Info -->
-            <div class="bg-slate-900 text-white rounded-2xl p-5 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div
+                class="bg-slate-900 text-white rounded-2xl p-5 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
                 <div class="flex items-center space-x-4">
                     <div class="p-3 bg-slate-800 rounded-xl text-yellow-400">
                         <i class="fa-solid fa-map-location-dot text-2xl"></i>
                     </div>
                     <div>
                         <h4 class="font-heading font-bold text-sm">Lokasi Posko KKN Banyuwangi (Radius Siliragung)</h4>
-                        <p class="text-xs text-slate-400 font-sans">Verifikasi Radius Presensi disetel 500 meter dari Kantor Desa Siliragung.</p>
+                        <p class="text-xs text-slate-400 font-sans">Verifikasi Radius Presensi disetel 1km dari Posko
+                            BBK Desa Siliragung.</p>
                     </div>
                 </div>
                 <div class="text-right flex items-center gap-2">
-                    <span class="text-xs px-3 py-1.5 bg-slate-800 rounded-lg border border-slate-700 font-mono text-emerald-400 font-semibold flex items-center gap-1.5">
+                    <span
+                        class="text-xs px-3 py-1.5 bg-slate-800 rounded-lg border border-slate-700 font-mono text-emerald-400 font-semibold flex items-center gap-1.5">
                         <span class="w-2 h-2 bg-emerald-400 rounded-full animate-ping"></span> Geofencing Aktif
                     </span>
                 </div>
@@ -249,25 +296,31 @@
         <!-- ================== TAB: PRESENSI MANDIRI ================== -->
         <section id="tab-presensi" class="tab-content hidden space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                
+
                 <!-- Left Section: Profile Info -->
                 <div class="lg:col-span-4 space-y-6">
-                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 text-center relative overflow-hidden">
+                    <div
+                        class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 text-center relative overflow-hidden">
                         <div class="unair-gradient h-24 absolute top-0 left-0 right-0 z-0"></div>
                         <div class="relative z-10 pt-8">
-                            <div class="w-24 h-24 bg-white p-1 rounded-full shadow-md mx-auto mb-3 border-2 border-unair-gold overflow-hidden">
-                                <div id="member-avatar" class="w-full h-full bg-slate-200 rounded-full flex items-center justify-center text-3xl text-slate-500 font-bold font-heading">
+                            <div
+                                class="w-24 h-24 bg-white p-1 rounded-full shadow-md mx-auto mb-3 border-2 border-unair-gold overflow-hidden">
+                                <div id="member-avatar"
+                                    class="w-full h-full bg-slate-200 rounded-full flex items-center justify-center text-3xl text-slate-500 font-bold font-heading">
                                     <!-- Dynamic Image/Initials -->
                                 </div>
                             </div>
-                            <h3 id="member-name" class="font-heading font-extrabold text-base text-slate-800 leading-snug">Memuat...</h3>
+                            <h3 id="member-name"
+                                class="font-heading font-extrabold text-base text-slate-800 leading-snug">Memuat...</h3>
                             <p id="member-nim" class="text-xs text-slate-400 font-mono mt-0.5">NIM. --</p>
-                            <span id="member-role" class="inline-block bg-unair-lightgold text-unair-gold font-bold text-[10px] tracking-wider uppercase px-3 py-1 rounded-full mt-2 border border-amber-200"></span>
-                            
+                            <span id="member-role"
+                                class="inline-block bg-unair-lightgold text-unair-gold font-bold text-[10px] tracking-wider uppercase px-3 py-1 rounded-full mt-2 border border-amber-200"></span>
+
                             <div class="grid grid-cols-2 gap-2 mt-6 pt-6 border-t border-slate-100 text-left text-xs">
                                 <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
                                     <span class="block text-slate-400 text-[10px]">Status Absensi</span>
-                                    <span id="member-status-box" class="font-semibold text-slate-600">Belum Presensi</span>
+                                    <span id="member-status-box" class="font-semibold text-slate-600">Belum
+                                        Presensi</span>
                                 </div>
                                 <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
                                     <span class="block text-slate-400 text-[10px]">Waktu Clock-In</span>
@@ -296,7 +349,8 @@
                                 <span id="gps-distance" class="text-slate-600 font-medium">--</span>
                             </div>
                         </div>
-                        <button onclick="detectLocation()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 rounded-xl text-xs flex items-center justify-center space-x-2 transition duration-200">
+                        <button onclick="detectLocation()"
+                            class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 rounded-xl text-xs flex items-center justify-center space-x-2 transition duration-200">
                             <i class="fa-solid fa-location-crosshairs"></i>
                             <span>Dapatkan Lokasi Saya</span>
                         </button>
@@ -306,36 +360,46 @@
                 <!-- Right Section: Interactive Presensi & Logbook Form -->
                 <div class="lg:col-span-8 bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-100 space-y-6">
                     <div>
-                        <h3 class="font-heading font-extrabold text-lg text-slate-800">Formulir Presensi Harian & Logbook</h3>
-                        <p class="text-xs text-slate-400 mt-1">Gunakan formulir di bawah ini untuk melaporkan kehadiran harian dan mendeskripsikan aktivitas yang dikerjakan hari ini.</p>
+                        <h3 class="font-heading font-extrabold text-lg text-slate-800">Formulir Presensi Harian &
+                            Logbook</h3>
+                        <p class="text-xs text-slate-400 mt-1">Gunakan formulir di bawah ini untuk melaporkan kehadiran
+                            harian dan mendeskripsikan aktivitas yang dikerjakan hari ini.</p>
                     </div>
 
                     <form id="attendance-form" onsubmit="handleAttendanceSubmit(event)" class="space-y-6">
-                        
+
                         <!-- Photographic Verification Field -->
                         <div class="space-y-2">
-                            <span class="block text-xs font-bold uppercase tracking-wider text-slate-500">Bukti Foto Kehadiran (Wajib)</span>
-                            
+                            <span class="block text-xs font-bold uppercase tracking-wider text-slate-500">Bukti Foto
+                                Kehadiran (Wajib)</span>
+
                             <!-- Input tersembunyi yang kompatibel untuk browser HP (menggunakan sr-only) -->
-                            <input type="file" id="photo-input" accept="image/*" capture="user" class="sr-only" onchange="previewPhoto(event)">
-                            
+                            <input type="file" id="photo-input" accept="image/*" capture="user" class="sr-only"
+                                onchange="previewPhoto(event)">
+
                             <!-- Label Trigger Kamera/Galeri -->
-                            <label id="camera-trigger" for="photo-input" class="border-2 border-dashed border-slate-200 hover:border-unair-gold rounded-2xl p-6 text-center transition flex flex-col items-center justify-center space-y-4 cursor-pointer bg-slate-50 hover:bg-slate-100/50">
+                            <label id="camera-trigger" for="photo-input"
+                                class="border-2 border-dashed border-slate-200 hover:border-unair-gold rounded-2xl p-6 text-center transition flex flex-col items-center justify-center space-y-4 cursor-pointer bg-slate-50 hover:bg-slate-100/50">
                                 <div id="camera-placeholder" class="space-y-2">
-                                    <div class="w-14 h-14 bg-white shadow-sm border border-slate-100 rounded-full flex items-center justify-center text-unair-blue mx-auto">
+                                    <div
+                                        class="w-14 h-14 bg-white shadow-sm border border-slate-100 rounded-full flex items-center justify-center text-unair-blue mx-auto">
                                         <i class="fa-solid fa-camera text-xl"></i>
                                     </div>
                                     <div class="text-xs">
-                                        <span class="text-unair-blue font-bold">Pilih file foto</span> atau ambil gambar langsung
+                                        <span class="text-unair-blue font-bold">Pilih file foto</span> atau ambil gambar
+                                        langsung
                                     </div>
-                                    <p class="text-[10px] text-slate-400 font-sans">Sistem keamanan HP Anda akan mengaktifkan kamera atau galeri secara resmi</p>
+                                    <p class="text-[10px] text-slate-400 font-sans">Sistem keamanan HP Anda akan
+                                        mengaktifkan kamera atau galeri secara resmi</p>
                                 </div>
                             </label>
-                            
+
                             <!-- Preview Foto (di luar Label agar tidak konflik saat klik tombol reset) -->
-                            <div id="camera-preview-container" class="hidden relative w-36 h-36 mx-auto rounded-xl overflow-hidden border-2 border-unair-gold shadow-md">
+                            <div id="camera-preview-container"
+                                class="hidden relative w-36 h-36 mx-auto rounded-xl overflow-hidden border-2 border-unair-gold shadow-md">
                                 <img id="camera-preview" src="#" alt="Bukti Foto" class="w-full h-full object-cover">
-                                <button type="button" onclick="resetPhoto(event)" class="absolute top-1.5 right-1.5 bg-red-600 hover:bg-red-700 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shadow-md">
+                                <button type="button" onclick="resetPhoto(event)"
+                                    class="absolute top-1.5 right-1.5 bg-red-600 hover:bg-red-700 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shadow-md">
                                     <i class="fa-solid fa-times"></i>
                                 </button>
                             </div>
@@ -343,12 +407,16 @@
 
                         <!-- Logbook Textarea Field -->
                         <div id="logbook-input-section" class="space-y-2">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">Logbook Kegiatan Hari Ini</label>
-                            <textarea id="logbook-text" rows="4" placeholder="Tuliskan detail aktivitas KKN yang Anda kerjakan hari ini di Desa Siliragung (misal: Rapat proker sosialisasi kesehatan, asistensi posyandu, atau pembuatan pangkalan data desa)..." class="w-full border border-slate-200 rounded-2xl p-4 text-xs sm:text-sm focus:ring-2 focus:ring-unair-blue focus:outline-none transition"></textarea>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">Logbook
+                                Kegiatan Hari Ini</label>
+                            <textarea id="logbook-text" rows="4"
+                                placeholder="Tuliskan detail aktivitas KKN yang Anda kerjakan hari ini di Desa Siliragung (misal: Rapat proker sosialisasi kesehatan, asistensi posyandu, atau pembuatan pangkalan data desa)..."
+                                class="w-full border border-slate-200 rounded-2xl p-4 text-xs sm:text-sm focus:ring-2 focus:ring-unair-blue focus:outline-none transition"></textarea>
                         </div>
 
                         <!-- Submission Trigger Button -->
-                        <button type="submit" class="w-full bg-unair-blue hover:bg-blue-900 text-white font-bold py-3.5 px-6 rounded-2xl text-xs sm:text-sm shadow-md flex items-center justify-center space-x-2 transition duration-200">
+                        <button type="submit"
+                            class="w-full bg-unair-blue hover:bg-blue-900 text-white font-bold py-3.5 px-6 rounded-2xl text-xs sm:text-sm shadow-md flex items-center justify-center space-x-2 transition duration-200">
                             <i class="fa-solid fa-cloud-arrow-up"></i>
                             <span>Kirim Laporan Harian & Absen</span>
                         </button>
@@ -360,17 +428,20 @@
         <!-- ================== TAB: DAFTAR LOGBOOK ================== -->
         <section id="tab-logbook" class="tab-content hidden space-y-6">
             <!-- Filtering & Controls Bar -->
-            <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div
+                class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <h3 class="font-heading font-extrabold text-base text-slate-800 flex items-center gap-1.5">
                     <i class="fa-solid fa-book-open-reader text-unair-gold"></i> Rekam Jejak Logbook KKN
                 </h3>
                 <div class="flex items-center space-x-2 w-full md:w-auto">
-                    <button onclick="triggerManualRefresh()" class="px-3 py-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl text-slate-600 font-bold flex items-center gap-1 transition text-xs">
+                    <button onclick="triggerManualRefresh()"
+                        class="px-3 py-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl text-slate-600 font-bold flex items-center gap-1 transition text-xs">
                         <i class="fa-solid fa-arrows-rotate"></i> Refresh
                     </button>
                     <div class="relative flex-grow md:flex-grow-0">
                         <i class="fa-solid fa-filter absolute left-3 top-3 text-slate-400 text-xs"></i>
-                        <select id="logbook-filter" onchange="renderLogbooks()" class="pl-8 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-600 focus:outline-none focus:ring-2 focus:ring-unair-blue w-full min-w-[150px]">
+                        <select id="logbook-filter" onchange="renderLogbooks()"
+                            class="pl-8 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-600 focus:outline-none focus:ring-2 focus:ring-unair-blue w-full min-w-[150px]">
                             <option value="all">Semua Anggota</option>
                         </select>
                     </div>
@@ -390,16 +461,19 @@
                 <div class="unair-gradient p-5 text-white flex justify-between items-center">
                     <div>
                         <h3 class="font-heading font-extrabold text-base sm:text-lg">Profil Kelompok KKN-BBK 8</h3>
-                        <p class="text-xs text-slate-300">Daftar Resmi Anggota Kelompok 8 Desa Siliragung, Banyuwangi</p>
+                        <p class="text-xs text-slate-300">Daftar Resmi Anggota Kelompok 8 Desa Siliragung, Banyuwangi
+                        </p>
                     </div>
-                    <span class="bg-amber-400 text-slate-900 font-bold text-xs px-3 py-1 rounded-full">10 Mahasiswa</span>
+                    <span class="bg-amber-400 text-slate-900 font-bold text-xs px-3 py-1 rounded-full">10
+                        Mahasiswa</span>
                 </div>
-                
+
                 <!-- Table View (Hidden on mobile displays) -->
                 <div class="hidden md:block overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-slate-50 text-slate-400 text-[11px] font-bold uppercase tracking-wider border-b border-slate-100">
+                            <tr
+                                class="bg-slate-50 text-slate-400 text-[11px] font-bold uppercase tracking-wider border-b border-slate-100">
                                 <th class="py-4 px-6 w-20">Foto</th>
                                 <th class="py-4 px-6">Nama Lengkap & NIM</th>
                                 <th class="py-4 px-6">Fakultas / Program Studi</th>
@@ -423,10 +497,10 @@
 
         <!-- ================== TAB: ADMIN PANEL ================== -->
         <section id="tab-admin" class="tab-content hidden space-y-6">
-            
+
             <!-- Authenticated Admin Board Panel -->
             <div id="admin-board-panel" class="space-y-6">
-                
+
                 <!-- Google Sheets Sync Configuration Panel (Cloud Sync Info) -->
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 space-y-2">
                     <div class="flex items-center gap-2">
@@ -434,33 +508,41 @@
                             <i class="fa-solid fa-cloud-arrow-up text-lg"></i>
                         </div>
                         <div>
-                            <h4 class="font-heading font-bold text-sm text-slate-800">Sinkronisasi Google Sheets Aktif</h4>
+                            <h4 class="font-heading font-bold text-sm text-slate-800">Sinkronisasi Google Sheets Aktif
+                            </h4>
                             <p class="text-[11px] text-emerald-600 font-medium font-sans">
-                                <i class="fa-solid fa-circle-check mr-1 animate-pulse"></i> Terhubung langsung ke database cloud kelompok Desa Siliragung
+                                <i class="fa-solid fa-circle-check mr-1 animate-pulse"></i> Terhubung langsung ke
+                                database cloud kelompok Desa Siliragung
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div
+                    class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                         <h3 class="font-heading font-extrabold text-lg text-slate-800 flex items-center gap-1.5">
-                            <i class="fa-solid fa-shield-halved text-emerald-500"></i> Dasbor Utama Dosen Pembimbing (DPL)
+                            <i class="fa-solid fa-shield-halved text-emerald-500"></i> Dasbor Utama Dosen Pembimbing
+                            (DPL)
                         </h3>
-                        <p class="text-xs text-slate-400 mt-0.5">Pantau, validasi logbook, dan ekspor laporan kerja mahasiswa</p>
+                        <p class="text-xs text-slate-400 mt-0.5">Pantau, validasi logbook, dan ekspor laporan kerja
+                            mahasiswa</p>
                     </div>
                     <div class="flex flex-wrap items-center gap-2">
                         <!-- Action Buttons -->
-                        <button onclick="exportToCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs flex items-center space-x-1.5 transition">
+                        <button onclick="exportToCSV()"
+                            class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs flex items-center space-x-1.5 transition">
                             <i class="fa-solid fa-file-excel"></i>
                             <span>Ekspor CSV</span>
                         </button>
-                        <button onclick="copyWeeklySummary()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-4 py-2.5 rounded-xl text-xs flex items-center space-x-1.5 transition">
+                        <button onclick="copyWeeklySummary()"
+                            class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-4 py-2.5 rounded-xl text-xs flex items-center space-x-1.5 transition">
                             <i class="fa-solid fa-copy"></i>
                             <span>Salin Ringkasan</span>
                         </button>
                         <!-- Emergency/Initial Clean Data Reset -->
-                        <button onclick="openResetModal()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs flex items-center space-x-1.5 transition">
+                        <button onclick="openResetModal()"
+                            class="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs flex items-center space-x-1.5 transition">
                             <i class="fa-solid fa-trash-can"></i>
                             <span>Hapus & Reset Semua Data</span>
                         </button>
@@ -470,14 +552,17 @@
                 <!-- Admin Member Overrides Dashboard -->
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
                     <div class="p-4 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
-                        <h4 class="font-heading font-bold text-xs text-slate-700 uppercase tracking-wider">Kelola Kehadiran Harian Anggota</h4>
-                        <span class="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded font-bold">10 Profil Aktif</span>
+                        <h4 class="font-heading font-bold text-xs text-slate-700 uppercase tracking-wider">Kelola
+                            Kehadiran Harian Anggota</h4>
+                        <span class="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded font-bold">10
+                            Profil Aktif</span>
                     </div>
-                    
+
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-xs border-collapse">
                             <thead>
-                                <tr class="bg-slate-50 text-slate-400 text-[10px] font-bold uppercase tracking-wider border-b border-slate-100">
+                                <tr
+                                    class="bg-slate-50 text-slate-400 text-[10px] font-bold uppercase tracking-wider border-b border-slate-100">
                                     <th class="py-3 px-6">Nama Mahasiswa</th>
                                     <th class="py-3 px-6">Status Harian</th>
                                     <th class="py-3 px-6">Waktu & Bukti Foto</th>
@@ -496,10 +581,14 @@
         </section>
 
         <!-- Modal Preview Foto Bukti (DPL) -->
-        <div id="photo-preview-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4" onclick="closePhotoModal()">
-            <div class="relative max-w-sm w-full bg-white rounded-3xl overflow-hidden shadow-2xl border border-white/20 p-5 space-y-4" onclick="event.stopPropagation()">
+        <div id="photo-preview-modal"
+            class="fixed inset-0 z-[100] hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4"
+            onclick="closePhotoModal()">
+            <div class="relative max-w-sm w-full bg-white rounded-3xl overflow-hidden shadow-2xl border border-white/20 p-5 space-y-4"
+                onclick="event.stopPropagation()">
                 <div class="flex justify-between items-center border-b border-slate-100 pb-3">
-                    <h4 class="font-heading font-extrabold text-sm text-slate-800" id="photo-modal-title">Bukti Foto Kehadiran</h4>
+                    <h4 class="font-heading font-extrabold text-sm text-slate-800" id="photo-modal-title">Bukti Foto
+                        Kehadiran</h4>
                     <button onclick="closePhotoModal()" class="text-slate-400 hover:text-slate-600">
                         <i class="fa-solid fa-circle-xmark text-lg"></i>
                     </button>
@@ -507,7 +596,8 @@
                 <div class="aspect-square w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200">
                     <img id="photo-modal-img" src="" alt="Bukti Kehadiran" class="w-full h-full object-cover">
                 </div>
-                <button onclick="closePhotoModal()" class="w-full bg-slate-950 hover:bg-slate-900 text-white font-bold py-2.5 rounded-xl text-xs transition">
+                <button onclick="closePhotoModal()"
+                    class="w-full bg-slate-950 hover:bg-slate-900 text-white font-bold py-2.5 rounded-xl text-xs transition">
                     Tutup Pratinjau
                 </button>
             </div>
@@ -518,8 +608,10 @@
     <!-- FOOTER SECTION -->
     <footer class="bg-slate-900 text-white py-6 border-t border-slate-800 mt-12">
         <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
-            <p class="text-xs text-slate-400">Aplikasi Presensi Mandiri (Client-Side & Cloud Sync Storage) KKN-BBK 8 Universitas Airlangga Desa Siliragung 2026.</p>
-            <p class="text-[10px] text-slate-500">&copy; 2026 KKN BBK 8 UNAIR Siliragung. All Rights Reserved. Terintegrasi dengan PDD & Sekretariat.</p>
+            <p class="text-xs text-slate-400">Aplikasi Presensi Mandiri (Client-Side & Cloud Sync Storage) KKN-BBK 8
+                Universitas Airlangga Desa Siliragung 2026.</p>
+            <p class="text-[10px] text-slate-500">&copy; 2026 KKN BBK 8 UNAIR Siliragung. All Rights Reserved.
+                Terintegrasi dengan PDD & Sekretariat.</p>
         </div>
     </footer>
 
@@ -530,9 +622,10 @@
     <script src="js/app.js"></script>
     <script>
         // Start application
-        window.onload = function() {
+        window.onload = function () {
             initApp();
         };
     </script>
 </body>
+
 </html>
