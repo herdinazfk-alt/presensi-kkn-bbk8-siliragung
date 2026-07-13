@@ -358,8 +358,8 @@ function detectLocation() {
     coordsEl.innerText = "Mendeteksi GPS...";
     distEl.innerText = "Menghitung jarak...";
     
-    const targetLat = -8.4735;
-    const targetLon = 114.1154;
+    const targetLat = -8.5553034;
+    const targetLon = 114.1111788;
 
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
