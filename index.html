@@ -63,6 +63,23 @@
     <!-- Custom Toast Notification System -->
     <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3 max-w-md w-full px-4 sm:px-0 pointer-events-none"></div>
 
+    <!-- MODAL KONFIRMASI RESET (KUSTOM) -->
+    <div id="reset-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-100 text-center space-y-4 transform scale-95 transition-all duration-200">
+            <div class="w-16 h-16 bg-red-50 text-red-600 rounded-full flex items-center justify-center text-2xl mx-auto">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div class="space-y-1">
+                <h3 class="font-heading font-extrabold text-slate-800 text-base">Hapus Seluruh Data?</h3>
+                <p class="text-xs text-slate-400 leading-relaxed">Tindakan ini akan menghapus semua riwayat presensi harian, berkas logbook, dan mengembalikan status seluruh anggota menjadi "Belum Absen". Tindakan ini tidak bisa dibatalkan.</p>
+            </div>
+            <div class="grid grid-cols-2 gap-3 pt-2">
+                <button onclick="closeResetModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs transition">Batal</button>
+                <button onclick="confirmResetAllData()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl text-xs transition">Ya, Hapus Semua</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MAIN NAVBAR -->
     <header class="unair-gradient text-white shadow-lg sticky top-0 z-40 border-b-4 border-unair-gold">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -70,8 +87,7 @@
                 
                 <!-- Brand Identity and Logo -->
                 <div class="flex items-center space-x-3">
-                    <!-- Updated Logo Integration: Using Logo BBK Siliragung.png -->
-                    <img src="Logo BBK Siliragung.png" alt="Logo BBK Siliragung" class="w-16 h-16 object-contain drop-shadow-md hover:scale-105 transition duration-200" onerror="this.onerror=null; this.src='https://placehold.co/150/0F2D59/E5A823?text=BBK+8'">
+                    <img src="Logo BBK Siliragung.png" alt="Logo BBK Siliragung" class="w-14 h-14 object-contain drop-shadow-md hover:scale-105 transition duration-200" onerror="handleLogoFallback(this)">
                     <div>
                         <h1 class="font-heading font-extrabold text-base sm:text-lg leading-tight tracking-wide text-unair-gold flex items-center gap-1.5">
                             KKN-BBK 8 UNAIR <span class="bg-amber-500 text-slate-950 text-[10px] px-2 py-0.5 rounded-full font-sans font-bold">2026</span>
@@ -80,21 +96,21 @@
                     </div>
                 </div>
 
-                <!-- Simulation Profile Quick Select Switcher -->
+                <!-- Profile Selection Dropdown -->
                 <div class="flex items-center space-x-2">
                     <div class="hidden md:block text-right">
                         <span class="block text-[10px] uppercase tracking-wider text-slate-300 font-bold">Pilih Profil Aktif (Simulasi):</span>
                         <span id="nav-active-role" class="text-xs font-semibold text-unair-gold">Memuat...</span>
                     </div>
                     <select id="profile-switcher" onchange="switchActiveProfile(this.value)" class="bg-slate-900/60 border border-slate-700 text-white rounded-lg px-2 py-1.5 text-xs font-semibold focus:ring-2 focus:ring-unair-gold focus:outline-none max-w-[140px] sm:max-w-[200px] cursor-pointer">
-                        <!-- Populated dynamically via JS -->
+                        <!-- Populated dynamically -->
                     </select>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- SUB NAVBAR (TAB NAVIGATION) -->
+    <!-- TAB NAVIGATION -->
     <div class="bg-white border-b border-slate-200 shadow-sm sticky top-20 z-30 overflow-x-auto scrollbar-none">
         <div class="max-w-7xl mx-auto px-4 flex space-x-1 sm:space-x-4">
             <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="tab-btn active px-3 py-3.5 border-b-2 border-unair-blue text-unair-blue font-semibold text-xs sm:text-sm flex items-center space-x-2 whitespace-nowrap">
@@ -120,12 +136,11 @@
         </div>
     </div>
 
-    <!-- MAIN CONTENT -->
+    <!-- MAIN CONTENT CONTAINER -->
     <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
         
         <!-- ================== TAB: DASHBOARD ================== -->
         <section id="tab-dashboard" class="tab-content block space-y-6 animate-fadeIn">
-            
             <!-- Welcome Banner -->
             <div class="unair-gradient text-white rounded-2xl p-6 sm:p-8 shadow-md relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div class="absolute -right-16 -bottom-16 w-64 h-64 bg-white/10 rounded-full blur-2xl"></div>
@@ -182,7 +197,7 @@
                 </div>
             </div>
 
-            <!-- Charts Section -->
+            <!-- Dashboard Analytics Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Presence Rate Chart -->
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 lg:col-span-1 flex flex-col justify-between">
@@ -205,12 +220,12 @@
                         </div>
                         <div>
                             <span class="inline-block w-2.5 h-2.5 bg-slate-300 rounded-full mr-1"></span>
-                            <span class="text-slate-500 font-medium">Absen</span>
+                            <span class="text-slate-500 font-medium">Belum</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Live Logs Logbook -->
+                <!-- Recent Activities Feed -->
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 lg:col-span-2">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="font-heading font-bold text-slate-800 text-sm flex items-center gap-1.5">
@@ -219,12 +234,12 @@
                         <span class="text-[10px] bg-slate-100 px-2 py-1 rounded text-slate-500 font-bold">Terupdate</span>
                     </div>
                     <div class="space-y-4 max-h-[260px] overflow-y-auto pr-1" id="recent-logs-container">
-                        <!-- Dynamic content -->
+                        <!-- Populated dynamically via JS -->
                     </div>
                 </div>
             </div>
 
-            <!-- Posko Geolocation Info -->
+            <!-- Geofencing & Map Banner Info -->
             <div class="bg-slate-900 text-white rounded-2xl p-5 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
                 <div class="flex items-center space-x-4">
                     <div class="p-3 bg-slate-800 rounded-xl text-yellow-400">
@@ -247,7 +262,7 @@
         <section id="tab-presensi" class="tab-content hidden animate-fadeIn">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 
-                <!-- Left: Profile Info & Map Verification -->
+                <!-- Left Section: Profile Info -->
                 <div class="lg:col-span-4 space-y-6">
                     <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 text-center relative overflow-hidden">
                         <div class="unair-gradient h-24 absolute top-0 left-0 right-0 z-0"></div>
@@ -274,7 +289,7 @@
                         </div>
                     </div>
 
-                    <!-- GPS Verification Status Card -->
+                    <!-- GPS Location Verification Panel -->
                     <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 space-y-4">
                         <h4 class="font-heading font-bold text-sm text-slate-800 flex items-center gap-1.5">
                             <i class="fa-solid fa-compass text-unair-gold"></i> Validasi Geo-Lokasi
@@ -300,7 +315,7 @@
                     </div>
                 </div>
 
-                <!-- Right: Action Form -->
+                <!-- Right Section: Interactive Presensi & Logbook Form -->
                 <div class="lg:col-span-8 bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-100 space-y-6">
                     <div>
                         <h3 class="font-heading font-extrabold text-lg text-slate-800">Formulir Presensi Harian & Logbook</h3>
@@ -309,9 +324,9 @@
 
                     <form id="attendance-form" onsubmit="handleAttendanceSubmit(event)" class="space-y-6">
                         
-                        <!-- Clock Action Grid (Clock-In vs Clock-Out) -->
+                        <!-- Toggle Clock-In / Clock-Out -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <!-- Clock-In Action Box -->
+                            <!-- Clock-In -->
                             <label class="relative border-2 border-slate-100 hover:border-unair-blue rounded-2xl p-4 cursor-pointer flex items-center space-x-4 transition group focus-within:ring-2 focus-within:ring-unair-blue" id="clockin-box">
                                 <input type="radio" name="attendance_type" value="clock_in" checked onchange="toggleFormFields(this.value)" class="absolute right-4 top-4 text-unair-blue focus:ring-unair-blue h-4 w-4">
                                 <div class="p-3 bg-emerald-50 text-emerald-600 group-hover:bg-emerald-100 rounded-xl transition">
@@ -323,7 +338,7 @@
                                 </div>
                             </label>
                             
-                            <!-- Clock-Out Action Box -->
+                            <!-- Clock-Out -->
                             <label class="relative border-2 border-slate-100 hover:border-unair-blue rounded-2xl p-4 cursor-pointer flex items-center space-x-4 transition group focus-within:ring-2 focus-within:ring-unair-blue" id="clockout-box">
                                 <input type="radio" name="attendance_type" value="clock_out" onchange="toggleFormFields(this.value)" class="absolute right-4 top-4 text-unair-blue focus:ring-unair-blue h-4 w-4">
                                 <div class="p-3 bg-red-50 text-red-600 group-hover:bg-red-100 rounded-xl transition">
@@ -336,7 +351,7 @@
                             </label>
                         </div>
 
-                        <!-- Upload Photo / Simulation Camera Area -->
+                        <!-- Photographic Verification Field -->
                         <div class="space-y-2">
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">Bukti Foto Kehadiran (Wajib)</label>
                             <div class="border-2 border-dashed border-slate-200 hover:border-unair-gold rounded-2xl p-6 text-center transition flex flex-col items-center justify-center space-y-4 cursor-pointer relative" onclick="triggerFileInput()">
@@ -346,9 +361,9 @@
                                         <i class="fa-solid fa-camera text-xl"></i>
                                     </div>
                                     <div class="text-xs">
-                                        <span class="text-unair-blue font-bold">Pilih file foto</span> atau ambil gambar dari HP
+                                        <span class="text-unair-blue font-bold">Pilih file foto</span> atau ambil gambar langsung
                                     </div>
-                                    <p class="text-[10px] text-slate-400">Gunakan rasio 1:1, pastikan wajah dan posko/lingkungan terlihat jelas</p>
+                                    <p class="text-[10px] text-slate-400">Pastikan wajah Anda dan lingkungan sekitar posko terlihat jelas</p>
                                 </div>
                                 <div id="camera-preview-container" class="hidden relative w-36 h-36 rounded-xl overflow-hidden border-2 border-unair-gold shadow-md">
                                     <img id="camera-preview" src="#" alt="Bukti Foto" class="w-full h-full object-cover">
@@ -359,13 +374,13 @@
                             </div>
                         </div>
 
-                        <!-- Logbook Input Area (Hidden for Clock Out) -->
+                        <!-- Logbook Textarea Field -->
                         <div id="logbook-input-section" class="space-y-2">
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">Logbook Kegiatan Hari Ini (Minimum 20 Karakter)</label>
                             <textarea id="logbook-text" rows="4" placeholder="Tuliskan detail aktivitas KKN yang Anda kerjakan hari ini di Desa Siliragung (misal: Rapat proker sosialisasi kesehatan, asistensi posyandu, atau pembuatan pangkalan data desa)..." class="w-full border border-slate-200 rounded-2xl p-4 text-xs sm:text-sm focus:ring-2 focus:ring-unair-blue focus:outline-none transition"></textarea>
                         </div>
 
-                        <!-- Submit Buttons -->
+                        <!-- Submission Trigger Button -->
                         <button type="submit" class="w-full bg-unair-blue hover:bg-blue-900 text-white font-bold py-3.5 px-6 rounded-2xl text-xs sm:text-sm shadow-md flex items-center justify-center space-x-2 transition duration-200">
                             <i class="fa-solid fa-cloud-arrow-up"></i>
                             <span id="submit-btn-text">Kirim Absensi Masuk (Clock-In)</span>
@@ -377,7 +392,7 @@
 
         <!-- ================== TAB: DAFTAR LOGBOOK ================== -->
         <section id="tab-logbook" class="tab-content hidden space-y-6 animate-fadeIn">
-            <!-- Filter Bar -->
+            <!-- Filtering & Controls Bar -->
             <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <h3 class="font-heading font-extrabold text-base text-slate-800 flex items-center gap-1.5">
                     <i class="fa-solid fa-book-open-reader text-unair-gold"></i> Rekam Jejak Logbook KKN
@@ -387,22 +402,22 @@
                         <i class="fa-solid fa-filter absolute left-3 top-2.5 text-slate-400 text-xs"></i>
                         <select id="logbook-filter" onchange="renderLogbooks()" class="pl-8 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-600 focus:outline-none focus:ring-2 focus:ring-unair-blue w-full">
                             <option value="all">Semua Anggota</option>
-                            <!-- Dynamic additions -->
+                            <!-- Filter options populated dynamically -->
                         </select>
                     </div>
                 </div>
             </div>
 
-            <!-- Logbook Feeds -->
+            <!-- Logbook Feeds Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="logbook-list-container">
-                <!-- Dynamically injected -->
+                <!-- Dynamically populated via JavaScript -->
             </div>
         </section>
 
         <!-- ================== TAB: DATA ANGGOTA ================== -->
         <section id="tab-anggota" class="tab-content hidden space-y-6 animate-fadeIn">
             <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                <!-- Header Banner -->
+                <!-- Banner Title -->
                 <div class="unair-gradient p-5 text-white flex justify-between items-center">
                     <div>
                         <h3 class="font-heading font-extrabold text-base sm:text-lg">Profil Kelompok KKN-BBK 8</h3>
@@ -411,12 +426,12 @@
                     <span class="bg-amber-400 text-slate-900 font-bold text-xs px-3 py-1 rounded-full">10 Mahasiswa</span>
                 </div>
                 
-                <!-- Table View (Hidden on mobile) -->
+                <!-- Table View (Hidden on mobile displays) -->
                 <div class="hidden md:block overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-slate-50 text-slate-400 text-[11px] font-bold uppercase tracking-wider border-b border-slate-100">
-                                <th class="py-4 px-6">Foto/Initials</th>
+                                <th class="py-4 px-6">Inisial</th>
                                 <th class="py-4 px-6">Nama Lengkap & NIM</th>
                                 <th class="py-4 px-6">Fakultas / Program Studi</th>
                                 <th class="py-4 px-6">Jabatan Kelompok</th>
@@ -430,7 +445,7 @@
                     </table>
                 </div>
 
-                <!-- Card View (Shown on mobile only) -->
+                <!-- Card View (Shown on mobile displays only) -->
                 <div class="block md:hidden divide-y divide-slate-100" id="members-cards-container">
                     <!-- Populated dynamically via JS -->
                 </div>
@@ -440,11 +455,10 @@
         <!-- ================== TAB: ADMIN PANEL ================== -->
         <section id="tab-admin" class="tab-content hidden space-y-6 animate-fadeIn">
             
-            <!-- Lock Overlay Screen (Default view) -->
+            <!-- Admin Verification Gateway Screen -->
             <div id="admin-auth-panel" class="bg-white p-6 sm:p-10 rounded-2xl shadow-sm border border-slate-100 max-w-lg mx-auto text-center space-y-6">
-                <!-- Branding Logo for Admin Panel login screen -->
                 <div class="mx-auto flex justify-center mb-2">
-                    <img src="Logo BBK Siliragung.png" alt="Logo BBK Siliragung" class="w-24 h-24 object-contain drop-shadow-md" onerror="this.onerror=null; this.src='https://placehold.co/200/0F2D59/E5A823?text=BBK+8'">
+                    <img src="Logo BBK Siliragung.png" alt="Logo BBK Siliragung" class="w-24 h-24 object-contain drop-shadow-md" onerror="handleLogoFallback(this)">
                 </div>
                 <div class="space-y-2">
                     <h3 class="font-heading font-extrabold text-lg text-slate-800">Verifikasi Sandi Pembimbing (DPL)</h3>
@@ -459,7 +473,7 @@
                 </div>
             </div>
 
-            <!-- Authenticated Admin Board (Hidden by default) -->
+            <!-- Authenticated Admin Board Panel -->
             <div id="admin-board-panel" class="hidden space-y-6">
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
@@ -468,7 +482,8 @@
                         </h3>
                         <p class="text-xs text-slate-400 mt-0.5">Pantau, validasi logbook, dan ekspor laporan kerja mahasiswa</p>
                     </div>
-                    <div class="flex items-center gap-2">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <!-- Action Buttons -->
                         <button onclick="exportToCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center space-x-1.5 transition">
                             <i class="fa-solid fa-file-excel"></i>
                             <span>Ekspor CSV</span>
@@ -477,13 +492,18 @@
                             <i class="fa-solid fa-copy"></i>
                             <span>Salin Ringkasan</span>
                         </button>
-                        <button onclick="logoutAdmin()" class="bg-red-50 hover:bg-red-100 text-red-600 font-bold px-3 py-2 rounded-xl text-xs flex items-center space-x-1.5 transition">
+                        <!-- Emergency/Initial Clean Data Reset -->
+                        <button onclick="openResetModal()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center space-x-1.5 transition">
+                            <i class="fa-solid fa-trash-can"></i>
+                            <span>Hapus & Reset Semua Data</span>
+                        </button>
+                        <button onclick="logoutAdmin()" class="bg-red-50 hover:bg-red-100 text-red-600 font-bold px-3 py-2 rounded-xl text-xs flex items-center space-x-1.5 transition" title="Log Out">
                             <i class="fa-solid fa-sign-out-alt"></i>
                         </button>
                     </div>
                 </div>
 
-                <!-- Attendance Overrides & Manual Settings -->
+                <!-- Admin Member Overrides Dashboard -->
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
                     <div class="p-4 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
                         <h4 class="font-heading font-bold text-xs text-slate-700 uppercase tracking-wider">Kelola Kehadiran Harian Anggota</h4>
@@ -503,7 +523,7 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100 text-slate-600" id="admin-member-list">
-                                <!-- Dynamic JS additions -->
+                                <!-- Dynamically added -->
                             </tbody>
                         </table>
                     </div>
@@ -521,39 +541,34 @@
         </div>
     </footer>
 
-    <!-- JAVASCRIPT & LOGIC APPLICATION -->
+    <!-- JAVASCRIPT LOGIC SYSTEM -->
     <script>
         /* -----------------------------------------
          * DATA DEFINITIONS & STATIC INITIALIZATION
          * ----------------------------------------- */
         
-        // 10 KKN Members from image_1b2444.png & specified job roles
+        // Corrected Members Registry List based on image_1b2444.png
         const KKN_MEMBERS = [
-            { id: "172231050", name: "DINI RISMA WARDHANI", gender: "Perempuan", faculty: "Ilmu Sosial dan Ilmu Politik", studyProgram: "S1 Administrasi Publik", role: "PDD", contact: "085606377639", initialStatus: "Hadir" },
-            { id: "171231063", name: "POPPY AYU PAWITRININGRUM", gender: "Perempuan", faculty: "Ilmu Sosial dan Ilmu Politik", studyProgram: "S1 Sosiologi", role: "Ketua Kelompok", contact: "08123195369", initialStatus: "Hadir" },
-            { id: "182231071", name: "HERDINA IZZA AFKARINA", gender: "Perempuan", faculty: "Sains dan Teknologi", studyProgram: "S1 Fisika", role: "Sekretaris", contact: "082264556590", initialStatus: "Hadir" },
-            { id: "123231139", name: "NADHIRAH KAMILA PUTRI PRASETYO", gender: "Perempuan", faculty: "Ilmu Budaya", studyProgram: "S1 Bahasa dan Sastra Inggris", role: "Perlengkapan", contact: "085781161061", initialStatus: "Hadir" },
+            { id: "172231050", name: "DINI RISMA WARDHANI", gender: "Perempuan", faculty: "Ilmu Sosial dan Ilmu Politik", studyProgram: "S1 Administrasi Publik", role: "PDD", contact: "085606377639", initialStatus: "Belum Absen" },
+            { id: "171231063", name: "POPPY AYU PAWITRININGRUM", gender: "Perempuan", faculty: "Ilmu Sosial dan Ilmu Politik", studyProgram: "S1 Sosiologi", role: "Ketua Kelompok", contact: "08123195369", initialStatus: "Belum Absen" },
+            { id: "182231071", name: "HERDINA IZZA AFKARINA", gender: "Perempuan", faculty: "Sains dan Teknologi", studyProgram: "S1 Fisika", role: "Sekretaris", contact: "082264556590", initialStatus: "Belum Absen" },
+            { id: "123231139", name: "NADHIRAH KAMILA PUTRI PRASETYO", gender: "Perempuan", faculty: "Ilmu Budaya", studyProgram: "S1 Bahasa dan Sastra Inggris", role: "Perlengkapan", contact: "085781161061", initialStatus: "Belum Absen" },
             { id: "132231083", name: "NUR FADHILAH", gender: "Perempuan", faculty: "Keperawatan", studyProgram: "S1 Keperawatan", role: "Acara", contact: "085854928355", initialStatus: "Belum Absen" },
             { id: "412231072", name: "SABRINA FIRDAUSA AZZAHRA SUNARTO", gender: "Perempuan", faculty: "Vokasi", studyProgram: "D4 Fisioterapi", role: "Bendahara", contact: "081235364787", initialStatus: "Belum Absen" },
-            { id: "434231099", name: "PEDJA RAFSANJANI", gender: "Laki-laki", faculty: "Vokasi", studyProgram: "D4 Teknik Informatika", role: "Perlengkapan", contact: "085710902854", initialStatus: "Izin" },
+            { id: "434231099", name: "PEDJA RAFSANJANI", gender: "Laki-laki", faculty: "Vokasi", studyProgram: "D4 Teknik Informatika", role: "Perlengkapan", contact: "085710902854", initialStatus: "Belum Absen" },
             { id: "441231007", name: "NANDA JELITA ANGGIA ARTA", gender: "Perempuan", faculty: "Vokasi", studyProgram: "D4 Teknologi Veteriner", role: "Acara", contact: "081515513747", initialStatus: "Belum Absen" },
             { id: "441231026", name: "SULTAN MAULANA IBRAHIM", gender: "Laki-laki", faculty: "Vokasi", studyProgram: "D4 Teknologi Veteriner", role: "PDD", contact: "085864072804", initialStatus: "Belum Absen" },
             { id: "194231031", name: "VIRNA ANANDA", gender: "Perempuan", faculty: "Ilmu Kesehatan, Kedokteran dan Ilmu Alam", studyProgram: "S1 Kesehatan Masyarakat (Fikkia Banyuwangi)", role: "Humas", contact: "081213485638", initialStatus: "Belum Absen" }
         ];
 
-        // Seed / Dummy Logs to pre-populate charts & dashboard nicely on load
-        const PRE_SEEDED_LOGS = [
-            { id: "log-seed-1", memberId: "171231063", name: "POPPY AYU PAWITRININGRUM", type: "clock_in", time: "07:34 WIB", date: "Hari Ini", photo: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop", text: "Melakukan koordinasi pagi bersama Kepala Desa Siliragung membahas sinkronisasi data stunting di balai desa.", verified: true },
-            { id: "log-seed-2", memberId: "182231071", name: "HERDINA IZZA AFKARINA", type: "clock_in", time: "07:45 WIB", date: "Hari Ini", photo: "https://images.unsplash.com/photo-1554151228-14d9def656e4?w=150&h=150&fit=crop", text: "Membantu inventarisasi data posko dan mencatat proposal program kerja mitigasi kebencanaan pesisir.", verified: true },
-            { id: "log-seed-3", memberId: "172231050", name: "DINI RISMA WARDHANI", type: "clock_in", time: "07:50 WIB", date: "Hari Ini", photo: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=150&h=150&fit=crop", text: "Mengambil dokumentasi video dan foto aktivitas kunjungan ke balai desa Siliragung untuk feed publikasi KKN.", verified: false },
-            { id: "log-seed-4", memberId: "123231139", name: "NADHIRAH KAMILA PUTRI PRASETYO", type: "clock_in", time: "07:58 WIB", date: "Hari Ini", photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop", text: "Mempersiapkan bahan ajar dan modul bahasa Inggris sederhana untuk pengajaran di SD Siliragung.", verified: false }
-        ];
+        // Production Start: Clean and Empty Log List State
+        const PRE_SEEDED_LOGS = [];
 
         // STATE MANAGER
         let state = {
             members: [...KKN_MEMBERS],
             logs: [...PRE_SEEDED_LOGS],
-            activeMemberId: "171231063", // Default Active Profile: POPPY (Ketua Kelompok)
+            activeMemberId: "171231063", // DEFAULT Active: Poppy Ayu
             isAdminAuthenticated: false,
             mockLocation: {
                 latitude: -8.4735,
@@ -563,21 +578,32 @@
             temporaryPhoto: null
         };
 
-        // Chart Instance Container
+        // Chart Container Instance
         let presenceChart = null;
 
+        // Smart Logo Fallback Handler
+        function handleLogoFallback(imgElement) {
+            const alternativeLogoName = "Logo_BBK_Siliragung-removebg-preview.png";
+            if (imgElement.src.indexOf(encodeURIComponent(alternativeLogoName)) === -1 && imgElement.src.indexOf(alternativeLogoName) === -1) {
+                imgElement.src = alternativeLogoName;
+            } else {
+                imgElement.onerror = null;
+                imgElement.src = 'https://placehold.co/150/0F2D59/E5A823?text=UNAIR+BBK+8';
+            }
+        }
+
         /* -----------------------------------------
-         * APP INITIALIZATION ON LOAD
+         * APP INITIALIZATION ON WINDOW LOAD
          * ----------------------------------------- */
         window.onload = function() {
-            // Load from localStorage if existing
-            if (localStorage.getItem("kkn_presensi_state")) {
+            // Load state from localStorage if it exists
+            if (localStorage.getItem("kkn_presensi_state_prod")) {
                 try {
-                    const loadedState = JSON.parse(localStorage.getItem("kkn_presensi_state"));
+                    const loadedState = JSON.parse(localStorage.getItem("kkn_presensi_state_prod"));
                     state.members = loadedState.members || state.members;
                     state.logs = loadedState.logs || state.logs;
                 } catch (e) {
-                    console.error("Localstorage parsing error", e);
+                    console.error("Gagal membaca LocalStorage", e);
                 }
             }
             
@@ -590,7 +616,6 @@
             renderAdminPanel();
         };
 
-        // Realtime Clock Loop
         function initClock() {
             setInterval(() => {
                 const now = new Date();
@@ -599,15 +624,14 @@
             }, 1000);
         }
 
-        // Save State helper
         function saveStateToLocalStorage() {
-            localStorage.setItem("kkn_presensi_state", JSON.stringify({
+            localStorage.setItem("kkn_presensi_state_prod", JSON.stringify({
                 members: state.members,
                 logs: state.logs
             }));
         }
 
-        // Native Premium Toast Banner system (replacing alerts)
+        // Custom Native Premium Toast Alerts System
         function showToast(message, type = 'info') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -625,23 +649,50 @@
             }
 
             container.appendChild(toast);
-            
-            // Trigger animation
-            setTimeout(() => {
-                toast.classList.remove('translate-y-2', 'opacity-0');
-            }, 50);
+            setTimeout(() => { toast.classList.remove('translate-y-2', 'opacity-0'); }, 50);
 
-            // Self destruct after 4s
+            // Self-Destruct
             setTimeout(() => {
                 toast.classList.add('opacity-0', 'translate-y-2');
-                setTimeout(() => {
-                    toast.remove();
-                }, 300);
+                setTimeout(() => { toast.remove(); }, 300);
             }, 4000);
         }
 
         /* -----------------------------------------
-         * PROFILE SWITCHING CAPABILITY
+         * MODAL RESET POPUP (KUSTOM)
+         * ----------------------------------------- */
+        function openResetModal() {
+            document.getElementById('reset-modal').classList.remove('hidden');
+            document.getElementById('reset-modal').classList.add('flex');
+        }
+
+        function closeResetModal() {
+            document.getElementById('reset-modal').classList.add('hidden');
+            document.getElementById('reset-modal').classList.remove('flex');
+        }
+
+        function confirmResetAllData() {
+            // Revert all data back to clean slate state
+            state.members = KKN_MEMBERS.map(m => {
+                m.initialStatus = "Belum Absen";
+                return m;
+            });
+            state.logs = [];
+            saveStateToLocalStorage();
+            
+            closeResetModal();
+            showToast("Semua database presensi & logbook kelompok telah berhasil dibersihkan!", "success");
+            
+            // Reload Viewport UI
+            switchActiveProfile(state.activeMemberId);
+            renderDashboard();
+            renderLogbooks();
+            renderMembersList();
+            renderAdminMemberList();
+        }
+
+        /* -----------------------------------------
+         * SWITCH PROFILE CONTROLLER
          * ----------------------------------------- */
         function populateProfileSwitcher() {
             const switcher = document.getElementById('profile-switcher');
@@ -651,13 +702,11 @@
             logFilter.innerHTML = '<option value="all">Semua Anggota</option>';
             
             state.members.forEach(m => {
-                // Populate Switcher in navbar
                 const opt = document.createElement('option');
                 opt.value = m.id;
                 opt.innerText = m.name.split(' ').slice(0, 2).join(' ') + ` (${m.role})`;
                 switcher.appendChild(opt);
 
-                // Populate filter selection on Logbook tab
                 const optFilter = document.createElement('option');
                 optFilter.value = m.id;
                 optFilter.innerText = m.name;
@@ -670,20 +719,16 @@
             const member = state.members.find(m => m.id === memberId);
             if (!member) return;
 
-            // Update Global Selection View
             document.getElementById('profile-switcher').value = memberId;
             document.getElementById('nav-active-role').innerText = `${member.name.split(' ')[0]} - ${member.role}`;
 
-            // Update Tab Profile UI view
             document.getElementById('member-name').innerText = member.name;
             document.getElementById('member-nim').innerText = `NIM. ${member.id}`;
             document.getElementById('member-role').innerText = member.role;
             
-            // Create profile initials
             const initials = member.name.split(' ').map(n => n[0]).slice(0, 2).join('');
             document.getElementById('member-avatar').innerText = initials;
 
-            // Sync with profile status today
             updateMemberStatusDisplay(member);
         }
 
@@ -691,9 +736,7 @@
             const statusBox = document.getElementById('member-status-box');
             const clockInBox = document.getElementById('member-clock-in');
             
-            // Find recent clock-in today for this user
             const todayInLog = state.logs.find(l => l.memberId === member.id && l.type === 'clock_in');
-            
             statusBox.className = "font-semibold text-xs py-0.5 px-2 rounded ";
             
             if (todayInLog) {
@@ -715,28 +758,23 @@
         }
 
         /* -----------------------------------------
-         * TAB CONTROLLER NAVIGATION
+         * TAB CONTROL SYSTEM
          * ----------------------------------------- */
         function switchTab(tabId) {
-            // Hide all contents
             document.querySelectorAll('.tab-content').forEach(section => {
                 section.classList.add('hidden');
             });
-            // Remove active classes from buttons
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active', 'border-unair-blue', 'text-unair-blue');
                 btn.classList.add('border-transparent', 'text-slate-500');
             });
 
-            // Show targets
             document.getElementById(`tab-${tabId}`).classList.remove('hidden');
             
-            // Highlight current button
             const activeBtn = document.getElementById(`tab-btn-${tabId}`);
             activeBtn.classList.add('active', 'border-unair-blue', 'text-unair-blue');
             activeBtn.classList.remove('border-transparent', 'text-slate-500');
 
-            // Hook up screen triggers
             if (tabId === 'dashboard') {
                 renderDashboard();
             } else if (tabId === 'logbook') {
@@ -749,7 +787,7 @@
         }
 
         /* -----------------------------------------
-         * RENDER TAB: DASHBOARD & METRICS
+         * TAB VIEW RENDERERS
          * ----------------------------------------- */
         function renderDashboard() {
             const activeMember = state.members.find(m => m.id === state.activeMemberId);
@@ -757,8 +795,6 @@
                 document.getElementById('dashboard-welcome-msg').innerHTML = `Halo, ${activeMember.name.split(' ')[0]}! <span class="wave">👋</span>`;
             }
 
-            // Calculation Stats
-            const logsToday = state.logs;
             const totalHadir = state.members.filter(m => {
                 const hasClockIn = state.logs.some(l => l.memberId === m.id && l.type === 'clock_in');
                 return hasClockIn || m.initialStatus === 'Hadir';
@@ -771,16 +807,13 @@
             const verifikasiDplCount = state.logs.filter(l => l.verified).length;
             const verifikasiRate = state.logs.length > 0 ? Math.round((verifikasiDplCount / state.logs.length) * 100) : 0;
 
-            // Set metric texts
             document.getElementById('stat-hadir').innerText = `${totalHadir} / 10`;
             document.getElementById('stat-belum').innerText = `${totalBelum}`;
             document.getElementById('stat-logbook').innerText = totalLogbooks;
             document.getElementById('stat-terverifikasi').innerText = `${verifikasiRate}%`;
 
-            // Draw/Update Chart
             drawPresenceChart(totalHadir, totalIzinSakit, totalBelum);
 
-            // Populate Recent Activity logs list
             const container = document.getElementById('recent-logs-container');
             container.innerHTML = '';
 
@@ -794,7 +827,6 @@
                 return;
             }
 
-            // Sorted logs by reverse chronological order
             const sortedLogs = [...state.logs].reverse();
 
             sortedLogs.forEach(log => {
@@ -854,9 +886,7 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            display: false
-                        }
+                        legend: { display: false }
                     },
                     cutout: '70%'
                 }
@@ -864,7 +894,7 @@
         }
 
         /* -----------------------------------------
-         * CAMERA SIMULATION & FORM FUNCTIONALITIES
+         * CAMERA & POSITION SIMULATIONS
          * ----------------------------------------- */
         function triggerFileInput() {
             document.getElementById('photo-input').click();
@@ -907,14 +937,12 @@
             }
         }
 
-        // Mock Geo-coordinates for simulation
         function detectLocation() {
             document.getElementById('gps-coords').innerText = "Mendeteksi...";
             document.getElementById('gps-distance').innerText = "Menghitung...";
             
             setTimeout(() => {
-                // Mock random coordinates within Banyuwangi
-                const isWithinRange = Math.random() > 0.15; // 85% chance within posko
+                const isWithinRange = Math.random() > 0.15;
                 
                 if (isWithinRange) {
                     state.mockLocation = {
@@ -938,7 +966,7 @@
         }
 
         /* -----------------------------------------
-         * PRESENSI SUBMISSION LOGIC
+         * ATTENDANCE SUBMISSION PROCESSOR
          * ----------------------------------------- */
         function handleAttendanceSubmit(event) {
             event.preventDefault();
@@ -947,7 +975,6 @@
             const attendanceType = document.querySelector('input[name="attendance_type"]:checked').value;
             const logbookText = document.getElementById('logbook-text').value.trim();
 
-            // Form Validations
             if (!state.temporaryPhoto) {
                 showToast("Anda wajib melampirkan foto bukti kehadiran!", "error");
                 return;
@@ -958,11 +985,9 @@
                 return;
             }
 
-            // Create timestamp
             const now = new Date();
             const timeString = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + " WIB";
 
-            // Push Log
             const newLog = {
                 id: "log-" + Date.now(),
                 memberId: activeMember.id,
@@ -972,10 +997,9 @@
                 date: "Hari Ini",
                 photo: state.temporaryPhoto,
                 text: attendanceType === 'clock_in' ? logbookText : "Clock-Out Mandiri Berhasil",
-                verified: false // Needs DPL verification
+                verified: false
             };
 
-            // Update Member initialStatus to reflect presence in UI
             if (attendanceType === 'clock_in') {
                 activeMember.initialStatus = "Hadir";
             }
@@ -983,20 +1007,14 @@
             state.logs.push(newLog);
             saveStateToLocalStorage();
 
-            // UI Feedback
             showToast(`${attendanceType === 'clock_in' ? 'Clock-In' : 'Clock-Out'} Berhasil Dikirim!`, "success");
             
-            // Clear / Reset Form fields
             document.getElementById('logbook-text').value = '';
             resetPhoto(event);
             
-            // Re-sync UI Displays
             updateMemberStatusDisplay(activeMember);
             
-            // Jump to Dashboard
-            setTimeout(() => {
-                switchTab('dashboard');
-            }, 500);
+            setTimeout(() => { switchTab('dashboard'); }, 500);
         }
 
         /* -----------------------------------------
@@ -1008,7 +1026,6 @@
             
             container.innerHTML = '';
             
-            // Filter logs
             const filteredLogs = state.logs.filter(log => {
                 if (filterVal === 'all') return log.text && log.text.length > 5;
                 return log.memberId === filterVal && log.text && log.text.length > 5;
@@ -1024,7 +1041,6 @@
                 return;
             }
 
-            // Reverse chron order
             [...filteredLogs].reverse().forEach(log => {
                 const member = state.members.find(m => m.id === log.memberId);
                 const role = member ? member.role : 'Anggota';
@@ -1060,7 +1076,7 @@
         }
 
         /* -----------------------------------------
-         * MEMBER DIRECTORY VIEW LOGIC
+         * MEMBER DIRECTORY RENDERER
          * ----------------------------------------- */
         function renderMembersList() {
             const tableBody = document.getElementById('members-table-body');
@@ -1072,7 +1088,6 @@
             state.members.forEach(member => {
                 const initials = member.name.split(' ').map(n => n[0]).slice(0, 2).join('');
                 
-                // Badge design mapping
                 const badgeMap = {
                     "Hadir": "bg-emerald-100 text-emerald-800",
                     "Izin": "bg-amber-100 text-amber-800",
@@ -1081,7 +1096,6 @@
                 };
                 const classBadge = badgeMap[member.initialStatus] || "bg-slate-100 text-slate-800";
 
-                // Table row creation (Desktop view)
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50/50 transition";
                 tr.innerHTML = `
@@ -1112,7 +1126,6 @@
                 `;
                 tableBody.appendChild(tr);
 
-                // Card creation (Mobile responsive view)
                 const card = document.createElement('div');
                 card.className = "p-4 space-y-3";
                 card.innerHTML = `
@@ -1149,7 +1162,6 @@
         function authenticateAdmin() {
             const passwordInput = document.getElementById('admin-password-input').value;
             
-            // Password DPL default is: UNAIR2026
             if (passwordInput === 'UNAIR2026') {
                 state.isAdminAuthenticated = true;
                 showToast("Autentikasi Pembimbing Lapangan Berhasil!", "success");
@@ -1189,10 +1201,8 @@
             container.innerHTML = '';
 
             state.members.forEach(member => {
-                // Find clock in log
                 const todayInLog = state.logs.find(l => l.memberId === member.id && l.type === 'clock_in');
                 
-                // Verified Status checkbox
                 const isVerified = todayInLog ? todayInLog.verified : false;
                 const checkboxAttr = isVerified ? 'checked disabled' : (todayInLog ? '' : 'disabled');
                 const verifyActionText = isVerified 
@@ -1201,7 +1211,6 @@
                         ? `<button onclick="verifyLogbook('${todayInLog.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1 px-2.5 rounded text-[10px] transition">Verifikasi</button>` 
                         : '<span class="text-slate-400 italic">Belum Ada Berkas</span>');
 
-                // Status Override drop-down options
                 const overrideOptions = ["Hadir", "Izin", "Sakit", "Belum Absen"].map(opt => {
                     const isSelected = member.initialStatus === opt ? 'selected' : '';
                     return `<option value="${opt}" ${isSelected}>${opt}</option>`;
@@ -1265,8 +1274,6 @@
          * ----------------------------------------- */
         function exportToCSV() {
             let csvContent = "data:text/csv;charset=utf-8,";
-            
-            // CSV Headers
             csvContent += "NIM,Nama Mahasiswa,Fakultas,Program Studi,Jabatan Kelompok,Status Hari Ini,Logbook Aktivitas,Waktu Presensi\n";
             
             state.members.forEach(m => {
@@ -1277,7 +1284,6 @@
                 csvContent += `"${m.id}","${m.name}","${m.faculty}","${m.studyProgram}","${m.role}","${m.initialStatus}","${cleanLogText}","${timeLog}"\n`;
             });
 
-            // Trigger client download file
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
@@ -1301,7 +1307,6 @@
 
             textSummary += `Diambil secara otomatis lewat Sistem Presensi Mandiri Web Siliragung.`;
 
-            // Copy to clipboard fallback mechanism
             const tempTextarea = document.createElement('textarea');
             tempTextarea.value = textSummary;
             document.body.appendChild(tempTextarea);
@@ -1315,7 +1320,7 @@
                     showToast("Gagal menyalin ringkasan.", "error");
                 }
             } catch (err) {
-                console.error("ExecCommand error", err);
+                console.error("Gagal menyalin", err);
             }
             
             document.body.removeChild(tempTextarea);
