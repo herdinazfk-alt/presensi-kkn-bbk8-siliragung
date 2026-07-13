@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Login - Presensi KKN-BBK 8 UNAIR Siliragung 2026</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        unair: {
+                            blue: '#0F2D59',
+                            gold: '#E5A823',
+                            lightgold: '#FDF6E2',
+                            slate: '#F3F4F6'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- External CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="unair-gradient min-h-screen flex flex-col justify-between antialiased">
+
+    <!-- Toast Notification System -->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3 max-w-md w-full px-4 sm:px-0 pointer-events-none"></div>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-grow flex items-center justify-center p-4 sm:p-6 lg:p-8">
+        <div class="glass-card max-w-md w-full rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/20 space-y-6">
+            
+            <!-- Branding & Logo -->
+            <div class="text-center space-y-3">
+                <img src="Logo BBK Siliragung.png" alt="Logo BBK Siliragung" class="w-20 h-20 mx-auto object-contain drop-shadow-md hover:scale-105 transition duration-200" onerror="this.src='https://placehold.co/150/0F2D59/E5A823?text=UNAIR+BBK+8'">
+                <div class="space-y-1">
+                    <h1 class="font-heading font-extrabold text-lg sm:text-xl text-unair-blue leading-tight">
+                        Presensi KKN-BBK 8 UNAIR
+                    </h1>
+                    <p class="text-xs text-slate-500 font-medium font-sans">Desa Siliragung, Kecamatan Siliragung, Banyuwangi</p>
+                </div>
+            </div>
+
+            <!-- Tab Toggles (Login, Daftar, DPL) -->
+            <div class="grid grid-cols-3 gap-1 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
+                <button onclick="switchFormTab('login')" id="tab-btn-login" class="py-2.5 rounded-xl text-[11px] sm:text-xs font-bold transition duration-200 bg-white text-unair-blue shadow-sm">
+                    Masuk
+                </button>
+                <button onclick="switchFormTab('register')" id="tab-btn-register" class="py-2.5 rounded-xl text-[11px] sm:text-xs font-bold transition duration-200 text-slate-500 hover:text-unair-blue">
+                    Daftar Akun
+                </button>
+                <button onclick="switchFormTab('dpl')" id="tab-btn-dpl" class="py-2.5 rounded-xl text-[11px] sm:text-xs font-bold transition duration-200 text-slate-500 hover:text-unair-blue">
+                    Akses DPL
+                </button>
+            </div>
+
+            <!-- FORM PANEL: LOGIN -->
+            <form id="form-login" onsubmit="handleLoginSubmit(event)" class="space-y-4">
+                <div class="space-y-1">
+                    <label for="login-nim" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 font-sans">NIM Mahasiswa</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-id-card absolute left-4 top-3.5 text-slate-400 text-sm"></i>
+                        <input type="text" id="login-nim" required placeholder="Masukkan NIM Anda..." class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-11 pr-4 py-3 text-xs sm:text-sm focus:ring-2 focus:ring-unair-blue focus:outline-none transition">
+                    </div>
+                </div>
+                <div class="space-y-1">
+                    <label for="login-password" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 font-sans">Kata Sandi</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-lock absolute left-4 top-3.5 text-slate-400 text-sm"></i>
+                        <input type="password" id="login-password" required placeholder="Masukkan kata sandi..." class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-11 pr-11 py-3 text-xs sm:text-sm focus:ring-2 focus:ring-unair-blue focus:outline-none transition">
+                        <button type="button" onclick="togglePasswordVisibility('login-password', this)" class="absolute right-4 top-3 text-slate-400 hover:text-slate-600">
+                            <i class="fa-solid fa-eye text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-unair-blue hover:bg-blue-900 text-white font-bold py-3.5 px-6 rounded-2xl text-xs sm:text-sm shadow-md transition duration-200 flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    <span>Masuk Aplikasi</span>
+                </button>
+                <p class="text-[10px] text-center text-slate-400 font-medium">
+                    Belum punya akun? <span onclick="switchFormTab('register')" class="text-blue-600 font-semibold cursor-pointer hover:underline">Registrasi Akun Baru</span>
+                </p>
+            </form>
+
+            <!-- FORM PANEL: REGISTER -->
+            <form id="form-register" onsubmit="handleRegisterSubmit(event)" class="space-y-4 hidden">
+                <div class="bg-blue-50 border border-blue-100 rounded-2xl p-3.5 text-[11px] text-blue-700 leading-relaxed font-sans">
+                    <i class="fa-solid fa-circle-info mr-1"></i>
+                    Pendaftaran khusus untuk anggota KKN Desa Siliragung. Masukkan NIM resmi Anda untuk mendaftarkan kata sandi baru.
+                </div>
+                <div class="space-y-1">
+                    <label for="reg-nim" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 font-sans">NIM Mahasiswa</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-id-card absolute left-4 top-3.5 text-slate-400 text-sm"></i>
+                        <input type="text" id="reg-nim" required placeholder="Masukkan NIM terdaftar..." class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-11 pr-4 py-3 text-xs sm:text-sm focus:ring-2 focus:ring-unair-blue focus:outline-none transition">
+                    </div>
+                </div>
+                <div class="space-y-1">
+                    <label for="reg-password" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 font-sans">Buat Kata Sandi Baru (Min. 6 Karakter)</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-lock absolute left-4 top-3.5 text-slate-400 text-sm"></i>
+                        <input type="password" id="reg-password" required placeholder="Buat kata sandi baru..." class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-11 pr-11 py-3 text-xs sm:text-sm focus:ring-2 focus:ring-unair-blue focus:outline-none transition">
+                        <button type="button" onclick="togglePasswordVisibility('reg-password', this)" class="absolute right-4 top-3 text-slate-400 hover:text-slate-600">
+                            <i class="fa-solid fa-eye text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="space-y-1">
+                    <label for="reg-confirm-password" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 font-sans">Konfirmasi Kata Sandi Baru</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-circle-check absolute left-4 top-3.5 text-slate-400 text-sm"></i>
+                        <input type="password" id="reg-confirm-password" required placeholder="Masukkan kembali kata sandi..." class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-11 pr-11 py-3 text-xs sm:text-sm focus:ring-2 focus:ring-unair-blue focus:outline-none transition">
+                        <button type="button" onclick="togglePasswordVisibility('reg-confirm-password', this)" class="absolute right-4 top-3 text-slate-400 hover:text-slate-600">
+                            <i class="fa-solid fa-eye text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-6 rounded-2xl text-xs sm:text-sm shadow-md transition duration-200 flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <span>Daftar & Aktifkan Akun</span>
+                </button>
+                <p class="text-[10px] text-center text-slate-400 font-medium">
+                    Sudah punya akun? <span onclick="switchFormTab('login')" class="text-blue-600 font-semibold cursor-pointer hover:underline">Masuk Di Sini</span>
+                </p>
+            </form>
+
+            <!-- FORM PANEL: DPL -->
+            <form id="form-dpl" onsubmit="handleDPLSubmit(event)" class="space-y-4 hidden">
+                <div class="bg-amber-50 border border-amber-100 rounded-2xl p-3.5 text-[11px] text-amber-700 leading-relaxed font-sans flex gap-2">
+                    <i class="fa-solid fa-circle-info mt-0.5"></i>
+                    <span>Akses monitoring ini dibatasi khusus untuk Dosen Pembimbing Lapangan (DPL). Masukkan sandi otentikasi DPL Anda.</span>
+                </div>
+                <div class="space-y-1">
+                    <label for="dpl-password" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 font-sans">Kata Sandi Khusus DPL</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-shield-halved absolute left-4 top-3.5 text-slate-400 text-sm"></i>
+                        <input type="password" id="dpl-password" required placeholder="Masukkan sandi DPL..." class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-11 pr-11 py-3 text-xs sm:text-sm focus:ring-2 focus:ring-unair-blue focus:outline-none transition">
+                        <button type="button" onclick="togglePasswordVisibility('dpl-password', this)" class="absolute right-4 top-3 text-slate-400 hover:text-slate-600">
+                            <i class="fa-solid fa-eye text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+                <p class="text-[9px] text-blue-600 font-semibold text-center cursor-pointer hover:underline font-sans" onclick="showDPLHint()">
+                    Petunjuk Sandi: Hubungi Sekretaris Kelompok 8
+                </p>
+                <button type="submit" class="w-full bg-unair-blue hover:bg-blue-900 text-white font-bold py-3.5 px-6 rounded-2xl text-xs sm:text-sm shadow-md transition duration-200 flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-lock-open"></i>
+                    <span>Masuk Panel DPL</span>
+                </button>
+            </form>
+
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900/40 text-slate-300 py-4 text-center border-t border-white/10">
+        <p class="text-[10px] font-sans">&copy; 2026 KKN BBK 8 UNAIR Siliragung. All Rights Reserved.</p>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script src="js/data.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        // Load data on startup
+        window.onload = function() {
+            loadState();
+            checkSessionAndRedirect(true); // check if already logged in
+        };
+
+        // UI Toast Helper
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `flex items-center p-4 rounded-xl shadow-lg border text-xs sm:text-sm font-semibold transform translate-y-2 opacity-0 transition-all duration-300 pointer-events-auto max-w-sm w-full `;
+            
+            if (type === 'success') {
+                toast.className += 'bg-emerald-50 border-emerald-200 text-emerald-800';
+                toast.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500 mr-3 text-lg"></i><span>${message}</span>`;
+            } else if (type === 'error') {
+                toast.className += 'bg-red-50 border-red-200 text-red-800';
+                toast.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-500 mr-3 text-lg"></i><span>${message}</span>`;
+            } else {
+                toast.className += 'bg-blue-50 border-blue-200 text-blue-800';
+                toast.innerHTML = `<i class="fa-solid fa-circle-info text-blue-500 mr-3 text-lg"></i><span>${message}</span>`;
+            }
+
+            container.appendChild(toast);
+            setTimeout(() => { toast.classList.remove('translate-y-2', 'opacity-0'); }, 50);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => { toast.remove(); }, 300);
+            }, 4000);
+        }
+
+        // Toggle Password Show/Hide
+        function togglePasswordVisibility(fieldId, button) {
+            const input = document.getElementById(fieldId);
+            const icon = button.querySelector('i');
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = "password";
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        // Switch Form Tab (Login / Register / DPL)
+        function switchFormTab(tabId) {
+            // Hide all forms
+            document.getElementById('form-login').classList.add('hidden');
+            document.getElementById('form-register').classList.add('hidden');
+            document.getElementById('form-dpl').classList.add('hidden');
+            
+            // Remove active styles from all buttons
+            document.querySelectorAll('[id^="tab-btn-"]').forEach(btn => {
+                btn.className = "py-2.5 rounded-xl text-[11px] sm:text-xs font-bold transition duration-200 text-slate-500 hover:text-unair-blue";
+            });
+
+            // Show active form
+            document.getElementById(`form-${tabId}`).classList.remove('hidden');
+            
+            // Apply active styles to button
+            const activeBtn = document.getElementById(`tab-btn-${tabId}`);
+            activeBtn.className = "py-2.5 rounded-xl text-[11px] sm:text-xs font-bold transition duration-200 bg-white text-unair-blue shadow-sm";
+        }
+
+        // Form Submit Handlers
+        function handleLoginSubmit(event) {
+            event.preventDefault();
+            const nim = document.getElementById('login-nim').value.trim();
+            const pass = document.getElementById('login-password').value;
+
+            const res = loginStudent(nim, pass);
+            if (res.success) {
+                showToast(res.message, "success");
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 1000);
+            } else {
+                showToast(res.message, "error");
+            }
+        }
+
+        function handleRegisterSubmit(event) {
+            event.preventDefault();
+            const nim = document.getElementById('reg-nim').value.trim();
+            const pass = document.getElementById('reg-password').value;
+            const confirmPass = document.getElementById('reg-confirm-password').value;
+
+            if (pass.length < 6) {
+                showToast("Sandi harus minimal 6 karakter!", "error");
+                return;
+            }
+
+            if (pass !== confirmPass) {
+                showToast("Konfirmasi kata sandi tidak cocok!", "error");
+                return;
+            }
+
+            const res = registerAccount(nim, pass);
+            if (res.success) {
+                showToast(res.message, "success");
+                setTimeout(() => {
+                    switchFormTab('login');
+                    document.getElementById('login-nim').value = nim;
+                    document.getElementById('login-password').value = '';
+                }, 1500);
+            } else {
+                showToast(res.message, "error");
+            }
+        }
+
+        function handleDPLSubmit(event) {
+            event.preventDefault();
+            const pass = document.getElementById('dpl-password').value;
+
+            const res = loginDPL(pass);
+            if (res.success) {
+                showToast(res.message, "success");
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 1000);
+            } else {
+                showToast(res.message, "error");
+            }
+        }
+
+        function showDPLHint() {
+            showToast("Kata sandi default DPL adalah 'UNAIR2026'", "info");
+        }
+    </script>
+</body>
+</html>

@@ -40,23 +40,8 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
-        }
-        .unair-gradient {
-            background: linear-gradient(135deg, #0F2D59 0%, #1E3A8A 100%);
-        }
-        .gold-gradient {
-            background: linear-gradient(135deg, #E5A823 0%, #F59E0B 100%);
-        }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(241, 245, 249, 0.8);
-        }
-    </style>
+    <!-- External Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="text-slate-800 min-h-screen flex flex-col antialiased">
 
@@ -71,7 +56,7 @@
             </div>
             <div class="space-y-1">
                 <h3 class="font-heading font-extrabold text-slate-800 text-base">Hapus Seluruh Data?</h3>
-                <p class="text-xs text-slate-400 leading-relaxed font-sans">Tindakan ini akan menghapus semua riwayat presensi harian, berkas logbook, dan mengembalikan status seluruh anggota menjadi "Belum Absen". Tindakan ini tidak bisa dibatalkan.</p>
+                <p class="text-xs text-slate-400 leading-relaxed font-sans">Tindakan ini akan menghapus semua riwayat presensi harian, berkas logbook di local storage, dan mengembalikan status seluruh anggota menjadi "Belum Absen". Tindakan ini tidak bisa dibatalkan.</p>
             </div>
             <div class="grid grid-cols-2 gap-3 pt-2">
                 <button onclick="closeResetModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs transition">Batal</button>
@@ -87,7 +72,7 @@
                 
                 <!-- Brand Identity and Logo -->
                 <div class="flex items-center space-x-3">
-                    <img src="Logo BBK Siliragung.png" alt="Logo BBK Siliragung" class="w-14 h-14 object-contain drop-shadow-md hover:scale-105 transition duration-200" onerror="handleLogoFallback(this)">
+                    <img src="Logo BBK Siliragung.png" alt="Logo BBK Siliragung" class="w-14 h-14 object-contain drop-shadow-md hover:scale-105 transition duration-200" onerror="this.src='https://placehold.co/150/0F2D59/E5A823?text=UNAIR+BBK+8'">
                     <div>
                         <h1 class="font-heading font-extrabold text-sm sm:text-base leading-tight tracking-wide text-unair-gold flex items-center gap-1.5">
                             KKN-BBK 8 UNAIR <span class="bg-amber-500 text-slate-950 text-[10px] px-2 py-0.5 rounded-full font-sans font-bold">2026</span>
@@ -96,15 +81,16 @@
                     </div>
                 </div>
 
-                <!-- Profile Selection Dropdown -->
-                <div class="flex items-center space-x-2">
-                    <div class="hidden md:block text-right">
-                        <span class="block text-[10px] uppercase tracking-wider text-slate-300 font-bold">Pilih Profil Aktif (Simulasi):</span>
-                        <span id="nav-active-role" class="text-xs font-semibold text-unair-gold">Memuat...</span>
+                <!-- Active User Profile and Logout -->
+                <div class="flex items-center space-x-3 bg-slate-950/40 p-2.5 rounded-2xl border border-slate-700/60 shadow-inner">
+                    <img id="nav-active-photo" src="" alt="Avatar" class="w-10 h-10 object-cover rounded-xl border border-unair-gold bg-slate-800" onerror="this.src='https://placehold.co/100/0f2d59/ffffff'">
+                    <div class="hidden sm:block text-left leading-tight pr-1">
+                        <span id="nav-active-name" class="block text-xs font-bold text-white tracking-wide truncate max-w-[150px]">Memuat...</span>
+                        <span id="nav-active-role" class="block text-[9px] text-unair-gold font-bold uppercase tracking-wider">Memuat...</span>
                     </div>
-                    <select id="profile-switcher" onchange="switchActiveProfile(this.value)" class="bg-slate-900/60 border border-slate-700 text-white rounded-lg px-2 py-1.5 text-xs font-semibold focus:ring-2 focus:ring-unair-gold focus:outline-none max-w-[130px] sm:max-w-[200px] cursor-pointer">
-                        <!-- Populated dynamically -->
-                    </select>
+                    <button onclick="logoutUser()" class="bg-red-600/10 hover:bg-red-600 text-red-400 hover:text-white p-2 rounded-xl transition duration-200 flex items-center justify-center" title="Keluar">
+                        <i class="fa-solid fa-right-from-bracket text-sm"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -129,9 +115,9 @@
                 <i class="fa-solid fa-users text-base"></i>
                 <span>Data Anggota</span>
             </button>
-            <button onclick="switchTab('admin')" id="tab-btn-admin" class="tab-btn px-3 py-3.5 border-b-2 border-transparent text-slate-500 hover:text-unair-blue hover:border-slate-300 font-medium text-xs sm:text-sm flex items-center space-x-2 whitespace-nowrap">
-                <i class="fa-solid fa-lock-open text-base"></i>
-                <span>Panel DPL (Admin)</span>
+            <button onclick="switchTab('admin')" id="tab-btn-admin" class="tab-btn hidden px-3 py-3.5 border-b-2 border-transparent text-slate-500 hover:text-unair-blue hover:border-slate-300 font-medium text-xs sm:text-sm flex items-center space-x-2 whitespace-nowrap">
+                <i class="fa-solid fa-shield-halved text-base"></i>
+                <span>Panel Monitoring DPL</span>
             </button>
         </div>
     </div>
@@ -231,7 +217,9 @@
                         <h3 class="font-heading font-bold text-slate-800 text-sm flex items-center gap-1.5">
                             <i class="fa-solid fa-receipt text-unair-gold"></i> Aktivitas Terkini Anggota
                         </h3>
-                        <span class="text-[10px] bg-slate-100 px-2 py-1 rounded text-slate-500 font-bold">Terupdate</span>
+                        <button onclick="triggerManualRefresh()" class="text-[10px] bg-slate-50 hover:bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-xl text-slate-600 font-bold flex items-center gap-1.5 transition">
+                            <i id="refresh-btn" class="fa-solid fa-rotate"></i> Sinkronisasi Cloud
+                        </button>
                     </div>
                     <div class="space-y-4 max-h-[260px] overflow-y-auto pr-1" id="recent-logs-container">
                         <!-- Populated dynamically via JS -->
@@ -267,9 +255,9 @@
                     <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 text-center relative overflow-hidden">
                         <div class="unair-gradient h-24 absolute top-0 left-0 right-0 z-0"></div>
                         <div class="relative z-10 pt-8">
-                            <div class="w-24 h-24 bg-white p-1 rounded-full shadow-md mx-auto mb-3 border-2 border-unair-gold">
+                            <div class="w-24 h-24 bg-white p-1 rounded-full shadow-md mx-auto mb-3 border-2 border-unair-gold overflow-hidden">
                                 <div id="member-avatar" class="w-full h-full bg-slate-200 rounded-full flex items-center justify-center text-3xl text-slate-500 font-bold font-heading">
-                                    <!-- Dynamic Initials -->
+                                    <!-- Dynamic Image/Initials -->
                                 </div>
                             </div>
                             <h3 id="member-name" class="font-heading font-extrabold text-base text-slate-800 leading-snug">Memuat...</h3>
@@ -351,11 +339,10 @@
                             </label>
                         </div>
 
-                        <!-- Photographic Verification Field (Native & Safe trigger click) -->
+                        <!-- Photographic Verification Field -->
                         <div class="space-y-2">
                             <span class="block text-xs font-bold uppercase tracking-wider text-slate-500">Bukti Foto Kehadiran (Wajib)</span>
                             
-                            <!-- Wrap the trigger area in a native HTML5 label to guarantee it triggers the camera in iOS & Safari safely -->
                             <label for="photo-input" class="border-2 border-dashed border-slate-200 hover:border-unair-gold rounded-2xl p-6 text-center transition flex flex-col items-center justify-center space-y-4 cursor-pointer relative bg-slate-50 hover:bg-slate-100/50">
                                 <input type="file" id="photo-input" accept="image/*" capture="user" class="hidden" onchange="previewPhoto(event)">
                                 
@@ -366,7 +353,7 @@
                                     <div class="text-xs">
                                         <span class="text-unair-blue font-bold">Pilih file foto</span> atau ambil gambar langsung
                                     </div>
-                                    <p class="text-[10px] text-slate-400 font-sans">Sistem keamanan iOS/Android akan mengaktifkan kamera atau galeri Anda secara resmi</p>
+                                    <p class="text-[10px] text-slate-400 font-sans">Sistem keamanan HP Anda akan mengaktifkan kamera atau galeri secara resmi</p>
                                 </div>
                                 
                                 <div id="camera-preview-container" class="hidden relative w-36 h-36 rounded-xl overflow-hidden border-2 border-unair-gold shadow-md">
@@ -402,11 +389,13 @@
                     <i class="fa-solid fa-book-open-reader text-unair-gold"></i> Rekam Jejak Logbook KKN
                 </h3>
                 <div class="flex items-center space-x-2 w-full md:w-auto">
+                    <button onclick="triggerManualRefresh()" class="px-3 py-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl text-slate-600 font-bold flex items-center gap-1 transition text-xs">
+                        <i class="fa-solid fa-arrows-rotate"></i> Refresh
+                    </button>
                     <div class="relative flex-grow md:flex-grow-0">
                         <i class="fa-solid fa-filter absolute left-3 top-3 text-slate-400 text-xs"></i>
-                        <select id="logbook-filter" onchange="renderLogbooks()" class="pl-8 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-600 focus:outline-none focus:ring-2 focus:ring-unair-blue w-full">
+                        <select id="logbook-filter" onchange="renderLogbooks()" class="pl-8 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-600 focus:outline-none focus:ring-2 focus:ring-unair-blue w-full min-w-[150px]">
                             <option value="all">Semua Anggota</option>
-                            <!-- Filter options populated dynamically -->
                         </select>
                     </div>
                 </div>
@@ -435,7 +424,7 @@
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-slate-50 text-slate-400 text-[11px] font-bold uppercase tracking-wider border-b border-slate-100">
-                                <th class="py-4 px-6">Inisial</th>
+                                <th class="py-4 px-6 w-20">Foto</th>
                                 <th class="py-4 px-6">Nama Lengkap & NIM</th>
                                 <th class="py-4 px-6">Fakultas / Program Studi</th>
                                 <th class="py-4 px-6">Jabatan Kelompok</th>
@@ -459,26 +448,8 @@
         <!-- ================== TAB: ADMIN PANEL ================== -->
         <section id="tab-admin" class="tab-content hidden space-y-6">
             
-            <!-- Admin Verification Gateway Screen -->
-            <div id="admin-auth-panel" class="bg-white p-6 sm:p-10 rounded-2xl shadow-sm border border-slate-100 max-w-lg mx-auto text-center space-y-6">
-                <div class="mx-auto flex justify-center mb-2">
-                    <img src="Logo BBK Siliragung.png" alt="Logo BBK Siliragung" class="w-24 h-24 object-contain drop-shadow-md" onerror="handleLogoFallback(this)">
-                </div>
-                <div class="space-y-2">
-                    <h3 class="font-heading font-extrabold text-lg text-slate-800 font-sans">Verifikasi Sandi Pembimbing (DPL)</h3>
-                    <p class="text-xs text-slate-400 leading-relaxed font-sans">Halaman ini dibatasi khusus untuk Dosen Pembimbing Lapangan (DPL) untuk memverifikasi logbook dan mengekspor kehadiran.</p>
-                </div>
-                <div class="space-y-4">
-                    <input type="password" id="admin-password-input" placeholder="Masukkan Kata Sandi DPL..." class="w-full border border-slate-200 rounded-xl px-4 py-3 text-center text-sm focus:ring-2 focus:ring-unair-blue focus:outline-none">
-                    <p class="text-[10px] text-blue-500 font-semibold cursor-pointer font-sans" onclick="showPasswordHint()">Petunjuk Sandi: Hubungi Sekretaris Tim KKN</p>
-                    <button onclick="authenticateAdmin()" class="w-full bg-unair-blue hover:bg-blue-900 text-white font-bold py-3.5 px-6 rounded-xl text-xs sm:text-sm shadow-md transition duration-200">
-                        Masuk Panel Admin DPL
-                    </button>
-                </div>
-            </div>
-
             <!-- Authenticated Admin Board Panel -->
-            <div id="admin-board-panel" class="hidden space-y-6">
+            <div id="admin-board-panel" class="space-y-6">
                 
                 <!-- Google Sheets Sync Configuration Panel (Cloud Sync) -->
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 space-y-4">
@@ -525,9 +496,6 @@
                             <i class="fa-solid fa-trash-can"></i>
                             <span>Hapus & Reset Semua Data</span>
                         </button>
-                        <button onclick="logoutAdmin()" class="bg-red-50 hover:bg-red-100 text-red-600 font-bold px-3 py-2.5 rounded-xl text-xs flex items-center space-x-1.5 transition" title="Log Out">
-                            <i class="fa-solid fa-sign-out-alt"></i>
-                        </button>
                     </div>
                 </div>
 
@@ -569,843 +537,16 @@
         </div>
     </footer>
 
-    <!-- JAVASCRIPT LOGIC SYSTEM -->
+    <!-- EXTERNAL JS SCRIPTS -->
+    <script src="js/data.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/sync.js"></script>
+    <script src="js/app.js"></script>
     <script>
-        /* -----------------------------------------
-         * DATA DEFINITIONS & STATIC INITIALIZATION
-         * ----------------------------------------- */
-        
-        // Corrected Members Registry List based on image_1b2444.png
-        const KKN_MEMBERS = [
-            { id: "172231050", name: "DINI RISMA WARDHANI", gender: "Perempuan", faculty: "Ilmu Sosial dan Ilmu Politik", studyProgram: "S1 Administrasi Publik", role: "PDD", contact: "085606377639", initialStatus: "Belum Absen" },
-            { id: "171231063", name: "POPPY AYU PAWITRININGRUM", gender: "Perempuan", faculty: "Ilmu Sosial dan Ilmu Politik", studyProgram: "S1 Sosiologi", role: "Ketua Kelompok", contact: "08123195369", initialStatus: "Belum Absen" },
-            { id: "182231071", name: "HERDINA IZZA AFKARINA", gender: "Perempuan", faculty: "Sains dan Teknologi", studyProgram: "S1 Fisika", role: "Sekretaris", contact: "082264556590", initialStatus: "Belum Absen" },
-            { id: "123231139", name: "NADHIRAH KAMILA PUTRI PRASETYO", gender: "Perempuan", faculty: "Ilmu Budaya", studyProgram: "S1 Bahasa dan Sastra Inggris", role: "Perlengkapan", contact: "085781161061", initialStatus: "Belum Absen" },
-            { id: "132231083", name: "NUR FADHILAH", gender: "Perempuan", faculty: "Keperawatan", studyProgram: "S1 Keperawatan", role: "Acara", contact: "085854928355", initialStatus: "Belum Absen" },
-            { id: "412231072", name: "SABRINA FIRDAUSA AZZAHRA SUNARTO", gender: "Perempuan", faculty: "Vokasi", studyProgram: "D4 Fisioterapi", role: "Bendahara", contact: "081235364787", initialStatus: "Belum Absen" },
-            { id: "434231099", name: "PEDJA RAFSANJANI", gender: "Laki-laki", faculty: "Vokasi", studyProgram: "D4 Teknik Informatika", role: "Perlengkapan", contact: "085710902854", initialStatus: "Belum Absen" },
-            { id: "441231007", name: "NANDA JELITA ANGGIA ARTA", gender: "Perempuan", faculty: "Vokasi", studyProgram: "D4 Teknologi Veteriner", role: "Acara", contact: "081515513747", initialStatus: "Belum Absen" },
-            { id: "441231026", name: "SULTAN MAULANA IBRAHIM", gender: "Laki-laki", faculty: "Vokasi", studyProgram: "D4 Teknologi Veteriner", role: "PDD", contact: "085864072804", initialStatus: "Belum Absen" },
-            { id: "194231031", name: "VIRNA ANANDA", gender: "Perempuan", faculty: "Ilmu Kesehatan, Kedokteran dan Ilmu Alam", studyProgram: "S1 Kesehatan Masyarakat (Fikkia Banyuwangi)", role: "Humas", contact: "081213485638", initialStatus: "Belum Absen" }
-        ];
-
-        // Production Start: Clean and Empty Log List State
-        const PRE_SEEDED_LOGS = [];
-
-        // STATE MANAGER
-        let state = {
-            members: JSON.parse(JSON.stringify(KKN_MEMBERS)),
-            logs: [...PRE_SEEDED_LOGS],
-            activeMemberId: "171231063", // DEFAULT Active: Poppy Ayu
-            isAdminAuthenticated: false,
-            mockLocation: {
-                latitude: -8.4735,
-                longitude: 114.1154,
-                distance: "0 meter (Presisi di Posko)"
-            },
-            temporaryPhoto: null,
-            cloudSyncUrl: ""
-        };
-
-        // Chart Container Instance
-        let presenceChart = null;
-
-        // Smart Logo Fallback Handler (Compatible with both names)
-        function handleLogoFallback(imgElement) {
-            const alternativeLogoName = "Logo_BBK_Siliragung-removebg-preview.png";
-            if (imgElement.src.indexOf(encodeURIComponent(alternativeLogoName)) === -1 && imgElement.src.indexOf(alternativeLogoName) === -1) {
-                imgElement.src = alternativeLogoName;
-            } else {
-                imgElement.onerror = null;
-                imgElement.src = 'https://placehold.co/150/0F2D59/E5A823?text=UNAIR+BBK+8';
-            }
-        }
-
-        /* -----------------------------------------
-         * APP INITIALIZATION ON WINDOW LOAD
-         * ----------------------------------------- */
+        // Start application
         window.onload = function() {
-            // Load state from localStorage if it exists
-            if (localStorage.getItem("kkn_presensi_state_prod_v2")) {
-                try {
-                    const loadedState = JSON.parse(localStorage.getItem("kkn_presensi_state_prod_v2"));
-                    state.members = loadedState.members || state.members;
-                    state.logs = loadedState.logs || state.logs;
-                    state.cloudSyncUrl = loadedState.cloudSyncUrl || "";
-                } catch (e) {
-                    console.error("Gagal membaca LocalStorage", e);
-                }
-            }
-            
-            initClock();
-            populateProfileSwitcher();
-            switchActiveProfile(state.activeMemberId);
-            renderDashboard();
-            renderLogbooks();
-            renderMembersList();
-            renderAdminPanel();
-
-            if (document.getElementById('cloud-sync-url')) {
-                document.getElementById('cloud-sync-url').value = state.cloudSyncUrl || "";
-            }
+            initApp();
         };
-
-        function initClock() {
-            setInterval(() => {
-                const now = new Date();
-                const timeString = now.toTimeString().split(' ')[0];
-                document.getElementById('digital-clock').innerText = timeString;
-            }, 1000);
-        }
-
-        function saveStateToLocalStorage() {
-            localStorage.setItem("kkn_presensi_state_prod_v2", JSON.stringify({
-                members: state.members,
-                logs: state.logs,
-                cloudSyncUrl: state.cloudSyncUrl
-            }));
-        }
-
-        // Custom Native Premium Toast Alerts System
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `flex items-center p-4 rounded-xl shadow-lg border text-xs sm:text-sm font-semibold transform translate-y-2 opacity-0 transition-all duration-300 pointer-events-auto max-w-sm w-full `;
-            
-            if (type === 'success') {
-                toast.className += 'bg-emerald-50 border-emerald-200 text-emerald-800';
-                toast.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500 mr-3 text-lg"></i><span>${message}</span>`;
-            } else if (type === 'error') {
-                toast.className += 'bg-red-50 border-red-200 text-red-800';
-                toast.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-500 mr-3 text-lg"></i><span>${message}</span>`;
-            } else {
-                toast.className += 'bg-blue-50 border-blue-200 text-blue-800';
-                toast.innerHTML = `<i class="fa-solid fa-circle-info text-blue-500 mr-3 text-lg"></i><span>${message}</span>`;
-            }
-
-            container.appendChild(toast);
-            setTimeout(() => { toast.classList.remove('translate-y-2', 'opacity-0'); }, 50);
-
-            // Self-Destruct
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'translate-y-2');
-                setTimeout(() => { toast.remove(); }, 300);
-            }, 4000);
-        }
-
-        /* -----------------------------------------
-         * STREAMING_CHUNK: Managing reset models...
-         * MODAL RESET POPUP (KUSTOM)
-         * ----------------------------------------- */
-        function openResetModal() {
-            document.getElementById('reset-modal').classList.remove('hidden');
-            document.getElementById('reset-modal').classList.add('flex');
-        }
-
-        function closeResetModal() {
-            document.getElementById('reset-modal').classList.add('hidden');
-            document.getElementById('reset-modal').classList.remove('flex');
-        }
-
-        function confirmResetAllData() {
-            // Revert all data back to clean slate state
-            state.members = JSON.parse(JSON.stringify(KKN_MEMBERS));
-            state.logs = [];
-            saveStateToLocalStorage();
-            
-            closeResetModal();
-            showToast("Semua database presensi & logbook kelompok telah berhasil dibersihkan!", "success");
-            
-            // Reload Viewport UI
-            switchActiveProfile(state.activeMemberId);
-            renderDashboard();
-            renderLogbooks();
-            renderMembersList();
-            renderAdminMemberList();
-        }
-
-        /* -----------------------------------------
-         * SWITCH PROFILE CONTROLLER
-         * ----------------------------------------- */
-        function populateProfileSwitcher() {
-            const switcher = document.getElementById('profile-switcher');
-            const logFilter = document.getElementById('logbook-filter');
-            
-            switcher.innerHTML = '';
-            logFilter.innerHTML = '<option value="all">Semua Anggota</option>';
-            
-            state.members.forEach(m => {
-                const opt = document.createElement('option');
-                opt.value = m.id;
-                opt.innerText = m.name.split(' ').slice(0, 2).join(' ') + ` (${m.role})`;
-                switcher.appendChild(opt);
-
-                const optFilter = document.createElement('option');
-                optFilter.value = m.id;
-                optFilter.innerText = m.name;
-                logFilter.appendChild(optFilter);
-            });
-        }
-
-        function switchActiveProfile(memberId) {
-            state.activeMemberId = memberId;
-            const member = state.members.find(m => m.id === memberId);
-            if (!member) return;
-
-            document.getElementById('profile-switcher').value = memberId;
-            document.getElementById('nav-active-role').innerText = `${member.name.split(' ')[0]} - ${member.role}`;
-
-            document.getElementById('member-name').innerText = member.name;
-            document.getElementById('member-nim').innerText = `NIM. ${member.id}`;
-            document.getElementById('member-role').innerText = member.role;
-            
-            const initials = member.name.split(' ').map(n => n[0]).slice(0, 2).join('');
-            document.getElementById('member-avatar').innerText = initials;
-
-            updateMemberStatusDisplay(member);
-        }
-
-        function updateMemberStatusDisplay(member) {
-            const statusBox = document.getElementById('member-status-box');
-            const clockInBox = document.getElementById('member-clock-in');
-            
-            const todayInLog = state.logs.find(l => l.memberId === member.id && l.type === 'clock_in');
-            statusBox.className = "font-semibold text-xs py-0.5 px-2 rounded ";
-            
-            if (todayInLog) {
-                statusBox.innerText = "Hadir (Clock-In)";
-                statusBox.className += "bg-emerald-100 text-emerald-800";
-                clockInBox.innerText = todayInLog.time;
-            } else {
-                const statusMap = {
-                    "Hadir": { text: "Hadir", class: "bg-emerald-100 text-emerald-800" },
-                    "Izin": { text: "Izin", class: "bg-amber-100 text-amber-800" },
-                    "Sakit": { text: "Sakit", class: "bg-red-100 text-red-800" },
-                    "Belum Absen": { text: "Belum Absen", class: "bg-slate-100 text-slate-800" }
-                };
-                const mapped = statusMap[member.initialStatus] || statusMap["Belum Absen"];
-                statusBox.innerText = mapped.text;
-                statusBox.className += mapped.class;
-                clockInBox.innerText = "-- : --";
-            }
-        }
-
-        /* -----------------------------------------
-         * TAB CONTROL SYSTEM
-         * ----------------------------------------- */
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(section => {
-                section.classList.add('hidden');
-            });
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active', 'border-unair-blue', 'text-unair-blue');
-                btn.classList.add('border-transparent', 'text-slate-500');
-            });
-
-            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-            
-            const activeBtn = document.getElementById(`tab-btn-${tabId}`);
-            activeBtn.classList.add('active', 'border-unair-blue', 'text-unair-blue');
-            activeBtn.classList.remove('border-transparent', 'text-slate-500');
-
-            if (tabId === 'dashboard') {
-                renderDashboard();
-            } else if (tabId === 'logbook') {
-                renderLogbooks();
-            } else if (tabId === 'anggota') {
-                renderMembersList();
-            } else if (tabId === 'admin') {
-                renderAdminPanel();
-            }
-        }
-
-        /* -----------------------------------------
-         * STREAMING_CHUNK: Rendering the analytical charts and feeds...
-         * TAB VIEW RENDERERS
-         * ----------------------------------------- */
-        function renderDashboard() {
-            const activeMember = state.members.find(m => m.id === state.activeMemberId);
-            if (activeMember) {
-                document.getElementById('dashboard-welcome-msg').innerHTML = `Halo, ${activeMember.name.split(' ')[0]}! <span class="wave">👋</span>`;
-            }
-
-            const totalHadir = state.members.filter(m => {
-                const hasClockIn = state.logs.some(l => l.memberId === m.id && l.type === 'clock_in');
-                return hasClockIn || m.initialStatus === 'Hadir';
-            }).length;
-
-            const totalIzinSakit = state.members.filter(m => m.initialStatus === 'Izin' || m.initialStatus === 'Sakit').length;
-            const totalBelum = 10 - totalHadir - totalIzinSakit;
-
-            const totalLogbooks = state.logs.filter(l => l.text && l.text.length > 5).length;
-            const verifikasiDplCount = state.logs.filter(l => l.verified).length;
-            const verifikasiRate = state.logs.length > 0 ? Math.round((verifikasiDplCount / state.logs.length) * 100) : 0;
-
-            document.getElementById('stat-hadir').innerText = `${totalHadir} / 10`;
-            document.getElementById('stat-belum').innerText = `${totalBelum}`;
-            document.getElementById('stat-logbook').innerText = totalLogbooks;
-            document.getElementById('stat-terverifikasi').innerText = `${verifikasiRate}%`;
-
-            drawPresenceChart(totalHadir, totalIzinSakit, totalBelum);
-
-            const container = document.getElementById('recent-logs-container');
-            container.innerHTML = '';
-
-            if (state.logs.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-8 text-slate-400 font-sans">
-                        <i class="fa-solid fa-hourglass-empty text-3xl mb-2 block text-slate-300"></i>
-                        <p class="text-xs">Belum ada aktivitas presensi atau logbook terkumpul hari ini.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            const sortedLogs = [...state.logs].reverse();
-
-            sortedLogs.forEach(log => {
-                const icon = log.type === 'clock_in' ? 'fa-circle-arrow-down text-emerald-500' : 'fa-circle-arrow-up text-red-500';
-                const actionLabel = log.type === 'clock_in' ? 'Clock-In (Masuk)' : 'Clock-Out (Pulang)';
-                const badgeVerified = log.verified 
-                    ? `<span class="bg-emerald-50 text-emerald-700 text-[9px] px-2 py-0.5 rounded border border-emerald-200 font-bold flex items-center gap-1"><i class="fa-solid fa-certificate"></i> Terverifikasi DPL</span>` 
-                    : `<span class="bg-amber-50 text-amber-700 text-[9px] px-2 py-0.5 rounded border border-amber-200 font-bold flex items-center gap-1"><i class="fa-solid fa-spinner animate-spin"></i> Menunggu DPL</span>`;
-
-                const member = state.members.find(m => m.id === log.memberId);
-                const role = member ? member.role : 'Anggota';
-
-                const logItem = document.createElement('div');
-                logItem.className = "bg-slate-50 p-3.5 rounded-xl border border-slate-100 flex gap-3 text-xs";
-                logItem.innerHTML = `
-                    <div class="flex-shrink-0">
-                        <img src="${log.photo}" alt="${log.name}" class="w-10 h-10 rounded-lg object-cover border border-slate-200" onerror="this.src='https://placehold.co/100/0f2d59/ffffff?text=${log.name[0]}'">
-                    </div>
-                    <div class="flex-grow space-y-1">
-                        <div class="flex items-center justify-between flex-wrap gap-1">
-                            <span class="font-bold text-slate-800">${log.name} <span class="text-[10px] text-slate-400 font-normal">(${role})</span></span>
-                            <span class="font-mono text-[10px] text-slate-400 bg-white px-1.5 py-0.5 rounded border">${log.time}</span>
-                        </div>
-                        <div class="flex items-center space-x-1.5 text-slate-500 font-medium py-0.5">
-                            <i class="fa-solid ${icon}"></i>
-                            <span>${actionLabel}</span>
-                        </div>
-                        <p class="text-slate-600 leading-relaxed font-sans mt-1 bg-white p-2 rounded-lg border border-slate-100 italic">${log.text || 'Tidak menulis deskripsi logbook.'}</p>
-                        <div class="flex justify-end pt-1">
-                            ${badgeVerified}
-                        </div>
-                    </div>
-                `;
-                container.appendChild(logItem);
-            });
-        }
-
-        function drawPresenceChart(hadir, izin, belum) {
-            const ctx = document.getElementById('presenceChart').getContext('2d');
-            
-            if (presenceChart) {
-                presenceChart.destroy();
-            }
-
-            presenceChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Hadir', 'Sakit/Izin', 'Belum Absen'],
-                    datasets: [{
-                        data: [hadir, izin, belum],
-                        backgroundColor: ['#059669', '#F59E0B', '#E2E8F0'],
-                        borderWidth: 2,
-                        hoverOffset: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    cutout: '70%'
-                }
-            });
-        }
-
-        /* -----------------------------------------
-         * CAMERA & POSITION SIMULATIONS
-         * ----------------------------------------- */
-        function previewPhoto(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                state.temporaryPhoto = e.target.result;
-                document.getElementById('camera-placeholder').classList.add('hidden');
-                
-                const previewImg = document.getElementById('camera-preview');
-                previewImg.src = e.target.result;
-                document.getElementById('camera-preview-container').classList.remove('hidden');
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function resetPhoto(event) {
-            if (event) event.stopPropagation();
-            state.temporaryPhoto = null;
-            document.getElementById('photo-input').value = '';
-            document.getElementById('camera-placeholder').classList.remove('hidden');
-            document.getElementById('camera-preview-container').classList.add('hidden');
-        }
-
-        function toggleFormFields(value) {
-            const logbookSection = document.getElementById('logbook-input-section');
-            const submitBtnText = document.getElementById('submit-btn-text');
-            
-            if (value === 'clock_in') {
-                logbookSection.classList.remove('hidden');
-                submitBtnText.innerText = "Kirim Absensi Masuk (Clock-In)";
-            } else {
-                logbookSection.classList.add('hidden');
-                submitBtnText.innerText = "Kirim Absensi Pulang (Clock-Out)";
-            }
-        }
-
-        function detectLocation() {
-            document.getElementById('gps-coords').innerText = "Mendeteksi...";
-            document.getElementById('gps-distance').innerText = "Menghitung...";
-            
-            setTimeout(() => {
-                const isWithinRange = Math.random() > 0.05; // 95% tervalidasi masuk daerah target
-                
-                if (isWithinRange) {
-                    state.mockLocation = {
-                        latitude: -8.4735 + (Math.random() - 0.5) * 0.001,
-                        longitude: 114.1154 + (Math.random() - 0.5) * 0.001,
-                        distance: "124 meter dari Balai Desa Siliragung"
-                    };
-                    showToast("GPS Lokasi Anda tervalidasi di kawasan Desa Siliragung!", "success");
-                } else {
-                    state.mockLocation = {
-                        latitude: -8.5412,
-                        longitude: 114.2341,
-                        distance: "12 km di luar radius Desa Siliragung!"
-                    };
-                    showToast("GPS Mendeteksi Anda di luar radius Desa Siliragung. Harap kembali ke lokasi posko!", "error");
-                }
-
-                document.getElementById('gps-coords').innerText = `${state.mockLocation.latitude.toFixed(5)}, ${state.mockLocation.longitude.toFixed(5)}`;
-                document.getElementById('gps-distance').innerText = state.mockLocation.distance;
-            }, 800);
-        }
-
-        /* -----------------------------------------
-         * STREAMING_CHUNK: Managing submission pipelines and cloud syncing...
-         * ATTENDANCE SUBMISSION PROCESSOR
-         * ----------------------------------------- */
-        function handleAttendanceSubmit(event) {
-            event.preventDefault();
-            
-            const activeMember = state.members.find(m => m.id === state.activeMemberId);
-            const attendanceType = document.querySelector('input[name="attendance_type"]:checked').value;
-            const logbookText = document.getElementById('logbook-text').value.trim();
-
-            if (!state.temporaryPhoto) {
-                showToast("Anda wajib melampirkan foto bukti kehadiran!", "error");
-                return;
-            }
-
-            if (attendanceType === 'clock_in' && logbookText.length < 20) {
-                showToast("Isi logbook terlalu pendek! Tuliskan minimal 20 karakter laporan kerja harian.", "error");
-                return;
-            }
-
-            const now = new Date();
-            const timeString = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + " WIB";
-
-            const newLog = {
-                id: "log-" + Date.now(),
-                memberId: activeMember.id,
-                name: activeMember.name,
-                type: attendanceType,
-                time: timeString,
-                date: now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
-                photo: state.temporaryPhoto,
-                text: attendanceType === 'clock_in' ? logbookText : "Clock-Out Mandiri Berhasil",
-                verified: false
-            };
-
-            if (attendanceType === 'clock_in') {
-                activeMember.initialStatus = "Hadir";
-            }
-
-            state.logs.push(newLog);
-            saveStateToLocalStorage();
-
-            // CLOUD SYNC: Send to Google Sheets if configured
-            if (state.cloudSyncUrl) {
-                syncToGoogleSheets(newLog);
-            }
-
-            showToast(`${attendanceType === 'clock_in' ? 'Clock-In' : 'Clock-Out'} Berhasil Dikirim!`, "success");
-            
-            document.getElementById('logbook-text').value = '';
-            resetPhoto();
-            
-            updateMemberStatusDisplay(activeMember);
-            
-            setTimeout(() => { switchTab('dashboard'); }, 500);
-        }
-
-        function syncToGoogleSheets(logData) {
-            const payload = {
-                id: logData.id,
-                memberId: logData.memberId,
-                name: logData.name,
-                type: logData.type,
-                time: logData.time,
-                date: logData.date,
-                text: logData.text
-            };
-
-            fetch(state.cloudSyncUrl, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            })
-            .then(() => {
-                showToast("Data absensi berhasil disinkronkan ke Google Sheets!", "success");
-            })
-            .catch(err => {
-                console.error("Gagal sinkron cloud", err);
-                showToast("Gagal kirim data ke Cloud. Data tetap disimpan lokal di HP Anda.", "error");
-            });
-        }
-
-        /* -----------------------------------------
-         * LOGBOOK TAB LOGIC
-         * ----------------------------------------- */
-        function renderLogbooks() {
-            const container = document.getElementById('logbook-list-container');
-            const filterVal = document.getElementById('logbook-filter').value;
-            
-            container.innerHTML = '';
-            
-            const filteredLogs = state.logs.filter(log => {
-                if (filterVal === 'all') return log.text && log.text.length > 5;
-                return log.memberId === filterVal && log.text && log.text.length > 5;
-            });
-
-            if (filteredLogs.length === 0) {
-                container.innerHTML = `
-                    <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-slate-100 font-sans">
-                        <i class="fa-solid fa-folder-open text-4xl mb-3 text-slate-300 block"></i>
-                        <p class="text-xs text-slate-400">Belum ada riwayat berkas logbook untuk anggota kelompok ini.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            [...filteredLogs].reverse().forEach(log => {
-                const member = state.members.find(m => m.id === log.memberId);
-                const role = member ? member.role : 'Anggota';
-                const statusBadge = log.verified 
-                    ? `<span class="bg-emerald-100 text-emerald-800 text-[10px] px-2.5 py-1 rounded-full font-bold flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> Terverifikasi DPL</span>`
-                    : `<span class="bg-amber-100 text-amber-800 text-[10px] px-2.5 py-1 rounded-full font-bold flex items-center gap-1"><i class="fa-solid fa-hourglass-start animate-pulse"></i> Menunggu DPL</span>`;
-
-                const card = document.createElement('div');
-                card.className = "bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex flex-col justify-between space-y-4";
-                card.innerHTML = `
-                    <div class="flex items-start justify-between gap-3">
-                        <div class="flex gap-3">
-                            <div class="flex-shrink-0">
-                                <img src="${log.photo}" alt="${log.name}" class="w-11 h-11 rounded-xl object-cover border border-slate-200" onerror="this.src='https://placehold.co/100/0f2d59/ffffff?text=${log.name[0]}'">
-                            </div>
-                            <div>
-                                <h4 class="font-heading font-extrabold text-sm text-slate-800">${log.name}</h4>
-                                <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">${role}</p>
-                            </div>
-                        </div>
-                        <span class="text-[10px] font-mono text-slate-400 bg-slate-50 border px-2 py-1 rounded">${log.time}</span>
-                    </div>
-                    
-                    <p class="text-xs leading-relaxed text-slate-600 italic bg-slate-50/50 p-3 rounded-xl border border-slate-100 font-sans">${log.text}</p>
-                    
-                    <div class="flex items-center justify-between border-t border-slate-100 pt-3 flex-wrap gap-2">
-                        <span class="text-[10px] text-slate-400 font-medium flex items-center gap-1"><i class="fa-regular fa-calendar"></i> Hari Ini</span>
-                        ${statusBadge}
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        /* -----------------------------------------
-         * STREAMING_CHUNK: Setting up members directories...
-         * MEMBER DIRECTORY RENDERER
-         * ----------------------------------------- */
-        function renderMembersList() {
-            const tableBody = document.getElementById('members-table-body');
-            const cardsContainer = document.getElementById('members-cards-container');
-            
-            tableBody.innerHTML = '';
-            cardsContainer.innerHTML = '';
-
-            state.members.forEach(member => {
-                const initials = member.name.split(' ').map(n => n[0]).slice(0, 2).join('');
-                
-                const badgeMap = {
-                    "Hadir": "bg-emerald-100 text-emerald-800",
-                    "Izin": "bg-amber-100 text-amber-800",
-                    "Sakit": "bg-red-100 text-red-800",
-                    "Belum Absen": "bg-slate-100 text-slate-800"
-                };
-                const classBadge = badgeMap[member.initialStatus] || "bg-slate-100 text-slate-800";
-
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50/50 transition";
-                tr.innerHTML = `
-                    <td class="py-4 px-6">
-                        <div class="w-9 h-9 bg-unair-blue text-white rounded-xl flex items-center justify-center font-heading font-extrabold text-xs shadow-inner">
-                            ${initials}
-                        </div>
-                    </td>
-                    <td class="py-4 px-6 font-medium">
-                        <span class="block font-bold text-slate-800 font-heading">${member.name}</span>
-                        <span class="block text-[10px] text-slate-400 font-mono mt-0.5">NIM. ${member.id}</span>
-                    </td>
-                    <td class="py-4 px-6 font-sans">
-                        <span class="block text-slate-700 font-medium">${member.faculty}</span>
-                        <span class="block text-[10px] text-slate-400 mt-0.5">${member.studyProgram}</span>
-                    </td>
-                    <td class="py-4 px-6">
-                        <span class="bg-blue-50 text-unair-blue font-bold px-2.5 py-1 rounded border border-blue-100 text-[10px] uppercase tracking-wider block text-center max-w-[140px]">${member.role}</span>
-                    </td>
-                    <td class="py-4 px-6 text-center">
-                        <span class="font-bold text-[10px] px-2.5 py-1 rounded-full ${classBadge}">${member.initialStatus}</span>
-                    </td>
-                    <td class="py-4 px-6 text-right">
-                        <a href="https://wa.me/${member.contact}" target="_blank" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold px-2.5 py-1.5 rounded-lg border border-emerald-100 inline-flex items-center gap-1">
-                            <i class="fa-brands fa-whatsapp text-sm"></i>Hubungi
-                        </a>
-                    </td>
-                `;
-                tableBody.appendChild(tr);
-
-                const card = document.createElement('div');
-                card.className = "p-4 space-y-3 font-sans";
-                card.innerHTML = `
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-unair-blue text-white rounded-xl flex items-center justify-center font-heading font-bold text-xs">
-                                ${initials}
-                            </div>
-                            <div>
-                                <h4 class="font-heading font-extrabold text-sm text-slate-800 leading-tight">${member.name}</h4>
-                                <span class="text-[10px] text-slate-400 font-mono">NIM. ${member.id}</span>
-                            </div>
-                        </div>
-                        <span class="font-bold text-[9px] px-2 py-0.5 rounded-full ${classBadge}">${member.initialStatus}</span>
-                    </div>
-                    <div class="text-[11px] text-slate-500 space-y-0.5">
-                        <p><span class="font-semibold text-slate-400 font-sans">Prodi:</span> ${member.studyProgram}</p>
-                        <p><span class="font-semibold text-slate-400 font-sans">Jabatan:</span> <span class="text-unair-blue font-bold">${member.role}</span></p>
-                    </div>
-                    <div class="flex justify-between items-center pt-2">
-                        <span class="text-[10px] text-slate-400">${member.faculty}</span>
-                        <a href="https://wa.me/${member.contact}" target="_blank" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold px-3 py-1 rounded-lg border border-emerald-100 inline-flex items-center gap-1">
-                            <i class="fa-brands fa-whatsapp"></i> Hubungi
-                        </a>
-                    </div>
-                `;
-                cardsContainer.appendChild(card);
-            });
-        }
-
-        /* -----------------------------------------
-         * PANEL ADMIN (DPL) ACCESS & AUTHENTICATION
-         * ----------------------------------------- */
-        function authenticateAdmin() {
-            const passwordInput = document.getElementById('admin-password-input').value;
-            
-            if (passwordInput === 'UNAIR2026') {
-                state.isAdminAuthenticated = true;
-                showToast("Autentikasi Pembimbing Lapangan Berhasil!", "success");
-                renderAdminPanel();
-            } else {
-                showToast("Kata sandi salah! Hubungi Sekretaris untuk memverifikasi password DPL.", "error");
-            }
-        }
-
-        function showPasswordHint() {
-            showToast("Kata Sandi bawaan default adalah: 'UNAIR2026'", "info");
-        }
-
-        function logoutAdmin() {
-            state.isAdminAuthenticated = false;
-            document.getElementById('admin-password-input').value = '';
-            showToast("Keluar dari panel admin.", "info");
-            renderAdminPanel();
-        }
-
-        function renderAdminPanel() {
-            const authPanel = document.getElementById('admin-auth-panel');
-            const boardPanel = document.getElementById('admin-board-panel');
-            
-            if (state.isAdminAuthenticated) {
-                authPanel.classList.add('hidden');
-                boardPanel.classList.remove('hidden');
-                renderAdminMemberList();
-                if (document.getElementById('cloud-sync-url')) {
-                    document.getElementById('cloud-sync-url').value = state.cloudSyncUrl || "";
-                }
-            } else {
-                authPanel.classList.remove('hidden');
-                boardPanel.classList.add('hidden');
-            }
-        }
-
-        function saveCloudSyncUrl() {
-            const urlInput = document.getElementById('cloud-sync-url').value.trim();
-            state.cloudSyncUrl = urlInput;
-            saveStateToLocalStorage();
-            
-            if (urlInput) {
-                showToast("URL Cloud Google Sheets berhasil disimpan & aktif!", "success");
-            } else {
-                showToast("Mode Cloud dinonaktifkan. Sistem beralih ke mode luring offline.", "info");
-            }
-        }
-
-        function renderAdminMemberList() {
-            const container = document.getElementById('admin-member-list');
-            container.innerHTML = '';
-
-            state.members.forEach(member => {
-                const todayInLog = state.logs.find(l => l.memberId === member.id && l.type === 'clock_in');
-                
-                const isVerified = todayInLog ? todayInLog.verified : false;
-                const checkboxAttr = isVerified ? 'checked disabled' : (todayInLog ? '' : 'disabled');
-                const verifyActionText = isVerified 
-                    ? '<span class="text-emerald-600 font-bold text-xs flex items-center justify-end gap-1"><i class="fa-solid fa-square-check"></i> Berhasil Verifikasi</span>' 
-                    : (todayInLog 
-                        ? `<button onclick="verifyLogbook('${todayInLog.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1 px-2.5 rounded text-[10px] transition">Verifikasi</button>` 
-                        : '<span class="text-slate-400 italic">Belum Ada Berkas</span>');
-
-                const overrideOptions = ["Hadir", "Izin", "Sakit", "Belum Absen"].map(opt => {
-                    const isSelected = member.initialStatus === opt ? 'selected' : '';
-                    return `<option value="${opt}" ${isSelected}>${opt}</option>`;
-                }).join('');
-
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 transition border-b border-slate-100 font-sans";
-                tr.innerHTML = `
-                    <td class="py-3 px-6">
-                        <span class="block font-bold text-slate-800">${member.name}</span>
-                        <span class="block text-[10px] text-slate-400 font-mono">${member.role}</span>
-                    </td>
-                    <td class="py-3 px-6">
-                        <select onchange="overrideMemberStatus('${member.id}', this.value)" class="bg-slate-50 border border-slate-200 rounded px-1.5 py-1 text-slate-600 font-medium focus:outline-none">
-                            ${overrideOptions}
-                        </select>
-                    </td>
-                    <td class="py-3 px-6">
-                        <span class="block text-slate-600 font-medium">${todayInLog ? todayInLog.time : '-- : --'}</span>
-                    </td>
-                    <td class="py-3 px-6">
-                        <p class="max-w-xs truncate text-[11px] text-slate-500" title="${todayInLog ? todayInLog.text : 'Tidak ada catatan'}">
-                            ${todayInLog ? todayInLog.text : '<span class="italic text-slate-300">Belum lapor</span>'}
-                        </p>
-                    </td>
-                    <td class="py-3 px-6 text-center">
-                        <input type="checkbox" ${checkboxAttr} class="h-4 w-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500">
-                    </td>
-                    <td class="py-3 px-6 text-right">
-                        ${verifyActionText}
-                    </td>
-                `;
-                container.appendChild(tr);
-            });
-        }
-
-        function verifyLogbook(logId) {
-            const log = state.logs.find(l => l.id === logId);
-            if (log) {
-                log.verified = true;
-                saveStateToLocalStorage();
-                showToast(`Logbook milik ${log.name} berhasil divalidasi!`, "success");
-                renderAdminPanel();
-                renderDashboard();
-            }
-        }
-
-        function overrideMemberStatus(memberId, newStatus) {
-            const member = state.members.find(m => m.id === memberId);
-            if (member) {
-                member.initialStatus = newStatus;
-                saveStateToLocalStorage();
-                showToast(`Status harian ${member.name} diubah menjadi: ${newStatus}`, "success");
-                renderAdminMemberList();
-                renderDashboard();
-            }
-        }
-
-        /* -----------------------------------------
-         * STREAMING_CHUNK: Packing CSV exporters...
-         * EXPORT DATA & WEEKLY SUMMARIES
-         * ----------------------------------------- */
-        function exportToCSV() {
-            let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "NIM,Nama Mahasiswa,Fakultas,Program Studi,Jabatan Kelompok,Status Hari Ini,Logbook Aktivitas,Waktu Presensi\n";
-            
-            state.members.forEach(m => {
-                const logToday = state.logs.find(l => l.memberId === m.id && l.type === 'clock_in');
-                const cleanLogText = logToday ? logToday.text.replace(/"/g, '""') : 'Tidak ada laporan';
-                const timeLog = logToday ? logToday.time : '--';
-                
-                csvContent += `"${m.id}","${m.name}","${m.faculty}","${m.studyProgram}","${m.role}","${m.initialStatus}","${cleanLogText}","${timeLog}"\n`;
-            });
-
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "REKAP_PRESENSI_KKN_SILIRAGUNG_2026.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            showToast("File CSV Rekap Kehadiran berhasil diunduh!", "success");
-        }
-
-        function copyWeeklySummary() {
-            let textSummary = `📋 RINGKASAN PRESENSI HARIAN KKN-BBK 8 UNAIR DESA SILIRAGUNG 2026\n`;
-            textSummary += `========================================================\n\n`;
-            
-            state.members.forEach((m, idx) => {
-                const logToday = state.logs.find(l => l.memberId === m.id && l.type === 'clock_in');
-                const logText = logToday ? `- Logbook: "${logToday.text.substring(0, 80)}..."` : "- Logbook: Belum diisi";
-                textSummary += `${idx + 1}. [${m.initialStatus}] ${m.name} (${m.role})\n   ${logText}\n\n`;
-            });
-
-            textSummary += `Diambil secara otomatis lewat Sistem Presensi Mandiri Web Siliragung.`;
-
-            const tempTextarea = document.createElement('textarea');
-            tempTextarea.value = textSummary;
-            document.body.appendChild(tempTextarea);
-            tempTextarea.select();
-            
-            try {
-                const success = document.execCommand('copy');
-                if (success) {
-                    showToast("Ringkasan Presensi disalin ke Clipboard!", "success");
-                } else {
-                    showToast("Gagal menyalin ringkasan.", "error");
-                }
-            } catch (err) {
-                console.error("Gagal menyalin", err);
-            }
-            
-            document.body.removeChild(tempTextarea);
-        }
     </script>
 </body>
 </html>
