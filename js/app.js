@@ -407,11 +407,7 @@ function handleAttendanceSubmit(event) {
         return;
     }
 
-    if (attendanceType === 'clock_in' && logbookText.length < 20) {
-        showToast("Isi logbook terlalu pendek! Tuliskan minimal 20 karakter laporan kerja harian.", "error");
-        return;
-    }
-
+    // Kirim absensi harian tanpa minimal batas karakter logbook
     const now = new Date();
     const timeString = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + " WIB";
 
