@@ -2,7 +2,7 @@
 <html lang="id" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Presensi KKN-BBK 8 UNAIR Siliragung 2026</title>
     
     <!-- Google Fonts -->
@@ -64,14 +64,14 @@
     <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3 max-w-md w-full px-4 sm:px-0 pointer-events-none"></div>
 
     <!-- MODAL KONFIRMASI RESET (KUSTOM) -->
-    <div id="reset-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div id="reset-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-100 text-center space-y-4 transform scale-95 transition-all duration-200">
             <div class="w-16 h-16 bg-red-50 text-red-600 rounded-full flex items-center justify-center text-2xl mx-auto">
                 <i class="fa-solid fa-triangle-exclamation"></i>
             </div>
             <div class="space-y-1">
                 <h3 class="font-heading font-extrabold text-slate-800 text-base">Hapus Seluruh Data?</h3>
-                <p class="text-xs text-slate-400 leading-relaxed">Tindakan ini akan menghapus semua riwayat presensi harian, berkas logbook, dan mengembalikan status seluruh anggota menjadi "Belum Absen". Tindakan ini tidak bisa dibatalkan.</p>
+                <p class="text-xs text-slate-400 leading-relaxed font-sans">Tindakan ini akan menghapus semua riwayat presensi harian, berkas logbook, dan mengembalikan status seluruh anggota menjadi "Belum Absen". Tindakan ini tidak bisa dibatalkan.</p>
             </div>
             <div class="grid grid-cols-2 gap-3 pt-2">
                 <button onclick="closeResetModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs transition">Batal</button>
@@ -89,10 +89,10 @@
                 <div class="flex items-center space-x-3">
                     <img src="Logo BBK Siliragung.png" alt="Logo BBK Siliragung" class="w-14 h-14 object-contain drop-shadow-md hover:scale-105 transition duration-200" onerror="handleLogoFallback(this)">
                     <div>
-                        <h1 class="font-heading font-extrabold text-base sm:text-lg leading-tight tracking-wide text-unair-gold flex items-center gap-1.5">
+                        <h1 class="font-heading font-extrabold text-sm sm:text-base leading-tight tracking-wide text-unair-gold flex items-center gap-1.5">
                             KKN-BBK 8 UNAIR <span class="bg-amber-500 text-slate-950 text-[10px] px-2 py-0.5 rounded-full font-sans font-bold">2026</span>
                         </h1>
-                        <p class="text-[11px] sm:text-xs text-slate-200 font-medium tracking-wide">Desa Siliragung, Kecamatan Siliragung, Banyuwangi</p>
+                        <p class="text-[10px] sm:text-xs text-slate-200 font-medium tracking-wide">Desa Siliragung, Kecamatan Siliragung, Banyuwangi</p>
                     </div>
                 </div>
 
@@ -102,7 +102,7 @@
                         <span class="block text-[10px] uppercase tracking-wider text-slate-300 font-bold">Pilih Profil Aktif (Simulasi):</span>
                         <span id="nav-active-role" class="text-xs font-semibold text-unair-gold">Memuat...</span>
                     </div>
-                    <select id="profile-switcher" onchange="switchActiveProfile(this.value)" class="bg-slate-900/60 border border-slate-700 text-white rounded-lg px-2 py-1.5 text-xs font-semibold focus:ring-2 focus:ring-unair-gold focus:outline-none max-w-[140px] sm:max-w-[200px] cursor-pointer">
+                    <select id="profile-switcher" onchange="switchActiveProfile(this.value)" class="bg-slate-900/60 border border-slate-700 text-white rounded-lg px-2 py-1.5 text-xs font-semibold focus:ring-2 focus:ring-unair-gold focus:outline-none max-w-[130px] sm:max-w-[200px] cursor-pointer">
                         <!-- Populated dynamically -->
                     </select>
                 </div>
@@ -140,14 +140,14 @@
     <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
         
         <!-- ================== TAB: DASHBOARD ================== -->
-        <section id="tab-dashboard" class="tab-content block space-y-6 animate-fadeIn">
+        <section id="tab-dashboard" class="tab-content block space-y-6">
             <!-- Welcome Banner -->
             <div class="unair-gradient text-white rounded-2xl p-6 sm:p-8 shadow-md relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div class="absolute -right-16 -bottom-16 w-64 h-64 bg-white/10 rounded-full blur-2xl"></div>
                 <div class="space-y-2 z-10">
                     <span class="bg-amber-400 text-slate-900 font-bold text-[10px] px-3 py-1 rounded-full uppercase tracking-wider">Aktivitas Hari Ini</span>
                     <h2 class="text-xl sm:text-2xl font-heading font-bold" id="dashboard-welcome-msg">Selamat Datang Rekan Mahasiswa</h2>
-                    <p class="text-xs sm:text-sm text-slate-200 max-w-2xl">Silakan lakukan presensi harian secara tepat waktu (Clock-In maks. 08.00 WIB) dan isi logbook harian sebagai bukti verifikasi aktivitas KKN kepada DPL.</p>
+                    <p class="text-xs sm:text-sm text-slate-200 max-w-2xl font-sans">Silakan lakukan presensi harian secara tepat waktu (Clock-In maks. 08.00 WIB) dan isi logbook harian sebagai bukti verifikasi aktivitas KKN kepada DPL.</p>
                 </div>
                 <div class="flex items-center space-x-4 bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20 z-10 self-start md:self-auto">
                     <div class="text-center">
@@ -161,38 +161,38 @@
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center space-x-4">
                     <div class="p-3 bg-blue-100 text-unair-blue rounded-xl">
-                        <i class="fa-solid fa-user-check text-xl"></i>
+                        <i class="fa-solid fa-user-check text-lg sm:text-xl"></i>
                     </div>
                     <div>
-                        <span class="block text-xs font-medium text-slate-400">Hadir Hari Ini</span>
-                        <span id="stat-hadir" class="text-xl sm:text-2xl font-bold text-slate-800">0 / 10</span>
+                        <span class="block text-[10px] sm:text-xs font-medium text-slate-400">Hadir Hari Ini</span>
+                        <span id="stat-hadir" class="text-base sm:text-2xl font-bold text-slate-800">0 / 10</span>
                     </div>
                 </div>
                 <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center space-x-4">
                     <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
-                        <i class="fa-solid fa-circle-question text-xl"></i>
+                        <i class="fa-solid fa-circle-question text-lg sm:text-xl"></i>
                     </div>
                     <div>
-                        <span class="block text-xs font-medium text-slate-400">Belum Presensi</span>
-                        <span id="stat-belum" class="text-xl sm:text-2xl font-bold text-slate-800">10 / 10</span>
+                        <span class="block text-[10px] sm:text-xs font-medium text-slate-400">Belum Presensi</span>
+                        <span id="stat-belum" class="text-base sm:text-2xl font-bold text-slate-800">10 / 10</span>
                     </div>
                 </div>
                 <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center space-x-4">
                     <div class="p-3 bg-green-100 text-green-600 rounded-xl">
-                        <i class="fa-solid fa-book text-xl"></i>
+                        <i class="fa-solid fa-book text-lg sm:text-xl"></i>
                     </div>
                     <div>
-                        <span class="block text-xs font-medium text-slate-400">Logbook Terkumpul</span>
-                        <span id="stat-logbook" class="text-xl sm:text-2xl font-bold text-slate-800">0</span>
+                        <span class="block text-[10px] sm:text-xs font-medium text-slate-400">Logbook Terkumpul</span>
+                        <span id="stat-logbook" class="text-base sm:text-2xl font-bold text-slate-800">0</span>
                     </div>
                 </div>
                 <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center space-x-4">
                     <div class="p-3 bg-indigo-100 text-indigo-600 rounded-xl">
-                        <i class="fa-solid fa-list-check text-xl"></i>
+                        <i class="fa-solid fa-list-check text-lg sm:text-xl"></i>
                     </div>
                     <div>
-                        <span class="block text-xs font-medium text-slate-400">Verifikasi DPL</span>
-                        <span id="stat-terverifikasi" class="text-xl sm:text-2xl font-bold text-slate-800">0%</span>
+                        <span class="block text-[10px] sm:text-xs font-medium text-slate-400">Verifikasi DPL</span>
+                        <span id="stat-terverifikasi" class="text-base sm:text-2xl font-bold text-slate-800">0%</span>
                     </div>
                 </div>
             </div>
@@ -203,7 +203,7 @@
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 lg:col-span-1 flex flex-col justify-between">
                     <div>
                         <h3 class="font-heading font-bold text-slate-800 text-sm mb-4 flex items-center gap-1.5">
-                            <i class="fa-solid fa-pie-chart text-unair-gold"></i> Presentase Kehadiran Kelompok
+                            <i class="fa-solid fa-pie-chart text-unair-gold"></i> Persentase Kehadiran Kelompok
                         </h3>
                     </div>
                     <div class="relative flex items-center justify-center py-4 max-h-[220px]">
@@ -247,7 +247,7 @@
                     </div>
                     <div>
                         <h4 class="font-heading font-bold text-sm">Lokasi Posko KKN Banyuwangi (Radius Siliragung)</h4>
-                        <p class="text-xs text-slate-400">Verifikasi Radius Presensi disetel 500 meter dari Kantor Desa Siliragung.</p>
+                        <p class="text-xs text-slate-400 font-sans">Verifikasi Radius Presensi disetel 500 meter dari Kantor Desa Siliragung.</p>
                     </div>
                 </div>
                 <div class="text-right flex items-center gap-2">
@@ -259,7 +259,7 @@
         </section>
 
         <!-- ================== TAB: PRESENSI MANDIRI ================== -->
-        <section id="tab-presensi" class="tab-content hidden animate-fadeIn">
+        <section id="tab-presensi" class="tab-content hidden space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 
                 <!-- Left Section: Profile Info -->
@@ -308,7 +308,7 @@
                                 <span id="gps-distance" class="text-slate-600 font-medium">--</span>
                             </div>
                         </div>
-                        <button onclick="detectLocation()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2 rounded-xl text-xs flex items-center justify-center space-x-2 transition duration-200">
+                        <button onclick="detectLocation()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 rounded-xl text-xs flex items-center justify-center space-x-2 transition duration-200">
                             <i class="fa-solid fa-location-crosshairs"></i>
                             <span>Dapatkan Lokasi Saya</span>
                         </button>
@@ -351,27 +351,31 @@
                             </label>
                         </div>
 
-                        <!-- Photographic Verification Field -->
+                        <!-- Photographic Verification Field (Native & Safe trigger click) -->
                         <div class="space-y-2">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">Bukti Foto Kehadiran (Wajib)</label>
-                            <div class="border-2 border-dashed border-slate-200 hover:border-unair-gold rounded-2xl p-6 text-center transition flex flex-col items-center justify-center space-y-4 cursor-pointer relative" onclick="triggerFileInput()">
-                                <input type="file" id="photo-input" accept="image/*" class="hidden" onchange="previewPhoto(event)">
+                            <span class="block text-xs font-bold uppercase tracking-wider text-slate-500">Bukti Foto Kehadiran (Wajib)</span>
+                            
+                            <!-- Wrap the trigger area in a native HTML5 label to guarantee it triggers the camera in iOS & Safari safely -->
+                            <label for="photo-input" class="border-2 border-dashed border-slate-200 hover:border-unair-gold rounded-2xl p-6 text-center transition flex flex-col items-center justify-center space-y-4 cursor-pointer relative bg-slate-50 hover:bg-slate-100/50">
+                                <input type="file" id="photo-input" accept="image/*" capture="user" class="hidden" onchange="previewPhoto(event)">
+                                
                                 <div id="camera-placeholder" class="space-y-2">
-                                    <div class="w-14 h-14 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 mx-auto">
+                                    <div class="w-14 h-14 bg-white shadow-sm border border-slate-100 rounded-full flex items-center justify-center text-unair-blue mx-auto">
                                         <i class="fa-solid fa-camera text-xl"></i>
                                     </div>
                                     <div class="text-xs">
                                         <span class="text-unair-blue font-bold">Pilih file foto</span> atau ambil gambar langsung
                                     </div>
-                                    <p class="text-[10px] text-slate-400">Pastikan wajah Anda dan lingkungan sekitar posko terlihat jelas</p>
+                                    <p class="text-[10px] text-slate-400 font-sans">Sistem keamanan iOS/Android akan mengaktifkan kamera atau galeri Anda secara resmi</p>
                                 </div>
+                                
                                 <div id="camera-preview-container" class="hidden relative w-36 h-36 rounded-xl overflow-hidden border-2 border-unair-gold shadow-md">
                                     <img id="camera-preview" src="#" alt="Bukti Foto" class="w-full h-full object-cover">
-                                    <button type="button" onclick="resetPhoto(event)" class="absolute top-1.5 right-1.5 bg-red-600 hover:bg-red-700 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shadow">
+                                    <button type="button" onclick="resetPhoto(event)" class="absolute top-1.5 right-1.5 bg-red-600 hover:bg-red-700 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shadow-md">
                                         <i class="fa-solid fa-times"></i>
                                     </button>
                                 </div>
-                            </div>
+                            </label>
                         </div>
 
                         <!-- Logbook Textarea Field -->
@@ -391,7 +395,7 @@
         </section>
 
         <!-- ================== TAB: DAFTAR LOGBOOK ================== -->
-        <section id="tab-logbook" class="tab-content hidden space-y-6 animate-fadeIn">
+        <section id="tab-logbook" class="tab-content hidden space-y-6">
             <!-- Filtering & Controls Bar -->
             <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <h3 class="font-heading font-extrabold text-base text-slate-800 flex items-center gap-1.5">
@@ -399,7 +403,7 @@
                 </h3>
                 <div class="flex items-center space-x-2 w-full md:w-auto">
                     <div class="relative flex-grow md:flex-grow-0">
-                        <i class="fa-solid fa-filter absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                        <i class="fa-solid fa-filter absolute left-3 top-3 text-slate-400 text-xs"></i>
                         <select id="logbook-filter" onchange="renderLogbooks()" class="pl-8 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-600 focus:outline-none focus:ring-2 focus:ring-unair-blue w-full">
                             <option value="all">Semua Anggota</option>
                             <!-- Filter options populated dynamically -->
@@ -415,7 +419,7 @@
         </section>
 
         <!-- ================== TAB: DATA ANGGOTA ================== -->
-        <section id="tab-anggota" class="tab-content hidden space-y-6 animate-fadeIn">
+        <section id="tab-anggota" class="tab-content hidden space-y-6">
             <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
                 <!-- Banner Title -->
                 <div class="unair-gradient p-5 text-white flex justify-between items-center">
@@ -453,7 +457,7 @@
         </section>
 
         <!-- ================== TAB: ADMIN PANEL ================== -->
-        <section id="tab-admin" class="tab-content hidden space-y-6 animate-fadeIn">
+        <section id="tab-admin" class="tab-content hidden space-y-6">
             
             <!-- Admin Verification Gateway Screen -->
             <div id="admin-auth-panel" class="bg-white p-6 sm:p-10 rounded-2xl shadow-sm border border-slate-100 max-w-lg mx-auto text-center space-y-6">
@@ -461,13 +465,13 @@
                     <img src="Logo BBK Siliragung.png" alt="Logo BBK Siliragung" class="w-24 h-24 object-contain drop-shadow-md" onerror="handleLogoFallback(this)">
                 </div>
                 <div class="space-y-2">
-                    <h3 class="font-heading font-extrabold text-lg text-slate-800">Verifikasi Sandi Pembimbing (DPL)</h3>
-                    <p class="text-xs text-slate-400">Halaman ini dibatasi khusus untuk Dosen Pembimbing Lapangan (DPL) untuk memverifikasi logbook dan mengekspor kehadiran.</p>
+                    <h3 class="font-heading font-extrabold text-lg text-slate-800 font-sans">Verifikasi Sandi Pembimbing (DPL)</h3>
+                    <p class="text-xs text-slate-400 leading-relaxed font-sans">Halaman ini dibatasi khusus untuk Dosen Pembimbing Lapangan (DPL) untuk memverifikasi logbook dan mengekspor kehadiran.</p>
                 </div>
                 <div class="space-y-4">
                     <input type="password" id="admin-password-input" placeholder="Masukkan Kata Sandi DPL..." class="w-full border border-slate-200 rounded-xl px-4 py-3 text-center text-sm focus:ring-2 focus:ring-unair-blue focus:outline-none">
-                    <p class="text-[10px] text-blue-500 font-semibold cursor-pointer" onclick="showPasswordHint()">Petunjuk Sandi: Hubungi Sekretaris Tim KKN</p>
-                    <button onclick="authenticateAdmin()" class="w-full bg-unair-blue hover:bg-blue-900 text-white font-bold py-3 px-6 rounded-xl text-xs sm:text-sm shadow-md transition duration-200">
+                    <p class="text-[10px] text-blue-500 font-semibold cursor-pointer font-sans" onclick="showPasswordHint()">Petunjuk Sandi: Hubungi Sekretaris Tim KKN</p>
+                    <button onclick="authenticateAdmin()" class="w-full bg-unair-blue hover:bg-blue-900 text-white font-bold py-3.5 px-6 rounded-xl text-xs sm:text-sm shadow-md transition duration-200">
                         Masuk Panel Admin DPL
                     </button>
                 </div>
@@ -475,6 +479,30 @@
 
             <!-- Authenticated Admin Board Panel -->
             <div id="admin-board-panel" class="hidden space-y-6">
+                
+                <!-- Google Sheets Sync Configuration Panel (Cloud Sync) -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 space-y-4">
+                    <div class="flex items-center gap-2">
+                        <div class="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
+                            <i class="fa-solid fa-cloud-arrow-up text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-heading font-bold text-sm text-slate-800">Integrasi Sinkronisasi Google Sheets</h4>
+                            <p class="text-[11px] text-slate-400">Hubungkan semua HP anggota KKN ke satu dokumen Google Sheets terpusat.</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-2">
+                        <input type="text" id="cloud-sync-url" placeholder="Masukkan URL Web App Google Apps Script Anda..." class="flex-grow border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-unair-blue focus:outline-none font-mono">
+                        <button onclick="saveCloudSyncUrl()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2.5 rounded-xl text-xs transition whitespace-nowrap">
+                            Simpan & Aktifkan Sync
+                        </button>
+                    </div>
+                    <p class="text-[10px] text-slate-400 font-sans">
+                        <i class="fa-solid fa-circle-info text-amber-500 mr-1"></i> 
+                        Kosongkan kolom di atas jika ingin menggunakan mode penyimpanan luring (*offline*) bawaan.
+                    </p>
+                </div>
+
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                         <h3 class="font-heading font-extrabold text-lg text-slate-800 flex items-center gap-1.5">
@@ -484,20 +512,20 @@
                     </div>
                     <div class="flex flex-wrap items-center gap-2">
                         <!-- Action Buttons -->
-                        <button onclick="exportToCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center space-x-1.5 transition">
+                        <button onclick="exportToCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs flex items-center space-x-1.5 transition">
                             <i class="fa-solid fa-file-excel"></i>
                             <span>Ekspor CSV</span>
                         </button>
-                        <button onclick="copyWeeklySummary()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-4 py-2 rounded-xl text-xs flex items-center space-x-1.5 transition">
+                        <button onclick="copyWeeklySummary()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-4 py-2.5 rounded-xl text-xs flex items-center space-x-1.5 transition">
                             <i class="fa-solid fa-copy"></i>
                             <span>Salin Ringkasan</span>
                         </button>
                         <!-- Emergency/Initial Clean Data Reset -->
-                        <button onclick="openResetModal()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center space-x-1.5 transition">
+                        <button onclick="openResetModal()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs flex items-center space-x-1.5 transition">
                             <i class="fa-solid fa-trash-can"></i>
                             <span>Hapus & Reset Semua Data</span>
                         </button>
-                        <button onclick="logoutAdmin()" class="bg-red-50 hover:bg-red-100 text-red-600 font-bold px-3 py-2 rounded-xl text-xs flex items-center space-x-1.5 transition" title="Log Out">
+                        <button onclick="logoutAdmin()" class="bg-red-50 hover:bg-red-100 text-red-600 font-bold px-3 py-2.5 rounded-xl text-xs flex items-center space-x-1.5 transition" title="Log Out">
                             <i class="fa-solid fa-sign-out-alt"></i>
                         </button>
                     </div>
@@ -536,7 +564,7 @@
     <!-- FOOTER SECTION -->
     <footer class="bg-slate-900 text-white py-6 border-t border-slate-800 mt-12">
         <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
-            <p class="text-xs text-slate-400">Aplikasi Presensi Mandiri (Client-Side Storage) KKN-BBK 8 Universitas Airlangga Desa Siliragung 2026.</p>
+            <p class="text-xs text-slate-400">Aplikasi Presensi Mandiri (Client-Side & Cloud Sync Storage) KKN-BBK 8 Universitas Airlangga Desa Siliragung 2026.</p>
             <p class="text-[10px] text-slate-500">&copy; 2026 KKN BBK 8 UNAIR Siliragung. All Rights Reserved. Terintegrasi dengan PDD & Sekretariat.</p>
         </div>
     </footer>
@@ -566,7 +594,7 @@
 
         // STATE MANAGER
         let state = {
-            members: [...KKN_MEMBERS],
+            members: JSON.parse(JSON.stringify(KKN_MEMBERS)),
             logs: [...PRE_SEEDED_LOGS],
             activeMemberId: "171231063", // DEFAULT Active: Poppy Ayu
             isAdminAuthenticated: false,
@@ -575,13 +603,14 @@
                 longitude: 114.1154,
                 distance: "0 meter (Presisi di Posko)"
             },
-            temporaryPhoto: null
+            temporaryPhoto: null,
+            cloudSyncUrl: ""
         };
 
         // Chart Container Instance
         let presenceChart = null;
 
-        // Smart Logo Fallback Handler
+        // Smart Logo Fallback Handler (Compatible with both names)
         function handleLogoFallback(imgElement) {
             const alternativeLogoName = "Logo_BBK_Siliragung-removebg-preview.png";
             if (imgElement.src.indexOf(encodeURIComponent(alternativeLogoName)) === -1 && imgElement.src.indexOf(alternativeLogoName) === -1) {
@@ -597,11 +626,12 @@
          * ----------------------------------------- */
         window.onload = function() {
             // Load state from localStorage if it exists
-            if (localStorage.getItem("kkn_presensi_state_prod")) {
+            if (localStorage.getItem("kkn_presensi_state_prod_v2")) {
                 try {
-                    const loadedState = JSON.parse(localStorage.getItem("kkn_presensi_state_prod"));
+                    const loadedState = JSON.parse(localStorage.getItem("kkn_presensi_state_prod_v2"));
                     state.members = loadedState.members || state.members;
                     state.logs = loadedState.logs || state.logs;
+                    state.cloudSyncUrl = loadedState.cloudSyncUrl || "";
                 } catch (e) {
                     console.error("Gagal membaca LocalStorage", e);
                 }
@@ -614,6 +644,10 @@
             renderLogbooks();
             renderMembersList();
             renderAdminPanel();
+
+            if (document.getElementById('cloud-sync-url')) {
+                document.getElementById('cloud-sync-url').value = state.cloudSyncUrl || "";
+            }
         };
 
         function initClock() {
@@ -625,9 +659,10 @@
         }
 
         function saveStateToLocalStorage() {
-            localStorage.setItem("kkn_presensi_state_prod", JSON.stringify({
+            localStorage.setItem("kkn_presensi_state_prod_v2", JSON.stringify({
                 members: state.members,
-                logs: state.logs
+                logs: state.logs,
+                cloudSyncUrl: state.cloudSyncUrl
             }));
         }
 
@@ -659,6 +694,7 @@
         }
 
         /* -----------------------------------------
+         * STREAMING_CHUNK: Managing reset models...
          * MODAL RESET POPUP (KUSTOM)
          * ----------------------------------------- */
         function openResetModal() {
@@ -673,10 +709,7 @@
 
         function confirmResetAllData() {
             // Revert all data back to clean slate state
-            state.members = KKN_MEMBERS.map(m => {
-                m.initialStatus = "Belum Absen";
-                return m;
-            });
+            state.members = JSON.parse(JSON.stringify(KKN_MEMBERS));
             state.logs = [];
             saveStateToLocalStorage();
             
@@ -787,6 +820,7 @@
         }
 
         /* -----------------------------------------
+         * STREAMING_CHUNK: Rendering the analytical charts and feeds...
          * TAB VIEW RENDERERS
          * ----------------------------------------- */
         function renderDashboard() {
@@ -819,7 +853,7 @@
 
             if (state.logs.length === 0) {
                 container.innerHTML = `
-                    <div class="text-center py-8 text-slate-400">
+                    <div class="text-center py-8 text-slate-400 font-sans">
                         <i class="fa-solid fa-hourglass-empty text-3xl mb-2 block text-slate-300"></i>
                         <p class="text-xs">Belum ada aktivitas presensi atau logbook terkumpul hari ini.</p>
                     </div>
@@ -896,10 +930,6 @@
         /* -----------------------------------------
          * CAMERA & POSITION SIMULATIONS
          * ----------------------------------------- */
-        function triggerFileInput() {
-            document.getElementById('photo-input').click();
-        }
-
         function previewPhoto(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -917,7 +947,7 @@
         }
 
         function resetPhoto(event) {
-            event.stopPropagation();
+            if (event) event.stopPropagation();
             state.temporaryPhoto = null;
             document.getElementById('photo-input').value = '';
             document.getElementById('camera-placeholder').classList.remove('hidden');
@@ -942,13 +972,13 @@
             document.getElementById('gps-distance').innerText = "Menghitung...";
             
             setTimeout(() => {
-                const isWithinRange = Math.random() > 0.15;
+                const isWithinRange = Math.random() > 0.05; // 95% tervalidasi masuk daerah target
                 
                 if (isWithinRange) {
                     state.mockLocation = {
                         latitude: -8.4735 + (Math.random() - 0.5) * 0.001,
                         longitude: 114.1154 + (Math.random() - 0.5) * 0.001,
-                        distance: "185 meter dari Balai Desa Siliragung"
+                        distance: "124 meter dari Balai Desa Siliragung"
                     };
                     showToast("GPS Lokasi Anda tervalidasi di kawasan Desa Siliragung!", "success");
                 } else {
@@ -962,10 +992,11 @@
 
                 document.getElementById('gps-coords').innerText = `${state.mockLocation.latitude.toFixed(5)}, ${state.mockLocation.longitude.toFixed(5)}`;
                 document.getElementById('gps-distance').innerText = state.mockLocation.distance;
-            }, 1000);
+            }, 800);
         }
 
         /* -----------------------------------------
+         * STREAMING_CHUNK: Managing submission pipelines and cloud syncing...
          * ATTENDANCE SUBMISSION PROCESSOR
          * ----------------------------------------- */
         function handleAttendanceSubmit(event) {
@@ -994,7 +1025,7 @@
                 name: activeMember.name,
                 type: attendanceType,
                 time: timeString,
-                date: "Hari Ini",
+                date: now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
                 photo: state.temporaryPhoto,
                 text: attendanceType === 'clock_in' ? logbookText : "Clock-Out Mandiri Berhasil",
                 verified: false
@@ -1007,14 +1038,47 @@
             state.logs.push(newLog);
             saveStateToLocalStorage();
 
+            // CLOUD SYNC: Send to Google Sheets if configured
+            if (state.cloudSyncUrl) {
+                syncToGoogleSheets(newLog);
+            }
+
             showToast(`${attendanceType === 'clock_in' ? 'Clock-In' : 'Clock-Out'} Berhasil Dikirim!`, "success");
             
             document.getElementById('logbook-text').value = '';
-            resetPhoto(event);
+            resetPhoto();
             
             updateMemberStatusDisplay(activeMember);
             
             setTimeout(() => { switchTab('dashboard'); }, 500);
+        }
+
+        function syncToGoogleSheets(logData) {
+            const payload = {
+                id: logData.id,
+                memberId: logData.memberId,
+                name: logData.name,
+                type: logData.type,
+                time: logData.time,
+                date: logData.date,
+                text: logData.text
+            };
+
+            fetch(state.cloudSyncUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(() => {
+                showToast("Data absensi berhasil disinkronkan ke Google Sheets!", "success");
+            })
+            .catch(err => {
+                console.error("Gagal sinkron cloud", err);
+                showToast("Gagal kirim data ke Cloud. Data tetap disimpan lokal di HP Anda.", "error");
+            });
         }
 
         /* -----------------------------------------
@@ -1033,7 +1097,7 @@
 
             if (filteredLogs.length === 0) {
                 container.innerHTML = `
-                    <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-slate-100">
+                    <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-slate-100 font-sans">
                         <i class="fa-solid fa-folder-open text-4xl mb-3 text-slate-300 block"></i>
                         <p class="text-xs text-slate-400">Belum ada riwayat berkas logbook untuk anggota kelompok ini.</p>
                     </div>
@@ -1064,7 +1128,7 @@
                         <span class="text-[10px] font-mono text-slate-400 bg-slate-50 border px-2 py-1 rounded">${log.time}</span>
                     </div>
                     
-                    <p class="text-xs leading-relaxed text-slate-600 italic bg-slate-50/50 p-3 rounded-xl border border-slate-100">${log.text}</p>
+                    <p class="text-xs leading-relaxed text-slate-600 italic bg-slate-50/50 p-3 rounded-xl border border-slate-100 font-sans">${log.text}</p>
                     
                     <div class="flex items-center justify-between border-t border-slate-100 pt-3 flex-wrap gap-2">
                         <span class="text-[10px] text-slate-400 font-medium flex items-center gap-1"><i class="fa-regular fa-calendar"></i> Hari Ini</span>
@@ -1076,6 +1140,7 @@
         }
 
         /* -----------------------------------------
+         * STREAMING_CHUNK: Setting up members directories...
          * MEMBER DIRECTORY RENDERER
          * ----------------------------------------- */
         function renderMembersList() {
@@ -1108,7 +1173,7 @@
                         <span class="block font-bold text-slate-800 font-heading">${member.name}</span>
                         <span class="block text-[10px] text-slate-400 font-mono mt-0.5">NIM. ${member.id}</span>
                     </td>
-                    <td class="py-4 px-6">
+                    <td class="py-4 px-6 font-sans">
                         <span class="block text-slate-700 font-medium">${member.faculty}</span>
                         <span class="block text-[10px] text-slate-400 mt-0.5">${member.studyProgram}</span>
                     </td>
@@ -1127,7 +1192,7 @@
                 tableBody.appendChild(tr);
 
                 const card = document.createElement('div');
-                card.className = "p-4 space-y-3";
+                card.className = "p-4 space-y-3 font-sans";
                 card.innerHTML = `
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-3">
@@ -1141,9 +1206,9 @@
                         </div>
                         <span class="font-bold text-[9px] px-2 py-0.5 rounded-full ${classBadge}">${member.initialStatus}</span>
                     </div>
-                    <div class="text-[11px] text-slate-500 space-y-0.5 font-sans">
-                        <p><span class="font-semibold text-slate-400">Prodi:</span> ${member.studyProgram}</p>
-                        <p><span class="font-semibold text-slate-400">Jabatan:</span> <span class="text-unair-blue font-bold">${member.role}</span></p>
+                    <div class="text-[11px] text-slate-500 space-y-0.5">
+                        <p><span class="font-semibold text-slate-400 font-sans">Prodi:</span> ${member.studyProgram}</p>
+                        <p><span class="font-semibold text-slate-400 font-sans">Jabatan:</span> <span class="text-unair-blue font-bold">${member.role}</span></p>
                     </div>
                     <div class="flex justify-between items-center pt-2">
                         <span class="text-[10px] text-slate-400">${member.faculty}</span>
@@ -1190,9 +1255,24 @@
                 authPanel.classList.add('hidden');
                 boardPanel.classList.remove('hidden');
                 renderAdminMemberList();
+                if (document.getElementById('cloud-sync-url')) {
+                    document.getElementById('cloud-sync-url').value = state.cloudSyncUrl || "";
+                }
             } else {
                 authPanel.classList.remove('hidden');
                 boardPanel.classList.add('hidden');
+            }
+        }
+
+        function saveCloudSyncUrl() {
+            const urlInput = document.getElementById('cloud-sync-url').value.trim();
+            state.cloudSyncUrl = urlInput;
+            saveStateToLocalStorage();
+            
+            if (urlInput) {
+                showToast("URL Cloud Google Sheets berhasil disimpan & aktif!", "success");
+            } else {
+                showToast("Mode Cloud dinonaktifkan. Sistem beralih ke mode luring offline.", "info");
             }
         }
 
@@ -1217,7 +1297,7 @@
                 }).join('');
 
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+                tr.className = "hover:bg-slate-50 transition border-b border-slate-100 font-sans";
                 tr.innerHTML = `
                     <td class="py-3 px-6">
                         <span class="block font-bold text-slate-800">${member.name}</span>
@@ -1270,6 +1350,7 @@
         }
 
         /* -----------------------------------------
+         * STREAMING_CHUNK: Packing CSV exporters...
          * EXPORT DATA & WEEKLY SUMMARIES
          * ----------------------------------------- */
         function exportToCSV() {
