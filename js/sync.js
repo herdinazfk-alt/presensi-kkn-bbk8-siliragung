@@ -38,7 +38,7 @@ function syncToGoogleSheets(logData) {
 }
 
 // Ambil semua data presensi/logbook dari Google Sheets
-async function fetchDataFromCloud() {
+async function fetchDataFromCloud(isSilent = false) {
     if (!state.cloudSyncUrl) {
         console.log("Cloud sync URL tidak disetel. Menggunakan database luring.");
         return false;
@@ -93,14 +93,16 @@ async function fetchDataFromCloud() {
 
             saveStateToLocalStorage();
             
-            if (addedCount > 0) {
+            if (addedCount > 0 && !isSilent) {
                 showToast(`${addedCount} data presensi baru berhasil disinkronkan dari Google Sheets!`, "success");
             }
             return true;
         }
     } catch (err) {
         console.error("Gagal sinkron data dari Cloud:", err);
-        showToast("Gagal memperbarui data dari Google Sheets. Periksa koneksi internet Anda.", "error");
+        if (!isSilent) {
+            showToast("Gagal memperbarui data dari Google Sheets. Periksa koneksi internet Anda.", "error");
+        }
         return false;
     }
 }

@@ -451,27 +451,19 @@
             <!-- Authenticated Admin Board Panel -->
             <div id="admin-board-panel" class="space-y-6">
                 
-                <!-- Google Sheets Sync Configuration Panel (Cloud Sync) -->
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 space-y-4">
+                <!-- Google Sheets Sync Configuration Panel (Cloud Sync Info) -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 space-y-2">
                     <div class="flex items-center gap-2">
                         <div class="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
                             <i class="fa-solid fa-cloud-arrow-up text-lg"></i>
                         </div>
                         <div>
-                            <h4 class="font-heading font-bold text-sm text-slate-800">Integrasi Sinkronisasi Google Sheets</h4>
-                            <p class="text-[11px] text-slate-400">Hubungkan semua HP anggota KKN ke satu dokumen Google Sheets terpusat.</p>
+                            <h4 class="font-heading font-bold text-sm text-slate-800">Sinkronisasi Google Sheets Aktif</h4>
+                            <p class="text-[11px] text-emerald-600 font-medium font-sans">
+                                <i class="fa-solid fa-circle-check mr-1 animate-pulse"></i> Terhubung langsung ke database cloud kelompok Desa Siliragung
+                            </p>
                         </div>
                     </div>
-                    <div class="flex flex-col sm:flex-row gap-2">
-                        <input type="text" id="cloud-sync-url" placeholder="Masukkan URL Web App Google Apps Script Anda..." class="flex-grow border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-unair-blue focus:outline-none font-mono">
-                        <button onclick="saveCloudSyncUrl()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2.5 rounded-xl text-xs transition whitespace-nowrap">
-                            Simpan & Aktifkan Sync
-                        </button>
-                    </div>
-                    <p class="text-[10px] text-slate-400 font-sans">
-                        <i class="fa-solid fa-circle-info text-amber-500 mr-1"></i> 
-                        Kosongkan kolom di atas jika ingin menggunakan mode penyimpanan luring (*offline*) bawaan.
-                    </p>
                 </div>
 
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">

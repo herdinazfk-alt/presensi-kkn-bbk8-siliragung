@@ -56,6 +56,27 @@ function initApp() {
     } else {
         renderActiveTabContent('dashboard');
     }
+
+    // Jalankan polling otomatis di latar belakang
+    startAutoPolling();
+}
+
+// Memulai polling otomatis di latar belakang setiap 30 detik
+function startAutoPolling() {
+    setInterval(() => {
+        if (state.cloudSyncUrl) {
+            // Polling secara silent (isSilent = true) tanpa notifikasi toast yang mengganggu
+            fetchDataFromCloud(true).then(updated => {
+                if (updated) {
+                    const activeTabBtn = document.querySelector('.tab-btn.active');
+                    if (activeTabBtn) {
+                        const tabId = activeTabBtn.id.replace('tab-btn-', '');
+                        renderActiveTabContent(tabId);
+                    }
+                }
+            });
+        }
+    }, 30000); // Polling setiap 30 detik
 }
 
 // Jam Digital Sistem
@@ -701,19 +722,7 @@ function overrideMemberStatus(memberId, newStatus) {
     }
 }
 
-// Simpan URL Google Sheets Cloud Sync
-function saveCloudSyncUrl() {
-    const urlInput = document.getElementById('cloud-sync-url').value.trim();
-    state.cloudSyncUrl = urlInput;
-    saveStateToLocalStorage();
-    
-    if (urlInput) {
-        showToast("URL Cloud Google Sheets berhasil disimpan & aktif!", "success");
-        fetchDataFromCloud().then(() => renderActiveTabContent('dashboard'));
-    } else {
-        showToast("Mode Cloud dinonaktifkan. Sistem beralih ke mode luring offline.", "info");
-    }
-}
+
 
 // Trigger Manual Sinkronisasi Data dari Cloud
 function triggerManualRefresh() {

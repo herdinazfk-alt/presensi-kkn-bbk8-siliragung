@@ -110,7 +110,7 @@ let state = {
     }),
     logs: [],
     registeredAccounts: {}, // format: { "NIM": "password" }
-    cloudSyncUrl: "",
+    cloudSyncUrl: "https://script.google.com/macros/s/AKfycbxTGjyHCPcyshNZUj_YuB7JnfQAX3xqHOAUN4buPEzAl3x4SvjTvuxT0FF_VqRsydk_pA/exec",
     mockLocation: {
         latitude: -8.4735,
         longitude: 114.1154,
@@ -131,7 +131,7 @@ function loadState() {
             state.members = parsed.members || state.members;
             state.logs = parsed.logs || state.logs;
             state.registeredAccounts = parsed.registeredAccounts || state.registeredAccounts;
-            state.cloudSyncUrl = parsed.cloudSyncUrl || state.cloudSyncUrl;
+            // cloudSyncUrl selalu menggunakan nilai hardcoded dari kode
         } catch (e) {
             console.error("Gagal memuat data dari LocalStorage, menggunakan data default.", e);
         }
@@ -143,8 +143,7 @@ function saveStateToLocalStorage() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
         members: state.members,
         logs: state.logs,
-        registeredAccounts: state.registeredAccounts,
-        cloudSyncUrl: state.cloudSyncUrl
+        registeredAccounts: state.registeredAccounts
     }));
 }
 
