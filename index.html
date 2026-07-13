@@ -312,33 +312,6 @@
 
                     <form id="attendance-form" onsubmit="handleAttendanceSubmit(event)" class="space-y-6">
                         
-                        <!-- Toggle Clock-In / Clock-Out -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <!-- Clock-In -->
-                            <label class="relative border-2 border-slate-100 hover:border-unair-blue rounded-2xl p-4 cursor-pointer flex items-center space-x-4 transition group focus-within:ring-2 focus-within:ring-unair-blue" id="clockin-box">
-                                <input type="radio" name="attendance_type" value="clock_in" checked onchange="toggleFormFields(this.value)" class="absolute right-4 top-4 text-unair-blue focus:ring-unair-blue h-4 w-4">
-                                <div class="p-3 bg-emerald-50 text-emerald-600 group-hover:bg-emerald-100 rounded-xl transition">
-                                    <i class="fa-solid fa-circle-arrow-down text-2xl"></i>
-                                </div>
-                                <div>
-                                    <span class="block font-heading font-bold text-sm text-slate-800">Clock-In (Masuk)</span>
-                                    <span class="block text-slate-400 text-[11px] mt-0.5">Maks. Pukul 08.00 WIB pagi</span>
-                                </div>
-                            </label>
-                            
-                            <!-- Clock-Out -->
-                            <label class="relative border-2 border-slate-100 hover:border-unair-blue rounded-2xl p-4 cursor-pointer flex items-center space-x-4 transition group focus-within:ring-2 focus-within:ring-unair-blue" id="clockout-box">
-                                <input type="radio" name="attendance_type" value="clock_out" onchange="toggleFormFields(this.value)" class="absolute right-4 top-4 text-unair-blue focus:ring-unair-blue h-4 w-4">
-                                <div class="p-3 bg-red-50 text-red-600 group-hover:bg-red-100 rounded-xl transition">
-                                    <i class="fa-solid fa-circle-arrow-up text-2xl"></i>
-                                </div>
-                                <div>
-                                    <span class="block font-heading font-bold text-sm text-slate-800">Clock-Out (Pulang)</span>
-                                    <span class="block text-slate-400 text-[11px] mt-0.5">Min. Mulai Pukul 16.00 WIB sore</span>
-                                </div>
-                            </label>
-                        </div>
-
                         <!-- Photographic Verification Field -->
                         <div class="space-y-2">
                             <span class="block text-xs font-bold uppercase tracking-wider text-slate-500">Bukti Foto Kehadiran (Wajib)</span>
@@ -377,7 +350,7 @@
                         <!-- Submission Trigger Button -->
                         <button type="submit" class="w-full bg-unair-blue hover:bg-blue-900 text-white font-bold py-3.5 px-6 rounded-2xl text-xs sm:text-sm shadow-md flex items-center justify-center space-x-2 transition duration-200">
                             <i class="fa-solid fa-cloud-arrow-up"></i>
-                            <span id="submit-btn-text">Kirim Absensi Masuk (Clock-In)</span>
+                            <span>Kirim Laporan Harian & Absen</span>
                         </button>
                     </form>
                 </div>
@@ -507,7 +480,7 @@
                                 <tr class="bg-slate-50 text-slate-400 text-[10px] font-bold uppercase tracking-wider border-b border-slate-100">
                                     <th class="py-3 px-6">Nama Mahasiswa</th>
                                     <th class="py-3 px-6">Status Harian</th>
-                                    <th class="py-3 px-6">Clock-In / Out</th>
+                                    <th class="py-3 px-6">Waktu & Bukti Foto</th>
                                     <th class="py-3 px-6">Logbook Hari Ini</th>
                                     <th class="py-3 px-6 text-center">Verifikasi DPL</th>
                                     <th class="py-3 px-6 text-right">Opsi Tindakan</th>
@@ -521,6 +494,24 @@
                 </div>
             </div>
         </section>
+
+        <!-- Modal Preview Foto Bukti (DPL) -->
+        <div id="photo-preview-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4" onclick="closePhotoModal()">
+            <div class="relative max-w-sm w-full bg-white rounded-3xl overflow-hidden shadow-2xl border border-white/20 p-5 space-y-4" onclick="event.stopPropagation()">
+                <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                    <h4 class="font-heading font-extrabold text-sm text-slate-800" id="photo-modal-title">Bukti Foto Kehadiran</h4>
+                    <button onclick="closePhotoModal()" class="text-slate-400 hover:text-slate-600">
+                        <i class="fa-solid fa-circle-xmark text-lg"></i>
+                    </button>
+                </div>
+                <div class="aspect-square w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200">
+                    <img id="photo-modal-img" src="" alt="Bukti Kehadiran" class="w-full h-full object-cover">
+                </div>
+                <button onclick="closePhotoModal()" class="w-full bg-slate-950 hover:bg-slate-900 text-white font-bold py-2.5 rounded-xl text-xs transition">
+                    Tutup Pratinjau
+                </button>
+            </div>
+        </div>
 
     </main>
 

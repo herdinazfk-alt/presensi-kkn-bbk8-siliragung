@@ -17,6 +17,7 @@ function syncToGoogleSheets(logData) {
         time: logData.time,
         date: logData.date,
         text: logData.text,
+        photo: logData.photo || "", // Kirim foto hasil kompresi ke Google Sheets
         verified: logData.verified ? "TRUE" : "FALSE"
     };
 
@@ -85,7 +86,7 @@ async function fetchDataFromCloud(isSilent = false) {
 
             // Perbarui status kehadiran mahasiswa secara real-time di UI
             state.members.forEach(m => {
-                const todayClockIn = state.logs.find(l => l.memberId === m.id && l.type === 'clock_in');
+                const todayClockIn = state.logs.find(l => l.memberId === m.id && (l.type === 'hadir' || l.type === 'clock_in'));
                 if (todayClockIn) {
                     m.initialStatus = "Hadir";
                 }
@@ -188,6 +189,7 @@ function resetCloudData() {
  *       payload.date,
  *       payload.text,
  *       payload.verified,
+ *       payload.photo, // Kolom I: Foto bukti kehadiran (Base64)
  *       timestamp
  *     ]);
  *   } else if (action === "verify") {

@@ -156,11 +156,11 @@ function updateMemberStatusDisplay(member) {
     
     if (!statusBox || !clockInBox) return;
     
-    const todayInLog = state.logs.find(l => l.memberId === member.id && l.type === 'clock_in');
+    const todayInLog = state.logs.find(l => l.memberId === member.id && (l.type === 'hadir' || l.type === 'clock_in'));
     statusBox.className = "font-semibold text-xs py-0.5 px-2 rounded ";
     
     if (todayInLog) {
-        statusBox.innerText = "Hadir (Clock-In)";
+        statusBox.innerText = "Hadir";
         statusBox.className += "bg-emerald-100 text-emerald-800";
         clockInBox.innerText = todayInLog.time;
     } else {
@@ -221,7 +221,7 @@ function renderDashboard() {
 
     // Hitung Stat
     const totalHadir = state.members.filter(m => {
-        const hasClockIn = state.logs.some(l => l.memberId === m.id && l.type === 'clock_in');
+        const hasClockIn = state.logs.some(l => l.memberId === m.id && (l.type === 'hadir' || l.type === 'clock_in'));
         return hasClockIn || m.initialStatus === 'Hadir';
     }).length;
 
@@ -263,8 +263,8 @@ function renderDashboard() {
     const sortedLogs = [...state.logs].reverse();
 
     sortedLogs.forEach(log => {
-        const icon = log.type === 'clock_in' ? 'fa-circle-arrow-down text-emerald-500' : 'fa-circle-arrow-up text-red-500';
-        const actionLabel = log.type === 'clock_in' ? 'Clock-In (Masuk)' : 'Clock-Out (Pulang)';
+        const icon = log.type === 'hadir' || log.type === 'clock_in' ? 'fa-circle-check text-emerald-500' : 'fa-circle-arrow-up text-red-500';
+        const actionLabel = log.type === 'hadir' || log.type === 'clock_in' ? 'Kehadiran & Logbook' : 'Clock-Out (Pulang)';
         const badgeVerified = log.verified 
             ? `<span class="bg-emerald-50 text-emerald-700 text-[9px] px-2 py-0.5 rounded border border-emerald-200 font-bold flex items-center gap-1"><i class="fa-solid fa-certificate"></i> Terverifikasi DPL</span>` 
             : `<span class="bg-amber-50 text-amber-700 text-[9px] px-2 py-0.5 rounded border border-amber-200 font-bold flex items-center gap-1"><i class="fa-solid fa-spinner animate-spin"></i> Menunggu DPL</span>`;
@@ -365,14 +365,68 @@ function detectLocation() {
     }, 800);
 }
 
-// Tampilkan Gambar Bukti Absen
-function previewPhoto(event) {
+// Mengompresi file foto bukti kehadiran ke resolusi rendah agar muat di Google Sheets dan mempercepat upload di HP
+function compressImage(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Set resolusi maksimum (180x180 pixel sangat cukup untuk verifikasi wajah DPL)
+                const MAX_WIDTH = 180;
+                const MAX_HEIGHT = 180;
+                let width = img.width;
+                let height = img.height;
+                
+                if (width > height) {
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
+                } else {
+                    if (height > MAX_HEIGHT) {
+                        width *= MAX_HEIGHT / height;
+                        height = MAX_HEIGHT;
+                    }
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // Gunakan format JPEG dengan kualitas 60% untuk kompresi maksimal
+                const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6);
+                resolve(compressedBase64);
+            };
+            img.onerror = reject;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+// Tampilkan Gambar Bukti Absen (dengan kompresi otomatis)
+async function previewPhoto(event) {
     const file = event.target.files[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        state.temporaryPhoto = e.target.result;
+    const placeholder = document.getElementById('camera-placeholder');
+    if (placeholder) {
+        placeholder.innerHTML = `
+            <div class="space-y-2 py-4">
+                <i class="fa-solid fa-spinner animate-spin text-unair-blue text-2xl"></i>
+                <p class="text-xs text-slate-500 font-bold">Mengompresi foto...</p>
+            </div>
+        `;
+    }
+
+    try {
+        const compressedBase64 = await compressImage(file);
+        state.temporaryPhoto = compressedBase64;
         
         // Sembunyikan dashed trigger box di HP setelah foto terunggah
         const trigger = document.getElementById('camera-trigger');
@@ -381,11 +435,14 @@ function previewPhoto(event) {
         const previewImg = document.getElementById('camera-preview');
         const container = document.getElementById('camera-preview-container');
         if (previewImg && container) {
-            previewImg.src = e.target.result;
+            previewImg.src = compressedBase64;
             container.classList.remove('hidden');
         }
-    };
-    reader.readAsDataURL(file);
+    } catch (err) {
+        console.error("Gagal memproses gambar:", err);
+        showToast("Gagal memproses foto. Silakan coba foto lain.", "error");
+        resetPhoto();
+    }
 }
 
 // Reset Gambar Bukti Absen
@@ -397,33 +454,31 @@ function resetPhoto(event) {
     
     // Tampilkan kembali dashed trigger box
     const trigger = document.getElementById('camera-trigger');
-    if (trigger) trigger.classList.remove('hidden');
+    if (trigger) {
+        trigger.classList.remove('hidden');
+    }
+    
+    const placeholder = document.getElementById('camera-placeholder');
+    if (placeholder) {
+        placeholder.innerHTML = `
+            <div class="w-14 h-14 bg-white shadow-sm border border-slate-100 rounded-full flex items-center justify-center text-unair-blue mx-auto">
+                <i class="fa-solid fa-camera text-xl"></i>
+            </div>
+            <div class="text-xs">
+                <span class="text-unair-blue font-bold">Pilih file foto</span> atau ambil gambar langsung
+            </div>
+            <p class="text-[10px] text-slate-400 font-sans">Sistem keamanan HP Anda akan mengaktifkan kamera atau galeri secara resmi</p>
+        `;
+    }
     
     const container = document.getElementById('camera-preview-container');
     if (container) container.classList.add('hidden');
-}
-
-// Toggle Fields Form Clock-In vs Clock-Out
-function toggleFormFields(value) {
-    const logbookSection = document.getElementById('logbook-input-section');
-    const submitBtnText = document.getElementById('submit-btn-text');
-    
-    if (!logbookSection || !submitBtnText) return;
-    
-    if (value === 'clock_in') {
-        logbookSection.classList.remove('hidden');
-        submitBtnText.innerText = "Kirim Absensi Masuk (Clock-In)";
-    } else {
-        logbookSection.classList.add('hidden');
-        submitBtnText.innerText = "Kirim Absensi Pulang (Clock-Out)";
-    }
 }
 
 // Handler Submit Form Absensi
 function handleAttendanceSubmit(event) {
     event.preventDefault();
     
-    const attendanceType = document.querySelector('input[name="attendance_type"]:checked').value;
     const logbookTextEl = document.getElementById('logbook-text');
     const logbookText = logbookTextEl ? logbookTextEl.value.trim() : '';
 
@@ -432,7 +487,11 @@ function handleAttendanceSubmit(event) {
         return;
     }
 
-    // Kirim absensi harian tanpa minimal batas karakter logbook
+    if (!logbookText) {
+        showToast("Anda wajib mengisi laporan logbook kegiatan!", "error");
+        return;
+    }
+
     const now = new Date();
     const timeString = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + " WIB";
 
@@ -440,18 +499,18 @@ function handleAttendanceSubmit(event) {
         id: "log-" + Date.now(),
         memberId: activeUser.id,
         name: activeUser.name,
-        type: attendanceType,
+        type: "hadir",
         time: timeString,
         date: now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
         photo: state.temporaryPhoto,
-        text: attendanceType === 'clock_in' ? logbookText : "Clock-Out Mandiri Berhasil",
+        text: logbookText,
         verified: false
     };
 
     // Update status harian
     const localMember = state.members.find(m => m.id === activeUser.id);
     if (localMember) {
-        localMember.initialStatus = (attendanceType === 'clock_in') ? "Hadir" : "Belum Absen";
+        localMember.initialStatus = "Hadir";
     }
 
     state.logs.push(newLog);
@@ -462,7 +521,7 @@ function handleAttendanceSubmit(event) {
         syncToGoogleSheets(newLog);
     }
 
-    showToast(`${attendanceType === 'clock_in' ? 'Clock-In' : 'Clock-Out'} Berhasil Dikirim!`, "success");
+    showToast("Laporan Kehadiran & Logbook Berhasil Dikirim!", "success");
     
     if (logbookTextEl) logbookTextEl.value = '';
     resetPhoto();
@@ -649,7 +708,7 @@ function renderAdminMemberList() {
     container.innerHTML = '';
 
     state.members.forEach(member => {
-        const todayInLog = state.logs.find(l => l.memberId === member.id && l.type === 'clock_in');
+        const todayInLog = state.logs.find(l => l.memberId === member.id && (l.type === 'hadir' || l.type === 'clock_in'));
         
         const isVerified = todayInLog ? todayInLog.verified : false;
         const checkboxAttr = isVerified ? 'checked disabled' : (todayInLog ? '' : 'disabled');
@@ -681,6 +740,11 @@ function renderAdminMemberList() {
             </td>
             <td class="py-3 px-6">
                 <span class="block text-slate-600 font-medium">${todayInLog ? todayInLog.time : '-- : --'}</span>
+                ${todayInLog && todayInLog.photo ? `
+                    <button onclick="viewVerificationPhoto('${todayInLog.photo}', '${member.name}')" class="mt-1 text-[9px] text-blue-600 hover:text-blue-800 font-bold inline-flex items-center gap-1 bg-blue-50 hover:bg-blue-100 border border-blue-100 px-1.5 py-0.5 rounded transition">
+                        <i class="fa-solid fa-image"></i> Lihat Foto
+                    </button>
+                ` : ''}
             </td>
             <td class="py-3 px-6">
                 <p class="max-w-xs truncate text-[11px] text-slate-500" title="${todayInLog ? todayInLog.text : 'Tidak ada catatan'}">
@@ -751,7 +815,7 @@ function exportToCSV() {
     csvContent += "NIM,Nama Mahasiswa,Fakultas,Program Studi,Jabatan Kelompok,Status Hari Ini,Logbook Aktivitas,Waktu Presensi\n";
     
     state.members.forEach(m => {
-        const logToday = state.logs.find(l => l.memberId === m.id && l.type === 'clock_in');
+        const logToday = state.logs.find(l => l.memberId === m.id && (l.type === 'hadir' || l.type === 'clock_in'));
         const cleanLogText = logToday ? logToday.text.replace(/"/g, '""') : 'Tidak ada laporan';
         const timeLog = logToday ? logToday.time : '--';
         
@@ -775,7 +839,7 @@ function copyWeeklySummary() {
     textSummary += `========================================================\n\n`;
     
     state.members.forEach((m, idx) => {
-        const logToday = state.logs.find(l => l.memberId === m.id && l.type === 'clock_in');
+        const logToday = state.logs.find(l => l.memberId === m.id && (l.type === 'hadir' || l.type === 'clock_in'));
         const logText = logToday ? `- Logbook: "${logToday.text.substring(0, 80)}..."` : "- Logbook: Belum diisi";
         textSummary += `${idx + 1}. [${m.initialStatus}] ${m.name} (${m.role})\n   ${logText}\n\n`;
     });
@@ -830,4 +894,27 @@ function confirmResetAllData() {
     // Refresh Tampilan UI
     setupUIForUserRole();
     renderActiveTabContent('dashboard');
+}
+
+// Buka Modal Foto Bukti Kehadiran (DPL)
+function viewVerificationPhoto(photoBase64, studentName) {
+    const modal = document.getElementById('photo-preview-modal');
+    const modalImg = document.getElementById('photo-modal-img');
+    const modalTitle = document.getElementById('photo-modal-title');
+    
+    if (modal && modalImg && modalTitle) {
+        modalTitle.innerText = `Bukti Kehadiran: ${studentName}`;
+        modalImg.src = photoBase64;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+}
+
+// Tutup Modal Foto Bukti Kehadiran (DPL)
+function closePhotoModal() {
+    const modal = document.getElementById('photo-preview-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
 }
