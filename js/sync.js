@@ -1,3 +1,20 @@
+// Menormalisasi string tanggal dari cloud agar selalu menggunakan format lokal Indonesia yang seragam
+function normalizeLogDate(dateStr) {
+    if (!dateStr) return '';
+    
+    // Jika formatnya ISO String (mengandung 'T' dan 'Z' dari serialisasi Google Apps Script)
+    if (typeof dateStr === 'string' && dateStr.includes('T') && dateStr.includes('Z')) {
+        try {
+            const dateObj = new Date(dateStr);
+            return dateObj.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        } catch (e) {
+            console.error("Gagal mengurai tanggal ISO:", e);
+        }
+    }
+    
+    return dateStr;
+}
+
 // Logika Sinkronisasi Google Sheets Cloud Storage
 // Menggunakan Google Apps Script Web App
 
@@ -63,7 +80,7 @@ async function fetchDataFromCloud(isSilent = false) {
                 name: cloudLog.name,
                 type: cloudLog.type,
                 time: cloudLog.time,
-                date: cloudLog.date,
+                date: normalizeLogDate(cloudLog.date),
                 photo: cloudLog.photo || "",
                 text: cloudLog.text,
                 verified: cloudLog.verified === "TRUE" || cloudLog.verified === true
