@@ -156,7 +156,8 @@ function updateMemberStatusDisplay(member) {
     
     if (!statusBox || !clockInBox) return;
     
-    const todayInLog = state.logs.find(l => String(l.memberId) === String(member.id) && (l.type === 'hadir' || l.type === 'clock_in'));
+    const todayStr = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const todayInLog = state.logs.find(l => String(l.memberId) === String(member.id) && (l.type === 'hadir' || l.type === 'clock_in') && l.date === todayStr);
     statusBox.className = "font-semibold text-xs py-0.5 px-2 rounded ";
     
     if (todayInLog) {
@@ -219,8 +220,9 @@ function renderDashboard() {
         dashboardWelcomeMsg.innerHTML = `Halo, ${activeUser.name.split(' ')[0]}! <span class="wave">👋</span>`;
     }
 
+    const todayStr = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     const totalHadir = state.members.filter(m => {
-        const hasClockIn = state.logs.some(l => String(l.memberId) === String(m.id) && (l.type === 'hadir' || l.type === 'clock_in'));
+        const hasClockIn = state.logs.some(l => String(l.memberId) === String(m.id) && (l.type === 'hadir' || l.type === 'clock_in') && l.date === todayStr);
         return hasClockIn || m.initialStatus === 'Hadir';
     }).length;
 
@@ -330,38 +332,97 @@ function drawPresenceChart(hadir, izin, belum) {
     });
 }
 
-// Simulasi Lokasi Posko (Geofencing)
+// Menghitung jarak antara dua koordinat menggunakan formula Haversine
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371e3; // radius bumi dalam meter
+    const phi1 = lat1 * Math.PI / 180;
+    const phi2 = lat2 * Math.PI / 180;
+    const deltaPhi = (lat2 - lat1) * Math.PI / 180;
+    const deltaLambda = (lon2 - lon1) * Math.PI / 180;
+
+    const a = Math.sin(deltaPhi/2) * Math.sin(deltaPhi/2) +
+              Math.cos(phi1) * Math.cos(phi2) *
+              Math.sin(deltaLambda/2) * Math.sin(deltaLambda/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+    return R * c; // jarak dalam meter
+}
+
+// Deteksi Lokasi GPS Hybrid (GPS Asli / Fallback Simulasi jika memakai file:///)
 function detectLocation() {
     const coordsEl = document.getElementById('gps-coords');
     const distEl = document.getElementById('gps-distance');
     
     if (!coordsEl || !distEl) return;
     
-    coordsEl.innerText = "Mendeteksi...";
-    distEl.innerText = "Menghitung...";
+    coordsEl.innerText = "Mendeteksi GPS...";
+    distEl.innerText = "Menghitung jarak...";
     
-    setTimeout(() => {
-        const isWithinRange = Math.random() > 0.05; // 95% tervalidasi masuk daerah target
-        
-        if (isWithinRange) {
-            state.mockLocation = {
-                latitude: -8.4735 + (Math.random() - 0.5) * 0.001,
-                longitude: 114.1154 + (Math.random() - 0.5) * 0.001,
-                distance: "124 meter dari Balai Desa Siliragung"
-            };
-            showToast("GPS Lokasi Anda tervalidasi di kawasan Desa Siliragung!", "success");
-        } else {
-            state.mockLocation = {
-                latitude: -8.5412,
-                longitude: 114.2341,
-                distance: "12 km di luar radius Desa Siliragung!"
-            };
-            showToast("GPS Mendeteksi Anda di luar radius Desa Siliragung. Harap kembali ke lokasi posko!", "error");
-        }
+    const targetLat = -8.4735;
+    const targetLon = 114.1154;
 
-        coordsEl.innerText = `${state.mockLocation.latitude.toFixed(5)}, ${state.mockLocation.longitude.toFixed(5)}`;
-        distEl.innerText = state.mockLocation.distance;
-    }, 800);
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                const distance = calculateDistance(lat, lon, targetLat, targetLon);
+                
+                state.mockLocation = {
+                    latitude: lat,
+                    longitude: lon,
+                    distance: distance >= 1000 
+                        ? `${(distance / 1000).toFixed(2)} km di luar posko KKN` 
+                        : `${Math.round(distance)} meter dari Balai Desa Siliragung`
+                };
+                
+                if (distance <= 1000) {
+                    showToast("GPS Lokasi Anda berhasil tervalidasi!", "success");
+                } else {
+                    showToast(`Gagal: Anda berada di luar radius posko KKN (${(distance/1000).toFixed(1)} km).`, "error");
+                }
+                
+                coordsEl.innerText = `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+                distEl.innerText = state.mockLocation.distance;
+            },
+            (error) => {
+                console.log("Akses GPS ditolak / error, menggunakan simulasi:", error);
+                runFallbackSimulation(coordsEl, distEl, targetLat, targetLon);
+            },
+            { enableHighAccuracy: true, timeout: 5000 }
+        );
+    } else {
+        runFallbackSimulation(coordsEl, distEl, targetLat, targetLon);
+    }
+}
+
+// Simulasi fallback jika GPS browser tidak aktif atau memakai file:///
+function runFallbackSimulation(coordsEl, distEl, targetLat, targetLon) {
+    const isWithinRange = Math.random() > 0.05; // 95% tervalidasi masuk target 1km
+    
+    if (isWithinRange) {
+        // Koordinat simulasi acak dalam radius 1km (latitude/longitude deviasi kecil)
+        const lat = targetLat + (Math.random() - 0.5) * 0.006;
+        const lon = targetLon + (Math.random() - 0.5) * 0.006;
+        const distance = calculateDistance(lat, lon, targetLat, targetLon);
+        
+        state.mockLocation = {
+            latitude: lat,
+            longitude: lon,
+            distance: `${Math.round(distance)} meter dari Balai Desa Siliragung`
+        };
+        showToast("GPS Lokasi Anda berhasil tervalidasi (Simulasi Luring)!", "success");
+    } else {
+        state.mockLocation = {
+            latitude: -8.5412,
+            longitude: 114.2341,
+            distance: "12 km di luar radius Desa Siliragung! (Simulasi Luring)"
+        };
+        showToast("GPS Mendeteksi Anda di luar radius Desa Siliragung. Harap kembali ke posko!", "error");
+    }
+
+    coordsEl.innerText = `${state.mockLocation.latitude.toFixed(5)}, ${state.mockLocation.longitude.toFixed(5)}`;
+    distEl.innerText = state.mockLocation.distance;
 }
 
 // Mengompresi file foto bukti kehadiran ke resolusi rendah agar muat di Google Sheets dan mempercepat upload di HP
@@ -480,6 +541,26 @@ function handleAttendanceSubmit(event) {
     
     const logbookTextEl = document.getElementById('logbook-text');
     const logbookText = logbookTextEl ? logbookTextEl.value.trim() : '';
+
+    // Validasi Geo-Lokasi (Batas Maksimal 1 km / 1000 meter dari Posko KKN Desa Siliragung)
+    if (!state.mockLocation || state.mockLocation.latitude === null) {
+        showToast("Silakan deteksi lokasi GPS Anda terlebih dahulu sebelum absen!", "error");
+        return;
+    }
+
+    const distStr = state.mockLocation.distance.toLowerCase();
+    let distanceInMeters = 0;
+
+    if (distStr.includes("km")) {
+        distanceInMeters = parseFloat(distStr) * 1000;
+    } else if (distStr.includes("meter")) {
+        distanceInMeters = parseFloat(distStr);
+    }
+
+    if (distanceInMeters > 1000) {
+        showToast(`Gagal: Anda berada di luar radius posko KKN (${(distanceInMeters/1000).toFixed(1)} km). Batas maksimal absensi adalah 1 km!`, "error");
+        return;
+    }
 
     if (!state.temporaryPhoto) {
         showToast("Anda wajib melampirkan foto bukti kehadiran!", "error");
@@ -706,8 +787,9 @@ function renderAdminMemberList() {
     
     container.innerHTML = '';
 
+    const todayStr = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     state.members.forEach(member => {
-        const todayInLog = state.logs.find(l => String(l.memberId) === String(member.id) && (l.type === 'hadir' || l.type === 'clock_in'));
+        const todayInLog = state.logs.find(l => String(l.memberId) === String(member.id) && (l.type === 'hadir' || l.type === 'clock_in') && l.date === todayStr);
         
         const isVerified = todayInLog ? todayInLog.verified : false;
         const checkboxAttr = isVerified ? 'checked disabled' : (todayInLog ? '' : 'disabled');
@@ -813,8 +895,9 @@ function exportToCSV() {
     let csvContent = "data:text/csv;charset=utf-8,";
     csvContent += "NIM,Nama Mahasiswa,Fakultas,Program Studi,Jabatan Kelompok,Status Hari Ini,Logbook Aktivitas,Waktu Presensi\n";
     
+    const todayStr = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     state.members.forEach(m => {
-        const logToday = state.logs.find(l => String(l.memberId) === String(m.id) && (l.type === 'hadir' || l.type === 'clock_in'));
+        const logToday = state.logs.find(l => String(l.memberId) === String(m.id) && (l.type === 'hadir' || l.type === 'clock_in') && l.date === todayStr);
         const cleanLogText = logToday ? logToday.text.replace(/"/g, '""') : 'Tidak ada laporan';
         const timeLog = logToday ? logToday.time : '--';
         
@@ -837,8 +920,9 @@ function copyWeeklySummary() {
     let textSummary = `📋 RINGKASAN PRESENSI HARIAN KKN-BBK 8 UNAIR DESA SILIRAGUNG 2026\n`;
     textSummary += `========================================================\n\n`;
     
+    const todayStr = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     state.members.forEach((m, idx) => {
-        const logToday = state.logs.find(l => String(l.memberId) === String(m.id) && (l.type === 'hadir' || l.type === 'clock_in'));
+        const logToday = state.logs.find(l => String(l.memberId) === String(m.id) && (l.type === 'hadir' || l.type === 'clock_in') && l.date === todayStr);
         const logText = logToday ? `- Logbook: "${logToday.text.substring(0, 80)}..."` : "- Logbook: Belum diisi";
         textSummary += `${idx + 1}. [${m.initialStatus}] ${m.name} (${m.role})\n   ${logText}\n\n`;
     });

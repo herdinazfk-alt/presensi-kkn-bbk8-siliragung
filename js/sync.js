@@ -56,39 +56,35 @@ async function fetchDataFromCloud(isSilent = false) {
         const cloudLogs = await response.json();
         
         if (Array.isArray(cloudLogs)) {
-            // Gabungkan data cloud dengan data lokal agar tidak duplikat
-            const currentLogs = [...state.logs];
-            let addedCount = 0;
+            // Jadikan data cloud sebagai source of truth utama
+            const newLogs = cloudLogs.map(cloudLog => ({
+                id: cloudLog.id,
+                memberId: String(cloudLog.memberId),
+                name: cloudLog.name,
+                type: cloudLog.type,
+                time: cloudLog.time,
+                date: cloudLog.date,
+                photo: cloudLog.photo || "",
+                text: cloudLog.text,
+                verified: cloudLog.verified === "TRUE" || cloudLog.verified === true
+            }));
 
-            cloudLogs.forEach(cloudLog => {
-                const index = currentLogs.findIndex(l => l.id === cloudLog.id);
-                if (index === -1) {
-                    // Log baru
-                    currentLogs.push({
-                        id: cloudLog.id,
-                        memberId: String(cloudLog.memberId),
-                        name: cloudLog.name,
-                        type: cloudLog.type,
-                        time: cloudLog.time,
-                        date: cloudLog.date,
-                        photo: cloudLog.photo || "", // Jika di Sheets tidak menyimpan photo, load profil statis
-                        text: cloudLog.text,
-                        verified: cloudLog.verified === "TRUE" || cloudLog.verified === true
-                    });
-                    addedCount++;
-                } else {
-                    // Update status verifikasi DPL dari cloud
-                    currentLogs[index].verified = cloudLog.verified === "TRUE" || cloudLog.verified === true;
-                }
-            });
+            // Hitung pertambahan data
+            const addedCount = newLogs.filter(nl => !state.logs.some(ol => ol.id === nl.id)).length;
+            const isChanged = state.logs.length !== newLogs.length || addedCount > 0 || 
+                              state.logs.some((l, idx) => newLogs[idx] && l.verified !== newLogs[idx].verified);
 
-            state.logs = currentLogs;
+            state.logs = newLogs;
 
             // Perbarui status kehadiran mahasiswa secara real-time di UI
+            const todayStr = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
             state.members.forEach(m => {
-                const todayClockIn = state.logs.find(l => l.memberId === m.id && (l.type === 'hadir' || l.type === 'clock_in'));
+                const todayClockIn = state.logs.find(l => String(l.memberId) === String(m.id) && (l.type === 'hadir' || l.type === 'clock_in') && l.date === todayStr);
                 if (todayClockIn) {
                     m.initialStatus = "Hadir";
+                } else {
+                    // Reset kembali ke "Belum Absen" jika datanya telah dihapus/direset di cloud oleh DPL atau berganti hari
+                    m.initialStatus = "Belum Absen";
                 }
             });
 
@@ -96,8 +92,10 @@ async function fetchDataFromCloud(isSilent = false) {
             
             if (addedCount > 0 && !isSilent) {
                 showToast(`${addedCount} data presensi baru berhasil disinkronkan dari Google Sheets!`, "success");
+            } else if (isChanged && !isSilent) {
+                showToast("Data sinkronisasi berhasil diperbarui!", "success");
             }
-            return true;
+            return isChanged; // Mengembalikan true jika ada perubahan data asli (agar UI direfresh)
         }
     } catch (err) {
         console.error("Gagal sinkron data dari Cloud:", err);

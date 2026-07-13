@@ -112,9 +112,9 @@ let state = {
     registeredAccounts: {}, // format: { "NIM": "password" }
     cloudSyncUrl: "https://script.google.com/macros/s/AKfycbxTGjyHCPcyshNZUj_YuB7JnfQAX3xqHOAUN4buPEzAl3x4SvjTvuxT0FF_VqRsydk_pA/exec",
     mockLocation: {
-        latitude: -8.4735,
-        longitude: 114.1154,
-        distance: "0 meter (Presisi di Posko)"
+        latitude: null,
+        longitude: null,
+        distance: "Belum Mendeteksi"
     },
     temporaryPhoto: null
 };
