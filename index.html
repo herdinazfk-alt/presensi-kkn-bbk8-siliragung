@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presensi KKN-BBK 8 UNAIR Siliragung 2026</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        unair: {
+                            blue: '#0F2D59',
+                            gold: '#E5A823',
+                            lightgold: '#FDF6E2',
+                            slate: '#F3F4F6',
+                            emerald: '#059669',
+                            red: '#DC2626'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .unair-gradient {
+            background: linear-gradient(135deg, #0F2D59 0%, #1E3A8A 100%);
+        }
+        .gold-gradient {
+            background: linear-gradient(135deg, #E5A823 0%, #F59E0B 100%);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(241, 245, 249, 0.8);
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col antialiased">
+
+    <!-- Custom Toast Notification System -->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3 max-w-md w-full px-4 sm:px-0 pointer-events-none"></div>
+
+    <!-- MAIN NAVBAR -->
+    <header class="unair-gradient text-white shadow-lg sticky top-0 z-40 border-b-4 border-unair-gold">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                
+                <!-- Brand Identity and Logo -->
+                <div class="flex items-center space-x-3">
+                    <!-- Updated Logo Integration: Using Logo BBK Siliragung.png -->
+                    <img src="Logo BBK Siliragung.png" alt="Logo BBK Siliragung" class="w-16 h-16 object-contain drop-shadow-md hover:scale-105 transition duration-200" onerror="this.onerror=null; this.src='https://placehold.co/150/0F2D59/E5A823?text=BBK+8'">
+                    <div>
+                        <h1 class="font-heading font-extrabold text-base sm:text-lg leading-tight tracking-wide text-unair-gold flex items-center gap-1.5">
+                            KKN-BBK 8 UNAIR <span class="bg-amber-500 text-slate-950 text-[10px] px-2 py-0.5 rounded-full font-sans font-bold">2026</span>
+                        </h1>
+                        <p class="text-[11px] sm:text-xs text-slate-200 font-medium tracking-wide">Desa Siliragung, Kecamatan Siliragung, Banyuwangi</p>
+                    </div>
+                </div>
+
+                <!-- Simulation Profile Quick Select Switcher -->
+                <div class="flex items-center space-x-2">
+                    <div class="hidden md:block text-right">
+                        <span class="block text-[10px] uppercase tracking-wider text-slate-300 font-bold">Pilih Profil Aktif (Simulasi):</span>
+                        <span id="nav-active-role" class="text-xs font-semibold text-unair-gold">Memuat...</span>
+                    </div>
+                    <select id="profile-switcher" onchange="switchActiveProfile(this.value)" class="bg-slate-900/60 border border-slate-700 text-white rounded-lg px-2 py-1.5 text-xs font-semibold focus:ring-2 focus:ring-unair-gold focus:outline-none max-w-[140px] sm:max-w-[200px] cursor-pointer">
+                        <!-- Populated dynamically via JS -->
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- SUB NAVBAR (TAB NAVIGATION) -->
+    <div class="bg-white border-b border-slate-200 shadow-sm sticky top-20 z-30 overflow-x-auto scrollbar-none">
+        <div class="max-w-7xl mx-auto px-4 flex space-x-1 sm:space-x-4">
+            <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="tab-btn active px-3 py-3.5 border-b-2 border-unair-blue text-unair-blue font-semibold text-xs sm:text-sm flex items-center space-x-2 whitespace-nowrap">
+                <i class="fa-solid fa-chart-line text-base"></i>
+                <span>Beranda</span>
+            </button>
+            <button onclick="switchTab('presensi')" id="tab-btn-presensi" class="tab-btn px-3 py-3.5 border-b-2 border-transparent text-slate-500 hover:text-unair-blue hover:border-slate-300 font-medium text-xs sm:text-sm flex items-center space-x-2 whitespace-nowrap">
+                <i class="fa-solid fa-signature text-base"></i>
+                <span>Presensi & Logbook</span>
+            </button>
+            <button onclick="switchTab('logbook')" id="tab-btn-logbook" class="tab-btn px-3 py-3.5 border-b-2 border-transparent text-slate-500 hover:text-unair-blue hover:border-slate-300 font-medium text-xs sm:text-sm flex items-center space-x-2 whitespace-nowrap">
+                <i class="fa-solid fa-book-open text-base"></i>
+                <span>Daftar Logbook</span>
+            </button>
+            <button onclick="switchTab('anggota')" id="tab-btn-anggota" class="tab-btn px-3 py-3.5 border-b-2 border-transparent text-slate-500 hover:text-unair-blue hover:border-slate-300 font-medium text-xs sm:text-sm flex items-center space-x-2 whitespace-nowrap">
+                <i class="fa-solid fa-users text-base"></i>
+                <span>Data Anggota</span>
+            </button>
+            <button onclick="switchTab('admin')" id="tab-btn-admin" class="tab-btn px-3 py-3.5 border-b-2 border-transparent text-slate-500 hover:text-unair-blue hover:border-slate-300 font-medium text-xs sm:text-sm flex items-center space-x-2 whitespace-nowrap">
+                <i class="fa-solid fa-lock-open text-base"></i>
+                <span>Panel DPL (Admin)</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <!-- ================== TAB: DASHBOARD ================== -->
+        <section id="tab-dashboard" class="tab-content block space-y-6 animate-fadeIn">
+            
+            <!-- Welcome Banner -->
+            <div class="unair-gradient text-white rounded-2xl p-6 sm:p-8 shadow-md relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div class="absolute -right-16 -bottom-16 w-64 h-64 bg-white/10 rounded-full blur-2xl"></div>
+                <div class="space-y-2 z-10">
+                    <span class="bg-amber-400 text-slate-900 font-bold text-[10px] px-3 py-1 rounded-full uppercase tracking-wider">Aktivitas Hari Ini</span>
+                    <h2 class="text-xl sm:text-2xl font-heading font-bold" id="dashboard-welcome-msg">Selamat Datang Rekan Mahasiswa</h2>
+                    <p class="text-xs sm:text-sm text-slate-200 max-w-2xl">Silakan lakukan presensi harian secara tepat waktu (Clock-In maks. 08.00 WIB) dan isi logbook harian sebagai bukti verifikasi aktivitas KKN kepada DPL.</p>
+                </div>
+                <div class="flex items-center space-x-4 bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20 z-10 self-start md:self-auto">
+                    <div class="text-center">
+                        <span class="block text-[10px] uppercase text-slate-300 tracking-wider">Jam Sistem</span>
+                        <span id="digital-clock" class="text-xl sm:text-2xl font-mono font-bold text-unair-gold">00:00:00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fast Stats Cards -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center space-x-4">
+                    <div class="p-3 bg-blue-100 text-unair-blue rounded-xl">
+                        <i class="fa-solid fa-user-check text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="block text-xs font-medium text-slate-400">Hadir Hari Ini</span>
+                        <span id="stat-hadir" class="text-xl sm:text-2xl font-bold text-slate-800">0 / 10</span>
+                    </div>
+                </div>
+                <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center space-x-4">
+                    <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
+                        <i class="fa-solid fa-circle-question text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="block text-xs font-medium text-slate-400">Belum Presensi</span>
+                        <span id="stat-belum" class="text-xl sm:text-2xl font-bold text-slate-800">10 / 10</span>
+                    </div>
+                </div>
+                <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center space-x-4">
+                    <div class="p-3 bg-green-100 text-green-600 rounded-xl">
+                        <i class="fa-solid fa-book text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="block text-xs font-medium text-slate-400">Logbook Terkumpul</span>
+                        <span id="stat-logbook" class="text-xl sm:text-2xl font-bold text-slate-800">0</span>
+                    </div>
+                </div>
+                <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center space-x-4">
+                    <div class="p-3 bg-indigo-100 text-indigo-600 rounded-xl">
+                        <i class="fa-solid fa-list-check text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="block text-xs font-medium text-slate-400">Verifikasi DPL</span>
+                        <span id="stat-terverifikasi" class="text-xl sm:text-2xl font-bold text-slate-800">0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Presence Rate Chart -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 lg:col-span-1 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-heading font-bold text-slate-800 text-sm mb-4 flex items-center gap-1.5">
+                            <i class="fa-solid fa-pie-chart text-unair-gold"></i> Presentase Kehadiran Kelompok
+                        </h3>
+                    </div>
+                    <div class="relative flex items-center justify-center py-4 max-h-[220px]">
+                        <canvas id="presenceChart"></canvas>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-slate-100 flex justify-around text-center text-xs">
+                        <div>
+                            <span class="inline-block w-2.5 h-2.5 bg-emerald-500 rounded-full mr-1"></span>
+                            <span class="text-slate-500 font-medium">Hadir</span>
+                        </div>
+                        <div>
+                            <span class="inline-block w-2.5 h-2.5 bg-amber-400 rounded-full mr-1"></span>
+                            <span class="text-slate-500 font-medium">Sakit/Izin</span>
+                        </div>
+                        <div>
+                            <span class="inline-block w-2.5 h-2.5 bg-slate-300 rounded-full mr-1"></span>
+                            <span class="text-slate-500 font-medium">Absen</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Logs Logbook -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 lg:col-span-2">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-heading font-bold text-slate-800 text-sm flex items-center gap-1.5">
+                            <i class="fa-solid fa-receipt text-unair-gold"></i> Aktivitas Terkini Anggota
+                        </h3>
+                        <span class="text-[10px] bg-slate-100 px-2 py-1 rounded text-slate-500 font-bold">Terupdate</span>
+                    </div>
+                    <div class="space-y-4 max-h-[260px] overflow-y-auto pr-1" id="recent-logs-container">
+                        <!-- Dynamic content -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Posko Geolocation Info -->
+            <div class="bg-slate-900 text-white rounded-2xl p-5 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div class="flex items-center space-x-4">
+                    <div class="p-3 bg-slate-800 rounded-xl text-yellow-400">
+                        <i class="fa-solid fa-map-location-dot text-2xl"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-heading font-bold text-sm">Lokasi Posko KKN Banyuwangi (Radius Siliragung)</h4>
+                        <p class="text-xs text-slate-400">Verifikasi Radius Presensi disetel 500 meter dari Kantor Desa Siliragung.</p>
+                    </div>
+                </div>
+                <div class="text-right flex items-center gap-2">
+                    <span class="text-xs px-3 py-1.5 bg-slate-800 rounded-lg border border-slate-700 font-mono text-emerald-400 font-semibold flex items-center gap-1.5">
+                        <span class="w-2 h-2 bg-emerald-400 rounded-full animate-ping"></span> Geofencing Aktif
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================== TAB: PRESENSI MANDIRI ================== -->
+        <section id="tab-presensi" class="tab-content hidden animate-fadeIn">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Left: Profile Info & Map Verification -->
+                <div class="lg:col-span-4 space-y-6">
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 text-center relative overflow-hidden">
+                        <div class="unair-gradient h-24 absolute top-0 left-0 right-0 z-0"></div>
+                        <div class="relative z-10 pt-8">
+                            <div class="w-24 h-24 bg-white p-1 rounded-full shadow-md mx-auto mb-3 border-2 border-unair-gold">
+                                <div id="member-avatar" class="w-full h-full bg-slate-200 rounded-full flex items-center justify-center text-3xl text-slate-500 font-bold font-heading">
+                                    <!-- Dynamic Initials -->
+                                </div>
+                            </div>
+                            <h3 id="member-name" class="font-heading font-extrabold text-base text-slate-800 leading-snug">Memuat...</h3>
+                            <p id="member-nim" class="text-xs text-slate-400 font-mono mt-0.5">NIM. --</p>
+                            <span id="member-role" class="inline-block bg-unair-lightgold text-unair-gold font-bold text-[10px] tracking-wider uppercase px-3 py-1 rounded-full mt-2 border border-amber-200"></span>
+                            
+                            <div class="grid grid-cols-2 gap-2 mt-6 pt-6 border-t border-slate-100 text-left text-xs">
+                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                                    <span class="block text-slate-400 text-[10px]">Status Absensi</span>
+                                    <span id="member-status-box" class="font-semibold text-slate-600">Belum Presensi</span>
+                                </div>
+                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                                    <span class="block text-slate-400 text-[10px]">Waktu Clock-In</span>
+                                    <span id="member-clock-in" class="font-semibold text-slate-600">-- : --</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GPS Verification Status Card -->
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 space-y-4">
+                        <h4 class="font-heading font-bold text-sm text-slate-800 flex items-center gap-1.5">
+                            <i class="fa-solid fa-compass text-unair-gold"></i> Validasi Geo-Lokasi
+                        </h4>
+                        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100 font-mono text-xs space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Koordinat Target:</span>
+                                <span class="text-slate-600 font-medium">-8.4735, 114.1154</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Koordinat Anda:</span>
+                                <span id="gps-coords" class="text-slate-600 font-medium">Belum Mendeteksi</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Jarak ke Posko:</span>
+                                <span id="gps-distance" class="text-slate-600 font-medium">--</span>
+                            </div>
+                        </div>
+                        <button onclick="detectLocation()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2 rounded-xl text-xs flex items-center justify-center space-x-2 transition duration-200">
+                            <i class="fa-solid fa-location-crosshairs"></i>
+                            <span>Dapatkan Lokasi Saya</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right: Action Form -->
+                <div class="lg:col-span-8 bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-100 space-y-6">
+                    <div>
+                        <h3 class="font-heading font-extrabold text-lg text-slate-800">Formulir Presensi Harian & Logbook</h3>
+                        <p class="text-xs text-slate-400 mt-1">Gunakan formulir di bawah ini untuk melaporkan kehadiran harian dan mendeskripsikan aktivitas yang dikerjakan hari ini.</p>
+                    </div>
+
+                    <form id="attendance-form" onsubmit="handleAttendanceSubmit(event)" class="space-y-6">
+                        
+                        <!-- Clock Action Grid (Clock-In vs Clock-Out) -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- Clock-In Action Box -->
+                            <label class="relative border-2 border-slate-100 hover:border-unair-blue rounded-2xl p-4 cursor-pointer flex items-center space-x-4 transition group focus-within:ring-2 focus-within:ring-unair-blue" id="clockin-box">
+                                <input type="radio" name="attendance_type" value="clock_in" checked onchange="toggleFormFields(this.value)" class="absolute right-4 top-4 text-unair-blue focus:ring-unair-blue h-4 w-4">
+                                <div class="p-3 bg-emerald-50 text-emerald-600 group-hover:bg-emerald-100 rounded-xl transition">
+                                    <i class="fa-solid fa-circle-arrow-down text-2xl"></i>
+                                </div>
+                                <div>
+                                    <span class="block font-heading font-bold text-sm text-slate-800">Clock-In (Masuk)</span>
+                                    <span class="block text-slate-400 text-[11px] mt-0.5">Maks. Pukul 08.00 WIB pagi</span>
+                                </div>
+                            </label>
+                            
+                            <!-- Clock-Out Action Box -->
+                            <label class="relative border-2 border-slate-100 hover:border-unair-blue rounded-2xl p-4 cursor-pointer flex items-center space-x-4 transition group focus-within:ring-2 focus-within:ring-unair-blue" id="clockout-box">
+                                <input type="radio" name="attendance_type" value="clock_out" onchange="toggleFormFields(this.value)" class="absolute right-4 top-4 text-unair-blue focus:ring-unair-blue h-4 w-4">
+                                <div class="p-3 bg-red-50 text-red-600 group-hover:bg-red-100 rounded-xl transition">
+                                    <i class="fa-solid fa-circle-arrow-up text-2xl"></i>
+                                </div>
+                                <div>
+                                    <span class="block font-heading font-bold text-sm text-slate-800">Clock-Out (Pulang)</span>
+                                    <span class="block text-slate-400 text-[11px] mt-0.5">Min. Mulai Pukul 16.00 WIB sore</span>
+                                </div>
+                            </label>
+                        </div>
+
+                        <!-- Upload Photo / Simulation Camera Area -->
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">Bukti Foto Kehadiran (Wajib)</label>
+                            <div class="border-2 border-dashed border-slate-200 hover:border-unair-gold rounded-2xl p-6 text-center transition flex flex-col items-center justify-center space-y-4 cursor-pointer relative" onclick="triggerFileInput()">
+                                <input type="file" id="photo-input" accept="image/*" class="hidden" onchange="previewPhoto(event)">
+                                <div id="camera-placeholder" class="space-y-2">
+                                    <div class="w-14 h-14 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 mx-auto">
+                                        <i class="fa-solid fa-camera text-xl"></i>
+                                    </div>
+                                    <div class="text-xs">
+                                        <span class="text-unair-blue font-bold">Pilih file foto</span> atau ambil gambar dari HP
+                                    </div>
+                                    <p class="text-[10px] text-slate-400">Gunakan rasio 1:1, pastikan wajah dan posko/lingkungan terlihat jelas</p>
+                                </div>
+                                <div id="camera-preview-container" class="hidden relative w-36 h-36 rounded-xl overflow-hidden border-2 border-unair-gold shadow-md">
+                                    <img id="camera-preview" src="#" alt="Bukti Foto" class="w-full h-full object-cover">
+                                    <button type="button" onclick="resetPhoto(event)" class="absolute top-1.5 right-1.5 bg-red-600 hover:bg-red-700 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shadow">
+                                        <i class="fa-solid fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Logbook Input Area (Hidden for Clock Out) -->
+                        <div id="logbook-input-section" class="space-y-2">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">Logbook Kegiatan Hari Ini (Minimum 20 Karakter)</label>
+                            <textarea id="logbook-text" rows="4" placeholder="Tuliskan detail aktivitas KKN yang Anda kerjakan hari ini di Desa Siliragung (misal: Rapat proker sosialisasi kesehatan, asistensi posyandu, atau pembuatan pangkalan data desa)..." class="w-full border border-slate-200 rounded-2xl p-4 text-xs sm:text-sm focus:ring-2 focus:ring-unair-blue focus:outline-none transition"></textarea>
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <button type="submit" class="w-full bg-unair-blue hover:bg-blue-900 text-white font-bold py-3.5 px-6 rounded-2xl text-xs sm:text-sm shadow-md flex items-center justify-center space-x-2 transition duration-200">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                            <span id="submit-btn-text">Kirim Absensi Masuk (Clock-In)</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================== TAB: DAFTAR LOGBOOK ================== -->
+        <section id="tab-logbook" class="tab-content hidden space-y-6 animate-fadeIn">
+            <!-- Filter Bar -->
+            <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <h3 class="font-heading font-extrabold text-base text-slate-800 flex items-center gap-1.5">
+                    <i class="fa-solid fa-book-open-reader text-unair-gold"></i> Rekam Jejak Logbook KKN
+                </h3>
+                <div class="flex items-center space-x-2 w-full md:w-auto">
+                    <div class="relative flex-grow md:flex-grow-0">
+                        <i class="fa-solid fa-filter absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                        <select id="logbook-filter" onchange="renderLogbooks()" class="pl-8 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-600 focus:outline-none focus:ring-2 focus:ring-unair-blue w-full">
+                            <option value="all">Semua Anggota</option>
+                            <!-- Dynamic additions -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logbook Feeds -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="logbook-list-container">
+                <!-- Dynamically injected -->
+            </div>
+        </section>
+
+        <!-- ================== TAB: DATA ANGGOTA ================== -->
+        <section id="tab-anggota" class="tab-content hidden space-y-6 animate-fadeIn">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                <!-- Header Banner -->
+                <div class="unair-gradient p-5 text-white flex justify-between items-center">
+                    <div>
+                        <h3 class="font-heading font-extrabold text-base sm:text-lg">Profil Kelompok KKN-BBK 8</h3>
+                        <p class="text-xs text-slate-300">Daftar Resmi Anggota Kelompok 8 Desa Siliragung, Banyuwangi</p>
+                    </div>
+                    <span class="bg-amber-400 text-slate-900 font-bold text-xs px-3 py-1 rounded-full">10 Mahasiswa</span>
+                </div>
+                
+                <!-- Table View (Hidden on mobile) -->
+                <div class="hidden md:block overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-400 text-[11px] font-bold uppercase tracking-wider border-b border-slate-100">
+                                <th class="py-4 px-6">Foto/Initials</th>
+                                <th class="py-4 px-6">Nama Lengkap & NIM</th>
+                                <th class="py-4 px-6">Fakultas / Program Studi</th>
+                                <th class="py-4 px-6">Jabatan Kelompok</th>
+                                <th class="py-4 px-6 text-center">Status Hari Ini</th>
+                                <th class="py-4 px-6 text-right">Kontak</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-xs text-slate-600" id="members-table-body">
+                            <!-- Populated dynamically via JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Card View (Shown on mobile only) -->
+                <div class="block md:hidden divide-y divide-slate-100" id="members-cards-container">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ================== TAB: ADMIN PANEL ================== -->
+        <section id="tab-admin" class="tab-content hidden space-y-6 animate-fadeIn">
+            
+            <!-- Lock Overlay Screen (Default view) -->
+            <div id="admin-auth-panel" class="bg-white p-6 sm:p-10 rounded-2xl shadow-sm border border-slate-100 max-w-lg mx-auto text-center space-y-6">
+                <!-- Branding Logo for Admin Panel login screen -->
+                <div class="mx-auto flex justify-center mb-2">
+                    <img src="Logo BBK Siliragung.png" alt="Logo BBK Siliragung" class="w-24 h-24 object-contain drop-shadow-md" onerror="this.onerror=null; this.src='https://placehold.co/200/0F2D59/E5A823?text=BBK+8'">
+                </div>
+                <div class="space-y-2">
+                    <h3 class="font-heading font-extrabold text-lg text-slate-800">Verifikasi Sandi Pembimbing (DPL)</h3>
+                    <p class="text-xs text-slate-400">Halaman ini dibatasi khusus untuk Dosen Pembimbing Lapangan (DPL) untuk memverifikasi logbook dan mengekspor kehadiran.</p>
+                </div>
+                <div class="space-y-4">
+                    <input type="password" id="admin-password-input" placeholder="Masukkan Kata Sandi DPL..." class="w-full border border-slate-200 rounded-xl px-4 py-3 text-center text-sm focus:ring-2 focus:ring-unair-blue focus:outline-none">
+                    <p class="text-[10px] text-blue-500 font-semibold cursor-pointer" onclick="showPasswordHint()">Petunjuk Sandi: Hubungi Sekretaris Tim KKN</p>
+                    <button onclick="authenticateAdmin()" class="w-full bg-unair-blue hover:bg-blue-900 text-white font-bold py-3 px-6 rounded-xl text-xs sm:text-sm shadow-md transition duration-200">
+                        Masuk Panel Admin DPL
+                    </button>
+                </div>
+            </div>
+
+            <!-- Authenticated Admin Board (Hidden by default) -->
+            <div id="admin-board-panel" class="hidden space-y-6">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="font-heading font-extrabold text-lg text-slate-800 flex items-center gap-1.5">
+                            <i class="fa-solid fa-shield-halved text-emerald-500"></i> Dasbor Utama Dosen Pembimbing (DPL)
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-0.5">Pantau, validasi logbook, dan ekspor laporan kerja mahasiswa</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="exportToCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center space-x-1.5 transition">
+                            <i class="fa-solid fa-file-excel"></i>
+                            <span>Ekspor CSV</span>
+                        </button>
+                        <button onclick="copyWeeklySummary()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-4 py-2 rounded-xl text-xs flex items-center space-x-1.5 transition">
+                            <i class="fa-solid fa-copy"></i>
+                            <span>Salin Ringkasan</span>
+                        </button>
+                        <button onclick="logoutAdmin()" class="bg-red-50 hover:bg-red-100 text-red-600 font-bold px-3 py-2 rounded-xl text-xs flex items-center space-x-1.5 transition">
+                            <i class="fa-solid fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Attendance Overrides & Manual Settings -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="p-4 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
+                        <h4 class="font-heading font-bold text-xs text-slate-700 uppercase tracking-wider">Kelola Kehadiran Harian Anggota</h4>
+                        <span class="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded font-bold">10 Profil Aktif</span>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-400 text-[10px] font-bold uppercase tracking-wider border-b border-slate-100">
+                                    <th class="py-3 px-6">Nama Mahasiswa</th>
+                                    <th class="py-3 px-6">Status Harian</th>
+                                    <th class="py-3 px-6">Clock-In / Out</th>
+                                    <th class="py-3 px-6">Logbook Hari Ini</th>
+                                    <th class="py-3 px-6 text-center">Verifikasi DPL</th>
+                                    <th class="py-3 px-6 text-right">Opsi Tindakan</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-slate-600" id="admin-member-list">
+                                <!-- Dynamic JS additions -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER SECTION -->
+    <footer class="bg-slate-900 text-white py-6 border-t border-slate-800 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
+            <p class="text-xs text-slate-400">Aplikasi Presensi Mandiri (Client-Side Storage) KKN-BBK 8 Universitas Airlangga Desa Siliragung 2026.</p>
+            <p class="text-[10px] text-slate-500">&copy; 2026 KKN BBK 8 UNAIR Siliragung. All Rights Reserved. Terintegrasi dengan PDD & Sekretariat.</p>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT & LOGIC APPLICATION -->
+    <script>
+        /* -----------------------------------------
+         * DATA DEFINITIONS & STATIC INITIALIZATION
+         * ----------------------------------------- */
+        
+        // 10 KKN Members from image_1b2444.png & specified job roles
+        const KKN_MEMBERS = [
+            { id: "172231050", name: "DINI RISMA WARDHANI", gender: "Perempuan", faculty: "Ilmu Sosial dan Ilmu Politik", studyProgram: "S1 Administrasi Publik", role: "PDD", contact: "085606377639", initialStatus: "Hadir" },
+            { id: "171231063", name: "POPPY AYU PAWITRININGRUM", gender: "Perempuan", faculty: "Ilmu Sosial dan Ilmu Politik", studyProgram: "S1 Sosiologi", role: "Ketua Kelompok", contact: "08123195369", initialStatus: "Hadir" },
+            { id: "182231071", name: "HERDINA IZZA AFKARINA", gender: "Perempuan", faculty: "Sains dan Teknologi", studyProgram: "S1 Fisika", role: "Sekretaris", contact: "082264556590", initialStatus: "Hadir" },
+            { id: "123231139", name: "NADHIRAH KAMILA PUTRI PRASETYO", gender: "Perempuan", faculty: "Ilmu Budaya", studyProgram: "S1 Bahasa dan Sastra Inggris", role: "Perlengkapan", contact: "085781161061", initialStatus: "Hadir" },
+            { id: "132231083", name: "NUR FADHILAH", gender: "Perempuan", faculty: "Keperawatan", studyProgram: "S1 Keperawatan", role: "Acara", contact: "085854928355", initialStatus: "Belum Absen" },
+            { id: "412231072", name: "SABRINA FIRDAUSA AZZAHRA SUNARTO", gender: "Perempuan", faculty: "Vokasi", studyProgram: "D4 Fisioterapi", role: "Bendahara", contact: "081235364787", initialStatus: "Belum Absen" },
+            { id: "434231099", name: "PEDJA RAFSANJANI", gender: "Laki-laki", faculty: "Vokasi", studyProgram: "D4 Teknik Informatika", role: "Perlengkapan", contact: "085710902854", initialStatus: "Izin" },
+            { id: "441231007", name: "NANDA JELITA ANGGIA ARTA", gender: "Perempuan", faculty: "Vokasi", studyProgram: "D4 Teknologi Veteriner", role: "Acara", contact: "081515513747", initialStatus: "Belum Absen" },
+            { id: "441231026", name: "SULTAN MAULANA IBRAHIM", gender: "Laki-laki", faculty: "Vokasi", studyProgram: "D4 Teknologi Veteriner", role: "PDD", contact: "085864072804", initialStatus: "Belum Absen" },
+            { id: "194231031", name: "VIRNA ANANDA", gender: "Perempuan", faculty: "Ilmu Kesehatan, Kedokteran dan Ilmu Alam", studyProgram: "S1 Kesehatan Masyarakat (Fikkia Banyuwangi)", role: "Humas", contact: "081213485638", initialStatus: "Belum Absen" }
+        ];
+
+        // Seed / Dummy Logs to pre-populate charts & dashboard nicely on load
+        const PRE_SEEDED_LOGS = [
+            { id: "log-seed-1", memberId: "171231063", name: "POPPY AYU PAWITRININGRUM", type: "clock_in", time: "07:34 WIB", date: "Hari Ini", photo: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop", text: "Melakukan koordinasi pagi bersama Kepala Desa Siliragung membahas sinkronisasi data stunting di balai desa.", verified: true },
+            { id: "log-seed-2", memberId: "182231071", name: "HERDINA IZZA AFKARINA", type: "clock_in", time: "07:45 WIB", date: "Hari Ini", photo: "https://images.unsplash.com/photo-1554151228-14d9def656e4?w=150&h=150&fit=crop", text: "Membantu inventarisasi data posko dan mencatat proposal program kerja mitigasi kebencanaan pesisir.", verified: true },
+            { id: "log-seed-3", memberId: "172231050", name: "DINI RISMA WARDHANI", type: "clock_in", time: "07:50 WIB", date: "Hari Ini", photo: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=150&h=150&fit=crop", text: "Mengambil dokumentasi video dan foto aktivitas kunjungan ke balai desa Siliragung untuk feed publikasi KKN.", verified: false },
+            { id: "log-seed-4", memberId: "123231139", name: "NADHIRAH KAMILA PUTRI PRASETYO", type: "clock_in", time: "07:58 WIB", date: "Hari Ini", photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop", text: "Mempersiapkan bahan ajar dan modul bahasa Inggris sederhana untuk pengajaran di SD Siliragung.", verified: false }
+        ];
+
+        // STATE MANAGER
+        let state = {
+            members: [...KKN_MEMBERS],
+            logs: [...PRE_SEEDED_LOGS],
+            activeMemberId: "171231063", // Default Active Profile: POPPY (Ketua Kelompok)
+            isAdminAuthenticated: false,
+            mockLocation: {
+                latitude: -8.4735,
+                longitude: 114.1154,
+                distance: "0 meter (Presisi di Posko)"
+            },
+            temporaryPhoto: null
+        };
+
+        // Chart Instance Container
+        let presenceChart = null;
+
+        /* -----------------------------------------
+         * APP INITIALIZATION ON LOAD
+         * ----------------------------------------- */
+        window.onload = function() {
+            // Load from localStorage if existing
+            if (localStorage.getItem("kkn_presensi_state")) {
+                try {
+                    const loadedState = JSON.parse(localStorage.getItem("kkn_presensi_state"));
+                    state.members = loadedState.members || state.members;
+                    state.logs = loadedState.logs || state.logs;
+                } catch (e) {
+                    console.error("Localstorage parsing error", e);
+                }
+            }
+            
+            initClock();
+            populateProfileSwitcher();
+            switchActiveProfile(state.activeMemberId);
+            renderDashboard();
+            renderLogbooks();
+            renderMembersList();
+            renderAdminPanel();
+        };
+
+        // Realtime Clock Loop
+        function initClock() {
+            setInterval(() => {
+                const now = new Date();
+                const timeString = now.toTimeString().split(' ')[0];
+                document.getElementById('digital-clock').innerText = timeString;
+            }, 1000);
+        }
+
+        // Save State helper
+        function saveStateToLocalStorage() {
+            localStorage.setItem("kkn_presensi_state", JSON.stringify({
+                members: state.members,
+                logs: state.logs
+            }));
+        }
+
+        // Native Premium Toast Banner system (replacing alerts)
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `flex items-center p-4 rounded-xl shadow-lg border text-xs sm:text-sm font-semibold transform translate-y-2 opacity-0 transition-all duration-300 pointer-events-auto max-w-sm w-full `;
+            
+            if (type === 'success') {
+                toast.className += 'bg-emerald-50 border-emerald-200 text-emerald-800';
+                toast.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500 mr-3 text-lg"></i><span>${message}</span>`;
+            } else if (type === 'error') {
+                toast.className += 'bg-red-50 border-red-200 text-red-800';
+                toast.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-500 mr-3 text-lg"></i><span>${message}</span>`;
+            } else {
+                toast.className += 'bg-blue-50 border-blue-200 text-blue-800';
+                toast.innerHTML = `<i class="fa-solid fa-circle-info text-blue-500 mr-3 text-lg"></i><span>${message}</span>`;
+            }
+
+            container.appendChild(toast);
+            
+            // Trigger animation
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 50);
+
+            // Self destruct after 4s
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 4000);
+        }
+
+        /* -----------------------------------------
+         * PROFILE SWITCHING CAPABILITY
+         * ----------------------------------------- */
+        function populateProfileSwitcher() {
+            const switcher = document.getElementById('profile-switcher');
+            const logFilter = document.getElementById('logbook-filter');
+            
+            switcher.innerHTML = '';
+            logFilter.innerHTML = '<option value="all">Semua Anggota</option>';
+            
+            state.members.forEach(m => {
+                // Populate Switcher in navbar
+                const opt = document.createElement('option');
+                opt.value = m.id;
+                opt.innerText = m.name.split(' ').slice(0, 2).join(' ') + ` (${m.role})`;
+                switcher.appendChild(opt);
+
+                // Populate filter selection on Logbook tab
+                const optFilter = document.createElement('option');
+                optFilter.value = m.id;
+                optFilter.innerText = m.name;
+                logFilter.appendChild(optFilter);
+            });
+        }
+
+        function switchActiveProfile(memberId) {
+            state.activeMemberId = memberId;
+            const member = state.members.find(m => m.id === memberId);
+            if (!member) return;
+
+            // Update Global Selection View
+            document.getElementById('profile-switcher').value = memberId;
+            document.getElementById('nav-active-role').innerText = `${member.name.split(' ')[0]} - ${member.role}`;
+
+            // Update Tab Profile UI view
+            document.getElementById('member-name').innerText = member.name;
+            document.getElementById('member-nim').innerText = `NIM. ${member.id}`;
+            document.getElementById('member-role').innerText = member.role;
+            
+            // Create profile initials
+            const initials = member.name.split(' ').map(n => n[0]).slice(0, 2).join('');
+            document.getElementById('member-avatar').innerText = initials;
+
+            // Sync with profile status today
+            updateMemberStatusDisplay(member);
+        }
+
+        function updateMemberStatusDisplay(member) {
+            const statusBox = document.getElementById('member-status-box');
+            const clockInBox = document.getElementById('member-clock-in');
+            
+            // Find recent clock-in today for this user
+            const todayInLog = state.logs.find(l => l.memberId === member.id && l.type === 'clock_in');
+            
+            statusBox.className = "font-semibold text-xs py-0.5 px-2 rounded ";
+            
+            if (todayInLog) {
+                statusBox.innerText = "Hadir (Clock-In)";
+                statusBox.className += "bg-emerald-100 text-emerald-800";
+                clockInBox.innerText = todayInLog.time;
+            } else {
+                const statusMap = {
+                    "Hadir": { text: "Hadir", class: "bg-emerald-100 text-emerald-800" },
+                    "Izin": { text: "Izin", class: "bg-amber-100 text-amber-800" },
+                    "Sakit": { text: "Sakit", class: "bg-red-100 text-red-800" },
+                    "Belum Absen": { text: "Belum Absen", class: "bg-slate-100 text-slate-800" }
+                };
+                const mapped = statusMap[member.initialStatus] || statusMap["Belum Absen"];
+                statusBox.innerText = mapped.text;
+                statusBox.className += mapped.class;
+                clockInBox.innerText = "-- : --";
+            }
+        }
+
+        /* -----------------------------------------
+         * TAB CONTROLLER NAVIGATION
+         * ----------------------------------------- */
+        function switchTab(tabId) {
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(section => {
+                section.classList.add('hidden');
+            });
+            // Remove active classes from buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active', 'border-unair-blue', 'text-unair-blue');
+                btn.classList.add('border-transparent', 'text-slate-500');
+            });
+
+            // Show targets
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            
+            // Highlight current button
+            const activeBtn = document.getElementById(`tab-btn-${tabId}`);
+            activeBtn.classList.add('active', 'border-unair-blue', 'text-unair-blue');
+            activeBtn.classList.remove('border-transparent', 'text-slate-500');
+
+            // Hook up screen triggers
+            if (tabId === 'dashboard') {
+                renderDashboard();
+            } else if (tabId === 'logbook') {
+                renderLogbooks();
+            } else if (tabId === 'anggota') {
+                renderMembersList();
+            } else if (tabId === 'admin') {
+                renderAdminPanel();
+            }
+        }
+
+        /* -----------------------------------------
+         * RENDER TAB: DASHBOARD & METRICS
+         * ----------------------------------------- */
+        function renderDashboard() {
+            const activeMember = state.members.find(m => m.id === state.activeMemberId);
+            if (activeMember) {
+                document.getElementById('dashboard-welcome-msg').innerHTML = `Halo, ${activeMember.name.split(' ')[0]}! <span class="wave">👋</span>`;
+            }
+
+            // Calculation Stats
+            const logsToday = state.logs;
+            const totalHadir = state.members.filter(m => {
+                const hasClockIn = state.logs.some(l => l.memberId === m.id && l.type === 'clock_in');
+                return hasClockIn || m.initialStatus === 'Hadir';
+            }).length;
+
+            const totalIzinSakit = state.members.filter(m => m.initialStatus === 'Izin' || m.initialStatus === 'Sakit').length;
+            const totalBelum = 10 - totalHadir - totalIzinSakit;
+
+            const totalLogbooks = state.logs.filter(l => l.text && l.text.length > 5).length;
+            const verifikasiDplCount = state.logs.filter(l => l.verified).length;
+            const verifikasiRate = state.logs.length > 0 ? Math.round((verifikasiDplCount / state.logs.length) * 100) : 0;
+
+            // Set metric texts
+            document.getElementById('stat-hadir').innerText = `${totalHadir} / 10`;
+            document.getElementById('stat-belum').innerText = `${totalBelum}`;
+            document.getElementById('stat-logbook').innerText = totalLogbooks;
+            document.getElementById('stat-terverifikasi').innerText = `${verifikasiRate}%`;
+
+            // Draw/Update Chart
+            drawPresenceChart(totalHadir, totalIzinSakit, totalBelum);
+
+            // Populate Recent Activity logs list
+            const container = document.getElementById('recent-logs-container');
+            container.innerHTML = '';
+
+            if (state.logs.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-slate-400">
+                        <i class="fa-solid fa-hourglass-empty text-3xl mb-2 block text-slate-300"></i>
+                        <p class="text-xs">Belum ada aktivitas presensi atau logbook terkumpul hari ini.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Sorted logs by reverse chronological order
+            const sortedLogs = [...state.logs].reverse();
+
+            sortedLogs.forEach(log => {
+                const icon = log.type === 'clock_in' ? 'fa-circle-arrow-down text-emerald-500' : 'fa-circle-arrow-up text-red-500';
+                const actionLabel = log.type === 'clock_in' ? 'Clock-In (Masuk)' : 'Clock-Out (Pulang)';
+                const badgeVerified = log.verified 
+                    ? `<span class="bg-emerald-50 text-emerald-700 text-[9px] px-2 py-0.5 rounded border border-emerald-200 font-bold flex items-center gap-1"><i class="fa-solid fa-certificate"></i> Terverifikasi DPL</span>` 
+                    : `<span class="bg-amber-50 text-amber-700 text-[9px] px-2 py-0.5 rounded border border-amber-200 font-bold flex items-center gap-1"><i class="fa-solid fa-spinner animate-spin"></i> Menunggu DPL</span>`;
+
+                const member = state.members.find(m => m.id === log.memberId);
+                const role = member ? member.role : 'Anggota';
+
+                const logItem = document.createElement('div');
+                logItem.className = "bg-slate-50 p-3.5 rounded-xl border border-slate-100 flex gap-3 text-xs";
+                logItem.innerHTML = `
+                    <div class="flex-shrink-0">
+                        <img src="${log.photo}" alt="${log.name}" class="w-10 h-10 rounded-lg object-cover border border-slate-200" onerror="this.src='https://placehold.co/100/0f2d59/ffffff?text=${log.name[0]}'">
+                    </div>
+                    <div class="flex-grow space-y-1">
+                        <div class="flex items-center justify-between flex-wrap gap-1">
+                            <span class="font-bold text-slate-800">${log.name} <span class="text-[10px] text-slate-400 font-normal">(${role})</span></span>
+                            <span class="font-mono text-[10px] text-slate-400 bg-white px-1.5 py-0.5 rounded border">${log.time}</span>
+                        </div>
+                        <div class="flex items-center space-x-1.5 text-slate-500 font-medium py-0.5">
+                            <i class="fa-solid ${icon}"></i>
+                            <span>${actionLabel}</span>
+                        </div>
+                        <p class="text-slate-600 leading-relaxed font-sans mt-1 bg-white p-2 rounded-lg border border-slate-100 italic">${log.text || 'Tidak menulis deskripsi logbook.'}</p>
+                        <div class="flex justify-end pt-1">
+                            ${badgeVerified}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(logItem);
+            });
+        }
+
+        function drawPresenceChart(hadir, izin, belum) {
+            const ctx = document.getElementById('presenceChart').getContext('2d');
+            
+            if (presenceChart) {
+                presenceChart.destroy();
+            }
+
+            presenceChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Hadir', 'Sakit/Izin', 'Belum Absen'],
+                    datasets: [{
+                        data: [hadir, izin, belum],
+                        backgroundColor: ['#059669', '#F59E0B', '#E2E8F0'],
+                        borderWidth: 2,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+        }
+
+        /* -----------------------------------------
+         * CAMERA SIMULATION & FORM FUNCTIONALITIES
+         * ----------------------------------------- */
+        function triggerFileInput() {
+            document.getElementById('photo-input').click();
+        }
+
+        function previewPhoto(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                state.temporaryPhoto = e.target.result;
+                document.getElementById('camera-placeholder').classList.add('hidden');
+                
+                const previewImg = document.getElementById('camera-preview');
+                previewImg.src = e.target.result;
+                document.getElementById('camera-preview-container').classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function resetPhoto(event) {
+            event.stopPropagation();
+            state.temporaryPhoto = null;
+            document.getElementById('photo-input').value = '';
+            document.getElementById('camera-placeholder').classList.remove('hidden');
+            document.getElementById('camera-preview-container').classList.add('hidden');
+        }
+
+        function toggleFormFields(value) {
+            const logbookSection = document.getElementById('logbook-input-section');
+            const submitBtnText = document.getElementById('submit-btn-text');
+            
+            if (value === 'clock_in') {
+                logbookSection.classList.remove('hidden');
+                submitBtnText.innerText = "Kirim Absensi Masuk (Clock-In)";
+            } else {
+                logbookSection.classList.add('hidden');
+                submitBtnText.innerText = "Kirim Absensi Pulang (Clock-Out)";
+            }
+        }
+
+        // Mock Geo-coordinates for simulation
+        function detectLocation() {
+            document.getElementById('gps-coords').innerText = "Mendeteksi...";
+            document.getElementById('gps-distance').innerText = "Menghitung...";
+            
+            setTimeout(() => {
+                // Mock random coordinates within Banyuwangi
+                const isWithinRange = Math.random() > 0.15; // 85% chance within posko
+                
+                if (isWithinRange) {
+                    state.mockLocation = {
+                        latitude: -8.4735 + (Math.random() - 0.5) * 0.001,
+                        longitude: 114.1154 + (Math.random() - 0.5) * 0.001,
+                        distance: "185 meter dari Balai Desa Siliragung"
+                    };
+                    showToast("GPS Lokasi Anda tervalidasi di kawasan Desa Siliragung!", "success");
+                } else {
+                    state.mockLocation = {
+                        latitude: -8.5412,
+                        longitude: 114.2341,
+                        distance: "12 km di luar radius Desa Siliragung!"
+                    };
+                    showToast("GPS Mendeteksi Anda di luar radius Desa Siliragung. Harap kembali ke lokasi posko!", "error");
+                }
+
+                document.getElementById('gps-coords').innerText = `${state.mockLocation.latitude.toFixed(5)}, ${state.mockLocation.longitude.toFixed(5)}`;
+                document.getElementById('gps-distance').innerText = state.mockLocation.distance;
+            }, 1000);
+        }
+
+        /* -----------------------------------------
+         * PRESENSI SUBMISSION LOGIC
+         * ----------------------------------------- */
+        function handleAttendanceSubmit(event) {
+            event.preventDefault();
+            
+            const activeMember = state.members.find(m => m.id === state.activeMemberId);
+            const attendanceType = document.querySelector('input[name="attendance_type"]:checked').value;
+            const logbookText = document.getElementById('logbook-text').value.trim();
+
+            // Form Validations
+            if (!state.temporaryPhoto) {
+                showToast("Anda wajib melampirkan foto bukti kehadiran!", "error");
+                return;
+            }
+
+            if (attendanceType === 'clock_in' && logbookText.length < 20) {
+                showToast("Isi logbook terlalu pendek! Tuliskan minimal 20 karakter laporan kerja harian.", "error");
+                return;
+            }
+
+            // Create timestamp
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + " WIB";
+
+            // Push Log
+            const newLog = {
+                id: "log-" + Date.now(),
+                memberId: activeMember.id,
+                name: activeMember.name,
+                type: attendanceType,
+                time: timeString,
+                date: "Hari Ini",
+                photo: state.temporaryPhoto,
+                text: attendanceType === 'clock_in' ? logbookText : "Clock-Out Mandiri Berhasil",
+                verified: false // Needs DPL verification
+            };
+
+            // Update Member initialStatus to reflect presence in UI
+            if (attendanceType === 'clock_in') {
+                activeMember.initialStatus = "Hadir";
+            }
+
+            state.logs.push(newLog);
+            saveStateToLocalStorage();
+
+            // UI Feedback
+            showToast(`${attendanceType === 'clock_in' ? 'Clock-In' : 'Clock-Out'} Berhasil Dikirim!`, "success");
+            
+            // Clear / Reset Form fields
+            document.getElementById('logbook-text').value = '';
+            resetPhoto(event);
+            
+            // Re-sync UI Displays
+            updateMemberStatusDisplay(activeMember);
+            
+            // Jump to Dashboard
+            setTimeout(() => {
+                switchTab('dashboard');
+            }, 500);
+        }
+
+        /* -----------------------------------------
+         * LOGBOOK TAB LOGIC
+         * ----------------------------------------- */
+        function renderLogbooks() {
+            const container = document.getElementById('logbook-list-container');
+            const filterVal = document.getElementById('logbook-filter').value;
+            
+            container.innerHTML = '';
+            
+            // Filter logs
+            const filteredLogs = state.logs.filter(log => {
+                if (filterVal === 'all') return log.text && log.text.length > 5;
+                return log.memberId === filterVal && log.text && log.text.length > 5;
+            });
+
+            if (filteredLogs.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-slate-100">
+                        <i class="fa-solid fa-folder-open text-4xl mb-3 text-slate-300 block"></i>
+                        <p class="text-xs text-slate-400">Belum ada riwayat berkas logbook untuk anggota kelompok ini.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Reverse chron order
+            [...filteredLogs].reverse().forEach(log => {
+                const member = state.members.find(m => m.id === log.memberId);
+                const role = member ? member.role : 'Anggota';
+                const statusBadge = log.verified 
+                    ? `<span class="bg-emerald-100 text-emerald-800 text-[10px] px-2.5 py-1 rounded-full font-bold flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> Terverifikasi DPL</span>`
+                    : `<span class="bg-amber-100 text-amber-800 text-[10px] px-2.5 py-1 rounded-full font-bold flex items-center gap-1"><i class="fa-solid fa-hourglass-start animate-pulse"></i> Menunggu DPL</span>`;
+
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex flex-col justify-between space-y-4";
+                card.innerHTML = `
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="flex gap-3">
+                            <div class="flex-shrink-0">
+                                <img src="${log.photo}" alt="${log.name}" class="w-11 h-11 rounded-xl object-cover border border-slate-200" onerror="this.src='https://placehold.co/100/0f2d59/ffffff?text=${log.name[0]}'">
+                            </div>
+                            <div>
+                                <h4 class="font-heading font-extrabold text-sm text-slate-800">${log.name}</h4>
+                                <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">${role}</p>
+                            </div>
+                        </div>
+                        <span class="text-[10px] font-mono text-slate-400 bg-slate-50 border px-2 py-1 rounded">${log.time}</span>
+                    </div>
+                    
+                    <p class="text-xs leading-relaxed text-slate-600 italic bg-slate-50/50 p-3 rounded-xl border border-slate-100">${log.text}</p>
+                    
+                    <div class="flex items-center justify-between border-t border-slate-100 pt-3 flex-wrap gap-2">
+                        <span class="text-[10px] text-slate-400 font-medium flex items-center gap-1"><i class="fa-regular fa-calendar"></i> Hari Ini</span>
+                        ${statusBadge}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        /* -----------------------------------------
+         * MEMBER DIRECTORY VIEW LOGIC
+         * ----------------------------------------- */
+        function renderMembersList() {
+            const tableBody = document.getElementById('members-table-body');
+            const cardsContainer = document.getElementById('members-cards-container');
+            
+            tableBody.innerHTML = '';
+            cardsContainer.innerHTML = '';
+
+            state.members.forEach(member => {
+                const initials = member.name.split(' ').map(n => n[0]).slice(0, 2).join('');
+                
+                // Badge design mapping
+                const badgeMap = {
+                    "Hadir": "bg-emerald-100 text-emerald-800",
+                    "Izin": "bg-amber-100 text-amber-800",
+                    "Sakit": "bg-red-100 text-red-800",
+                    "Belum Absen": "bg-slate-100 text-slate-800"
+                };
+                const classBadge = badgeMap[member.initialStatus] || "bg-slate-100 text-slate-800";
+
+                // Table row creation (Desktop view)
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/50 transition";
+                tr.innerHTML = `
+                    <td class="py-4 px-6">
+                        <div class="w-9 h-9 bg-unair-blue text-white rounded-xl flex items-center justify-center font-heading font-extrabold text-xs shadow-inner">
+                            ${initials}
+                        </div>
+                    </td>
+                    <td class="py-4 px-6 font-medium">
+                        <span class="block font-bold text-slate-800 font-heading">${member.name}</span>
+                        <span class="block text-[10px] text-slate-400 font-mono mt-0.5">NIM. ${member.id}</span>
+                    </td>
+                    <td class="py-4 px-6">
+                        <span class="block text-slate-700 font-medium">${member.faculty}</span>
+                        <span class="block text-[10px] text-slate-400 mt-0.5">${member.studyProgram}</span>
+                    </td>
+                    <td class="py-4 px-6">
+                        <span class="bg-blue-50 text-unair-blue font-bold px-2.5 py-1 rounded border border-blue-100 text-[10px] uppercase tracking-wider block text-center max-w-[140px]">${member.role}</span>
+                    </td>
+                    <td class="py-4 px-6 text-center">
+                        <span class="font-bold text-[10px] px-2.5 py-1 rounded-full ${classBadge}">${member.initialStatus}</span>
+                    </td>
+                    <td class="py-4 px-6 text-right">
+                        <a href="https://wa.me/${member.contact}" target="_blank" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold px-2.5 py-1.5 rounded-lg border border-emerald-100 inline-flex items-center gap-1">
+                            <i class="fa-brands fa-whatsapp text-sm"></i>Hubungi
+                        </a>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+
+                // Card creation (Mobile responsive view)
+                const card = document.createElement('div');
+                card.className = "p-4 space-y-3";
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-unair-blue text-white rounded-xl flex items-center justify-center font-heading font-bold text-xs">
+                                ${initials}
+                            </div>
+                            <div>
+                                <h4 class="font-heading font-extrabold text-sm text-slate-800 leading-tight">${member.name}</h4>
+                                <span class="text-[10px] text-slate-400 font-mono">NIM. ${member.id}</span>
+                            </div>
+                        </div>
+                        <span class="font-bold text-[9px] px-2 py-0.5 rounded-full ${classBadge}">${member.initialStatus}</span>
+                    </div>
+                    <div class="text-[11px] text-slate-500 space-y-0.5 font-sans">
+                        <p><span class="font-semibold text-slate-400">Prodi:</span> ${member.studyProgram}</p>
+                        <p><span class="font-semibold text-slate-400">Jabatan:</span> <span class="text-unair-blue font-bold">${member.role}</span></p>
+                    </div>
+                    <div class="flex justify-between items-center pt-2">
+                        <span class="text-[10px] text-slate-400">${member.faculty}</span>
+                        <a href="https://wa.me/${member.contact}" target="_blank" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold px-3 py-1 rounded-lg border border-emerald-100 inline-flex items-center gap-1">
+                            <i class="fa-brands fa-whatsapp"></i> Hubungi
+                        </a>
+                    </div>
+                `;
+                cardsContainer.appendChild(card);
+            });
+        }
+
+        /* -----------------------------------------
+         * PANEL ADMIN (DPL) ACCESS & AUTHENTICATION
+         * ----------------------------------------- */
+        function authenticateAdmin() {
+            const passwordInput = document.getElementById('admin-password-input').value;
+            
+            // Password DPL default is: UNAIR2026
+            if (passwordInput === 'UNAIR2026') {
+                state.isAdminAuthenticated = true;
+                showToast("Autentikasi Pembimbing Lapangan Berhasil!", "success");
+                renderAdminPanel();
+            } else {
+                showToast("Kata sandi salah! Hubungi Sekretaris untuk memverifikasi password DPL.", "error");
+            }
+        }
+
+        function showPasswordHint() {
+            showToast("Kata Sandi bawaan default adalah: 'UNAIR2026'", "info");
+        }
+
+        function logoutAdmin() {
+            state.isAdminAuthenticated = false;
+            document.getElementById('admin-password-input').value = '';
+            showToast("Keluar dari panel admin.", "info");
+            renderAdminPanel();
+        }
+
+        function renderAdminPanel() {
+            const authPanel = document.getElementById('admin-auth-panel');
+            const boardPanel = document.getElementById('admin-board-panel');
+            
+            if (state.isAdminAuthenticated) {
+                authPanel.classList.add('hidden');
+                boardPanel.classList.remove('hidden');
+                renderAdminMemberList();
+            } else {
+                authPanel.classList.remove('hidden');
+                boardPanel.classList.add('hidden');
+            }
+        }
+
+        function renderAdminMemberList() {
+            const container = document.getElementById('admin-member-list');
+            container.innerHTML = '';
+
+            state.members.forEach(member => {
+                // Find clock in log
+                const todayInLog = state.logs.find(l => l.memberId === member.id && l.type === 'clock_in');
+                
+                // Verified Status checkbox
+                const isVerified = todayInLog ? todayInLog.verified : false;
+                const checkboxAttr = isVerified ? 'checked disabled' : (todayInLog ? '' : 'disabled');
+                const verifyActionText = isVerified 
+                    ? '<span class="text-emerald-600 font-bold text-xs flex items-center justify-end gap-1"><i class="fa-solid fa-square-check"></i> Berhasil Verifikasi</span>' 
+                    : (todayInLog 
+                        ? `<button onclick="verifyLogbook('${todayInLog.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1 px-2.5 rounded text-[10px] transition">Verifikasi</button>` 
+                        : '<span class="text-slate-400 italic">Belum Ada Berkas</span>');
+
+                // Status Override drop-down options
+                const overrideOptions = ["Hadir", "Izin", "Sakit", "Belum Absen"].map(opt => {
+                    const isSelected = member.initialStatus === opt ? 'selected' : '';
+                    return `<option value="${opt}" ${isSelected}>${opt}</option>`;
+                }).join('');
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+                tr.innerHTML = `
+                    <td class="py-3 px-6">
+                        <span class="block font-bold text-slate-800">${member.name}</span>
+                        <span class="block text-[10px] text-slate-400 font-mono">${member.role}</span>
+                    </td>
+                    <td class="py-3 px-6">
+                        <select onchange="overrideMemberStatus('${member.id}', this.value)" class="bg-slate-50 border border-slate-200 rounded px-1.5 py-1 text-slate-600 font-medium focus:outline-none">
+                            ${overrideOptions}
+                        </select>
+                    </td>
+                    <td class="py-3 px-6">
+                        <span class="block text-slate-600 font-medium">${todayInLog ? todayInLog.time : '-- : --'}</span>
+                    </td>
+                    <td class="py-3 px-6">
+                        <p class="max-w-xs truncate text-[11px] text-slate-500" title="${todayInLog ? todayInLog.text : 'Tidak ada catatan'}">
+                            ${todayInLog ? todayInLog.text : '<span class="italic text-slate-300">Belum lapor</span>'}
+                        </p>
+                    </td>
+                    <td class="py-3 px-6 text-center">
+                        <input type="checkbox" ${checkboxAttr} class="h-4 w-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500">
+                    </td>
+                    <td class="py-3 px-6 text-right">
+                        ${verifyActionText}
+                    </td>
+                `;
+                container.appendChild(tr);
+            });
+        }
+
+        function verifyLogbook(logId) {
+            const log = state.logs.find(l => l.id === logId);
+            if (log) {
+                log.verified = true;
+                saveStateToLocalStorage();
+                showToast(`Logbook milik ${log.name} berhasil divalidasi!`, "success");
+                renderAdminPanel();
+                renderDashboard();
+            }
+        }
+
+        function overrideMemberStatus(memberId, newStatus) {
+            const member = state.members.find(m => m.id === memberId);
+            if (member) {
+                member.initialStatus = newStatus;
+                saveStateToLocalStorage();
+                showToast(`Status harian ${member.name} diubah menjadi: ${newStatus}`, "success");
+                renderAdminMemberList();
+                renderDashboard();
+            }
+        }
+
+        /* -----------------------------------------
+         * EXPORT DATA & WEEKLY SUMMARIES
+         * ----------------------------------------- */
+        function exportToCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            
+            // CSV Headers
+            csvContent += "NIM,Nama Mahasiswa,Fakultas,Program Studi,Jabatan Kelompok,Status Hari Ini,Logbook Aktivitas,Waktu Presensi\n";
+            
+            state.members.forEach(m => {
+                const logToday = state.logs.find(l => l.memberId === m.id && l.type === 'clock_in');
+                const cleanLogText = logToday ? logToday.text.replace(/"/g, '""') : 'Tidak ada laporan';
+                const timeLog = logToday ? logToday.time : '--';
+                
+                csvContent += `"${m.id}","${m.name}","${m.faculty}","${m.studyProgram}","${m.role}","${m.initialStatus}","${cleanLogText}","${timeLog}"\n`;
+            });
+
+            // Trigger client download file
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "REKAP_PRESENSI_KKN_SILIRAGUNG_2026.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            showToast("File CSV Rekap Kehadiran berhasil diunduh!", "success");
+        }
+
+        function copyWeeklySummary() {
+            let textSummary = `📋 RINGKASAN PRESENSI HARIAN KKN-BBK 8 UNAIR DESA SILIRAGUNG 2026\n`;
+            textSummary += `========================================================\n\n`;
+            
+            state.members.forEach((m, idx) => {
+                const logToday = state.logs.find(l => l.memberId === m.id && l.type === 'clock_in');
+                const logText = logToday ? `- Logbook: "${logToday.text.substring(0, 80)}..."` : "- Logbook: Belum diisi";
+                textSummary += `${idx + 1}. [${m.initialStatus}] ${m.name} (${m.role})\n   ${logText}\n\n`;
+            });
+
+            textSummary += `Diambil secara otomatis lewat Sistem Presensi Mandiri Web Siliragung.`;
+
+            // Copy to clipboard fallback mechanism
+            const tempTextarea = document.createElement('textarea');
+            tempTextarea.value = textSummary;
+            document.body.appendChild(tempTextarea);
+            tempTextarea.select();
+            
+            try {
+                const success = document.execCommand('copy');
+                if (success) {
+                    showToast("Ringkasan Presensi disalin ke Clipboard!", "success");
+                } else {
+                    showToast("Gagal menyalin ringkasan.", "error");
+                }
+            } catch (err) {
+                console.error("ExecCommand error", err);
+            }
+            
+            document.body.removeChild(tempTextarea);
+        }
+    </script>
+</body>
+</html>
