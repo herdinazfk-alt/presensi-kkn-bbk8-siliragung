@@ -168,8 +168,7 @@ function resetCloudData() {
  *   }
  *   
  *   return ContentService.createTextOutput(JSON.stringify(data))
- *     .setMimeType(ContentService.MimeType.JSON)
- *     .setHeader("Access-Control-Allow-Origin", "*");
+ *     .setMimeType(ContentService.MimeType.JSON);
  * }
  * 
  * function doPost(e) {
@@ -210,7 +209,6 @@ function resetCloudData() {
  *   }
  *   
  *   return ContentService.createTextOutput(JSON.stringify({success: true}))
- *     .setMimeType(ContentService.MimeType.JSON)
- *     .setHeader("Access-Control-Allow-Origin", "*");
+ *     .setMimeType(ContentService.MimeType.JSON);
  * }
  */
