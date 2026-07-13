@@ -943,36 +943,7 @@ function copyWeeklySummary() {
     document.body.removeChild(tempTextarea);
 }
 
-// Buka Modal Reset Data
-function openResetModal() {
-    const modal = document.getElementById('reset-modal');
-    if (modal) {
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-    }
-}
 
-// Tutup Modal Reset Data
-function closeResetModal() {
-    const modal = document.getElementById('reset-modal');
-    if (modal) {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-    }
-}
-
-// Konfirmasi dan hapus semua data
-function confirmResetAllData() {
-    resetAllStateData();
-    resetCloudData();
-    closeResetModal();
-
-    showToast("Semua database presensi & logbook kelompok telah berhasil dibersihkan!", "success");
-
-    // Refresh Tampilan UI
-    setupUIForUserRole();
-    renderActiveTabContent('dashboard');
-}
 
 // Buka Modal Foto Bukti Kehadiran (DPL)
 function viewVerificationPhoto(photoBase64, studentName) {

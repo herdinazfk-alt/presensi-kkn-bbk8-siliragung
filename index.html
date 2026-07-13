@@ -53,30 +53,7 @@
     <div id="toast-container"
         class="fixed top-5 right-5 z-50 flex flex-col gap-3 max-w-md w-full px-4 sm:px-0 pointer-events-none"></div>
 
-    <!-- MODAL KONFIRMASI RESET (KUSTOM) -->
-    <div id="reset-modal"
-        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-        <div
-            class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-100 text-center space-y-4 transform scale-95 transition-all duration-200">
-            <div
-                class="w-16 h-16 bg-red-50 text-red-600 rounded-full flex items-center justify-center text-2xl mx-auto">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-            </div>
-            <div class="space-y-1">
-                <h3 class="font-heading font-extrabold text-slate-800 text-base">Hapus Seluruh Data?</h3>
-                <p class="text-xs text-slate-400 leading-relaxed font-sans">Tindakan ini akan menghapus semua riwayat
-                    presensi harian, berkas logbook di local storage, dan mengembalikan status seluruh anggota menjadi
-                    "Belum Absen". Tindakan ini tidak bisa dibatalkan.</p>
-            </div>
-            <div class="grid grid-cols-2 gap-3 pt-2">
-                <button onclick="closeResetModal()"
-                    class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs transition">Batal</button>
-                <button onclick="confirmResetAllData()"
-                    class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl text-xs transition">Ya,
-                    Hapus Semua</button>
-            </div>
-        </div>
-    </div>
+
 
     <!-- MAIN NAVBAR -->
     <header class="unair-gradient text-white shadow-lg sticky top-0 z-40 border-b-4 border-unair-gold">
@@ -540,12 +517,7 @@
                             <i class="fa-solid fa-copy"></i>
                             <span>Salin Ringkasan</span>
                         </button>
-                        <!-- Emergency/Initial Clean Data Reset -->
-                        <button onclick="openResetModal()"
-                            class="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs flex items-center space-x-1.5 transition">
-                            <i class="fa-solid fa-trash-can"></i>
-                            <span>Hapus & Reset Semua Data</span>
-                        </button>
+
                     </div>
                 </div>
 
