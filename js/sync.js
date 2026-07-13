@@ -66,7 +66,7 @@ async function fetchDataFromCloud(isSilent = false) {
                     // Log baru
                     currentLogs.push({
                         id: cloudLog.id,
-                        memberId: cloudLog.memberId,
+                        memberId: String(cloudLog.memberId),
                         name: cloudLog.name,
                         type: cloudLog.type,
                         time: cloudLog.time,

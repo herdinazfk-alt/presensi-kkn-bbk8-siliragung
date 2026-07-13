@@ -156,7 +156,7 @@ function updateMemberStatusDisplay(member) {
     
     if (!statusBox || !clockInBox) return;
     
-    const todayInLog = state.logs.find(l => l.memberId === member.id && (l.type === 'hadir' || l.type === 'clock_in'));
+    const todayInLog = state.logs.find(l => String(l.memberId) === String(member.id) && (l.type === 'hadir' || l.type === 'clock_in'));
     statusBox.className = "font-semibold text-xs py-0.5 px-2 rounded ";
     
     if (todayInLog) {
@@ -219,9 +219,8 @@ function renderDashboard() {
         dashboardWelcomeMsg.innerHTML = `Halo, ${activeUser.name.split(' ')[0]}! <span class="wave">👋</span>`;
     }
 
-    // Hitung Stat
     const totalHadir = state.members.filter(m => {
-        const hasClockIn = state.logs.some(l => l.memberId === m.id && (l.type === 'hadir' || l.type === 'clock_in'));
+        const hasClockIn = state.logs.some(l => String(l.memberId) === String(m.id) && (l.type === 'hadir' || l.type === 'clock_in'));
         return hasClockIn || m.initialStatus === 'Hadir';
     }).length;
 
@@ -269,7 +268,7 @@ function renderDashboard() {
             ? `<span class="bg-emerald-50 text-emerald-700 text-[9px] px-2 py-0.5 rounded border border-emerald-200 font-bold flex items-center gap-1"><i class="fa-solid fa-certificate"></i> Terverifikasi DPL</span>` 
             : `<span class="bg-amber-50 text-amber-700 text-[9px] px-2 py-0.5 rounded border border-amber-200 font-bold flex items-center gap-1"><i class="fa-solid fa-spinner animate-spin"></i> Menunggu DPL</span>`;
 
-        const member = KKN_MEMBERS.find(m => m.id === log.memberId);
+        const member = KKN_MEMBERS.find(m => String(m.id) === String(log.memberId));
         const role = member ? member.role : 'Anggota';
         const profilePhoto = member ? member.photo : 'https://placehold.co/100/0f2d59/ffffff';
 
@@ -559,7 +558,7 @@ function renderLogbooks() {
     
     const filteredLogs = state.logs.filter(log => {
         if (filterVal === 'all') return log.text && log.text.length > 5;
-        return log.memberId === filterVal && log.text && log.text.length > 5;
+        return String(log.memberId) === String(filterVal) && log.text && log.text.length > 5;
     });
 
     if (filteredLogs.length === 0) {
@@ -573,7 +572,7 @@ function renderLogbooks() {
     }
 
     [...filteredLogs].reverse().forEach(log => {
-        const member = KKN_MEMBERS.find(m => m.id === log.memberId);
+        const member = KKN_MEMBERS.find(m => String(m.id) === String(log.memberId));
         const role = member ? member.role : 'Anggota';
         const profilePhoto = member ? member.photo : 'https://placehold.co/100/0f2d59/ffffff';
         const statusBadge = log.verified 
@@ -708,7 +707,7 @@ function renderAdminMemberList() {
     container.innerHTML = '';
 
     state.members.forEach(member => {
-        const todayInLog = state.logs.find(l => l.memberId === member.id && (l.type === 'hadir' || l.type === 'clock_in'));
+        const todayInLog = state.logs.find(l => String(l.memberId) === String(member.id) && (l.type === 'hadir' || l.type === 'clock_in'));
         
         const isVerified = todayInLog ? todayInLog.verified : false;
         const checkboxAttr = isVerified ? 'checked disabled' : (todayInLog ? '' : 'disabled');
@@ -815,7 +814,7 @@ function exportToCSV() {
     csvContent += "NIM,Nama Mahasiswa,Fakultas,Program Studi,Jabatan Kelompok,Status Hari Ini,Logbook Aktivitas,Waktu Presensi\n";
     
     state.members.forEach(m => {
-        const logToday = state.logs.find(l => l.memberId === m.id && (l.type === 'hadir' || l.type === 'clock_in'));
+        const logToday = state.logs.find(l => String(l.memberId) === String(m.id) && (l.type === 'hadir' || l.type === 'clock_in'));
         const cleanLogText = logToday ? logToday.text.replace(/"/g, '""') : 'Tidak ada laporan';
         const timeLog = logToday ? logToday.time : '--';
         
@@ -839,7 +838,7 @@ function copyWeeklySummary() {
     textSummary += `========================================================\n\n`;
     
     state.members.forEach((m, idx) => {
-        const logToday = state.logs.find(l => l.memberId === m.id && (l.type === 'hadir' || l.type === 'clock_in'));
+        const logToday = state.logs.find(l => String(l.memberId) === String(m.id) && (l.type === 'hadir' || l.type === 'clock_in'));
         const logText = logToday ? `- Logbook: "${logToday.text.substring(0, 80)}..."` : "- Logbook: Belum diisi";
         textSummary += `${idx + 1}. [${m.initialStatus}] ${m.name} (${m.role})\n   ${logText}\n\n`;
     });
