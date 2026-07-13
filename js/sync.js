@@ -15,6 +15,27 @@ function normalizeLogDate(dateStr) {
     return dateStr;
 }
 
+// Memeriksa apakah log presensi dikirim pada hari ini (berdasarkan waktu lokal)
+function isLogFromToday(log) {
+    if (!log || !log.id) return false;
+    
+    // Ambil timestamp dari ID (misal log-1783954847656)
+    const tsString = log.id.replace('log-', '');
+    const timestamp = parseInt(tsString);
+    
+    if (!isNaN(timestamp)) {
+        const logDate = new Date(timestamp);
+        const today = new Date();
+        return logDate.getDate() === today.getDate() &&
+               logDate.getMonth() === today.getMonth() &&
+               logDate.getFullYear() === today.getFullYear();
+    }
+    
+    // Fallback jika ID manual
+    const todayStr = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    return log.date === todayStr;
+}
+
 // Logika Sinkronisasi Google Sheets Cloud Storage
 // Menggunakan Google Apps Script Web App
 
@@ -93,10 +114,8 @@ async function fetchDataFromCloud(isSilent = false) {
 
             state.logs = newLogs;
 
-            // Perbarui status kehadiran mahasiswa secara real-time di UI
-            const todayStr = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
             state.members.forEach(m => {
-                const todayClockIn = state.logs.find(l => String(l.memberId) === String(m.id) && (l.type === 'hadir' || l.type === 'clock_in') && l.date === todayStr);
+                const todayClockIn = state.logs.find(l => String(l.memberId) === String(m.id) && (l.type === 'hadir' || l.type === 'clock_in') && isLogFromToday(l));
                 if (todayClockIn) {
                     m.initialStatus = "Hadir";
                 } else {

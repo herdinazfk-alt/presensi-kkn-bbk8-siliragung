@@ -156,8 +156,7 @@ function updateMemberStatusDisplay(member) {
     
     if (!statusBox || !clockInBox) return;
     
-    const todayStr = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-    const todayInLog = state.logs.find(l => String(l.memberId) === String(member.id) && (l.type === 'hadir' || l.type === 'clock_in') && l.date === todayStr);
+    const todayInLog = state.logs.find(l => String(l.memberId) === String(member.id) && (l.type === 'hadir' || l.type === 'clock_in') && isLogFromToday(l));
     statusBox.className = "font-semibold text-xs py-0.5 px-2 rounded ";
     
     if (todayInLog) {
@@ -220,9 +219,8 @@ function renderDashboard() {
         dashboardWelcomeMsg.innerHTML = `Halo, ${activeUser.name.split(' ')[0]}! <span class="wave">👋</span>`;
     }
 
-    const todayStr = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     const totalHadir = state.members.filter(m => {
-        const hasClockIn = state.logs.some(l => String(l.memberId) === String(m.id) && (l.type === 'hadir' || l.type === 'clock_in') && l.date === todayStr);
+        const hasClockIn = state.logs.some(l => String(l.memberId) === String(m.id) && (l.type === 'hadir' || l.type === 'clock_in') && isLogFromToday(l));
         return hasClockIn || m.initialStatus === 'Hadir';
     }).length;
 
@@ -787,9 +785,8 @@ function renderAdminMemberList() {
     
     container.innerHTML = '';
 
-    const todayStr = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     state.members.forEach(member => {
-        const todayInLog = state.logs.find(l => String(l.memberId) === String(member.id) && (l.type === 'hadir' || l.type === 'clock_in') && l.date === todayStr);
+        const todayInLog = state.logs.find(l => String(l.memberId) === String(member.id) && (l.type === 'hadir' || l.type === 'clock_in') && isLogFromToday(l));
         
         const isVerified = todayInLog ? todayInLog.verified : false;
         const checkboxAttr = isVerified ? 'checked disabled' : (todayInLog ? '' : 'disabled');
@@ -895,9 +892,8 @@ function exportToCSV() {
     let csvContent = "data:text/csv;charset=utf-8,";
     csvContent += "NIM,Nama Mahasiswa,Fakultas,Program Studi,Jabatan Kelompok,Status Hari Ini,Logbook Aktivitas,Waktu Presensi\n";
     
-    const todayStr = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     state.members.forEach(m => {
-        const logToday = state.logs.find(l => String(l.memberId) === String(m.id) && (l.type === 'hadir' || l.type === 'clock_in') && l.date === todayStr);
+        const logToday = state.logs.find(l => String(l.memberId) === String(m.id) && (l.type === 'hadir' || l.type === 'clock_in') && isLogFromToday(l));
         const cleanLogText = logToday ? logToday.text.replace(/"/g, '""') : 'Tidak ada laporan';
         const timeLog = logToday ? logToday.time : '--';
         
@@ -920,9 +916,8 @@ function copyWeeklySummary() {
     let textSummary = `📋 RINGKASAN PRESENSI HARIAN KKN-BBK 8 UNAIR DESA SILIRAGUNG 2026\n`;
     textSummary += `========================================================\n\n`;
     
-    const todayStr = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     state.members.forEach((m, idx) => {
-        const logToday = state.logs.find(l => String(l.memberId) === String(m.id) && (l.type === 'hadir' || l.type === 'clock_in') && l.date === todayStr);
+        const logToday = state.logs.find(l => String(l.memberId) === String(m.id) && (l.type === 'hadir' || l.type === 'clock_in') && isLogFromToday(l));
         const logText = logToday ? `- Logbook: "${logToday.text.substring(0, 80)}..."` : "- Logbook: Belum diisi";
         textSummary += `${idx + 1}. [${m.initialStatus}] ${m.name} (${m.role})\n   ${logText}\n\n`;
     });
