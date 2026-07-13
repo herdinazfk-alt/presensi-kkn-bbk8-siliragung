@@ -343,9 +343,11 @@
                         <div class="space-y-2">
                             <span class="block text-xs font-bold uppercase tracking-wider text-slate-500">Bukti Foto Kehadiran (Wajib)</span>
                             
-                            <label for="photo-input" class="border-2 border-dashed border-slate-200 hover:border-unair-gold rounded-2xl p-6 text-center transition flex flex-col items-center justify-center space-y-4 cursor-pointer relative bg-slate-50 hover:bg-slate-100/50">
-                                <input type="file" id="photo-input" accept="image/*" capture="user" class="hidden" onchange="previewPhoto(event)">
-                                
+                            <!-- Input tersembunyi yang kompatibel untuk browser HP (menggunakan sr-only) -->
+                            <input type="file" id="photo-input" accept="image/*" capture="user" class="sr-only" onchange="previewPhoto(event)">
+                            
+                            <!-- Label Trigger Kamera/Galeri -->
+                            <label id="camera-trigger" for="photo-input" class="border-2 border-dashed border-slate-200 hover:border-unair-gold rounded-2xl p-6 text-center transition flex flex-col items-center justify-center space-y-4 cursor-pointer bg-slate-50 hover:bg-slate-100/50">
                                 <div id="camera-placeholder" class="space-y-2">
                                     <div class="w-14 h-14 bg-white shadow-sm border border-slate-100 rounded-full flex items-center justify-center text-unair-blue mx-auto">
                                         <i class="fa-solid fa-camera text-xl"></i>
@@ -355,14 +357,15 @@
                                     </div>
                                     <p class="text-[10px] text-slate-400 font-sans">Sistem keamanan HP Anda akan mengaktifkan kamera atau galeri secara resmi</p>
                                 </div>
-                                
-                                <div id="camera-preview-container" class="hidden relative w-36 h-36 rounded-xl overflow-hidden border-2 border-unair-gold shadow-md">
-                                    <img id="camera-preview" src="#" alt="Bukti Foto" class="w-full h-full object-cover">
-                                    <button type="button" onclick="resetPhoto(event)" class="absolute top-1.5 right-1.5 bg-red-600 hover:bg-red-700 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shadow-md">
-                                        <i class="fa-solid fa-times"></i>
-                                    </button>
-                                </div>
                             </label>
+                            
+                            <!-- Preview Foto (di luar Label agar tidak konflik saat klik tombol reset) -->
+                            <div id="camera-preview-container" class="hidden relative w-36 h-36 mx-auto rounded-xl overflow-hidden border-2 border-unair-gold shadow-md">
+                                <img id="camera-preview" src="#" alt="Bukti Foto" class="w-full h-full object-cover">
+                                <button type="button" onclick="resetPhoto(event)" class="absolute top-1.5 right-1.5 bg-red-600 hover:bg-red-700 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shadow-md">
+                                    <i class="fa-solid fa-times"></i>
+                                </button>
+                            </div>
                         </div>
 
                         <!-- Logbook Textarea Field -->

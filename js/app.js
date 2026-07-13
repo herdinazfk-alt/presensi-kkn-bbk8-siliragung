@@ -373,8 +373,10 @@ function previewPhoto(event) {
     const reader = new FileReader();
     reader.onload = function(e) {
         state.temporaryPhoto = e.target.result;
-        const placeholder = document.getElementById('camera-placeholder');
-        if (placeholder) placeholder.classList.add('hidden');
+        
+        // Sembunyikan dashed trigger box di HP setelah foto terunggah
+        const trigger = document.getElementById('camera-trigger');
+        if (trigger) trigger.classList.add('hidden');
         
         const previewImg = document.getElementById('camera-preview');
         const container = document.getElementById('camera-preview-container');
@@ -393,9 +395,11 @@ function resetPhoto(event) {
     const input = document.getElementById('photo-input');
     if (input) input.value = '';
     
-    const placeholder = document.getElementById('camera-placeholder');
+    // Tampilkan kembali dashed trigger box
+    const trigger = document.getElementById('camera-trigger');
+    if (trigger) trigger.classList.remove('hidden');
+    
     const container = document.getElementById('camera-preview-container');
-    if (placeholder) placeholder.classList.remove('hidden');
     if (container) container.classList.add('hidden');
 }
 
