@@ -434,9 +434,9 @@ function compressImage(file) {
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
 
-                // Set resolusi maksimum (180x180 pixel sangat cukup untuk verifikasi wajah DPL)
-                const MAX_WIDTH = 180;
-                const MAX_HEIGHT = 180;
+                // Set resolusi maksimum (640x640 pixel agar foto sangat jelas namun tetap ringan di Google Sheets)
+                const MAX_WIDTH = 640;
+                const MAX_HEIGHT = 640;
                 let width = img.width;
                 let height = img.height;
 
@@ -456,8 +456,8 @@ function compressImage(file) {
                 canvas.height = height;
                 ctx.drawImage(img, 0, 0, width, height);
 
-                // Gunakan format JPEG dengan kualitas 60% untuk kompresi maksimal
-                const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6);
+                // Gunakan format JPEG dengan kualitas 80% agar tidak burem
+                const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8);
                 resolve(compressedBase64);
             };
             img.onerror = reject;
