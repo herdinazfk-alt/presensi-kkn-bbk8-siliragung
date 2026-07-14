@@ -175,6 +175,15 @@ function updateMemberStatusDisplay(member) {
         statusBox.className += mapped.class;
         clockInBox.innerText = "-- : --";
     }
+
+    const submitBtnText = document.getElementById('submit-btn-text');
+    if (submitBtnText) {
+        if (todayInLog) {
+            submitBtnText.innerText = "Kirim Laporan Kegiatan Tambahan";
+        } else {
+            submitBtnText.innerText = "Kirim Laporan Harian & Absen";
+        }
+    }
 }
 
 // Ganti Tab Utama
@@ -573,6 +582,10 @@ function handleAttendanceSubmit(event) {
     const now = new Date();
     const timeString = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + " WIB";
 
+    // Cek apakah laporan pertama hari ini sudah diverifikasi oleh DPL
+    const todayVerifiedLog = state.logs.find(l => String(l.memberId) === String(activeUser.id) && isLogFromToday(l) && l.verified);
+    const isAlreadyVerified = !!todayVerifiedLog;
+
     const newLog = {
         id: "log-" + Date.now(),
         memberId: activeUser.id,
@@ -582,7 +595,7 @@ function handleAttendanceSubmit(event) {
         date: now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
         photo: state.temporaryPhoto,
         text: logbookText,
-        verified: false
+        verified: isAlreadyVerified
     };
 
     // Update status harian
@@ -844,13 +857,21 @@ function renderAdminMemberList() {
 function verifyLogbook(logId) {
     const log = state.logs.find(l => l.id === logId);
     if (log) {
-        log.verified = true;
+        // Cari semua log milik mahasiswa ini pada hari ini
+        const targetMemberId = log.memberId;
+        const todayLogsOfMember = state.logs.filter(l => String(l.memberId) === String(targetMemberId) && isLogFromToday(l));
+        
+        todayLogsOfMember.forEach(l => {
+            if (!l.verified) {
+                l.verified = true;
+                // Verifikasi di cloud jika diset
+                verifyLogbookOnCloud(l.id);
+            }
+        });
+
         saveStateToLocalStorage();
 
-        // Verifikasi di cloud jika diset
-        verifyLogbookOnCloud(logId);
-
-        showToast(`Logbook milik ${log.name} berhasil divalidasi!`, "success");
+        showToast(`Seluruh laporan harian ${log.name} hari ini berhasil divalidasi!`, "success");
         renderAdminMemberList();
         renderDashboard();
     }
