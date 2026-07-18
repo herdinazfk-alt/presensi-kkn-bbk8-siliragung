@@ -20,7 +20,8 @@ function isLogFromToday(log) {
     if (!log || !log.id) return false;
     
     // Ambil timestamp dari ID (misal log-1783954847656)
-    const tsString = log.id.replace('log-', '');
+    const idStr = String(log.id);
+    const tsString = idStr.replace('log-', '');
     const timestamp = parseInt(tsString);
     
     if (!isNaN(timestamp)) {

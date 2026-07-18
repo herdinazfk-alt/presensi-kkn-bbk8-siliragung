@@ -855,7 +855,7 @@ function renderAdminMemberList() {
 
 // Verifikasi Logbook secara manual oleh DPL
 function verifyLogbook(logId) {
-    const log = state.logs.find(l => l.id === logId);
+    const log = state.logs.find(l => String(l.id) === String(logId));
     if (log) {
         // Cari semua log milik mahasiswa ini pada hari ini
         const targetMemberId = log.memberId;
