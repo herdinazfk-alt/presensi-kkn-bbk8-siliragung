@@ -138,13 +138,17 @@ function loadState() {
     }
 }
 
-// Menyimpan state ke LocalStorage
+// Menyimpan state ke LocalStorage (aman untuk iOS Safari Private Mode)
 function saveStateToLocalStorage() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        members: state.members,
-        logs: state.logs,
-        registeredAccounts: state.registeredAccounts
-    }));
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+            members: state.members,
+            logs: state.logs,
+            registeredAccounts: state.registeredAccounts
+        }));
+    } catch (e) {
+        console.warn("Gagal menyimpan ke LocalStorage (iOS Private Mode atau Kuota Penuh):", e);
+    }
 }
 
 // Reset semua data lokal

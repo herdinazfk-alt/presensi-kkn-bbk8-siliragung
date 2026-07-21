@@ -135,10 +135,7 @@ async function fetchDataFromCloud(isSilent = false) {
             return isChanged; // Mengembalikan true jika ada perubahan data asli (agar UI direfresh)
         }
     } catch (err) {
-        console.error("Gagal sinkron data dari Cloud:", err);
-        if (!isSilent) {
-            showToast("Gagal memperbarui data dari Google Sheets. Periksa koneksi internet Anda.", "error");
-        }
+        console.warn("Gagal sinkron data dari Cloud (mode luring aktif):", err);
         return false;
     }
 }

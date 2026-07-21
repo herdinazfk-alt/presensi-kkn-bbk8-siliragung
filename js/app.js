@@ -474,10 +474,19 @@ function compressImage(file) {
                 // Gunakan format JPEG dengan kualitas 80% agar tidak burem
                 const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8);
                 if (objectUrl) URL.revokeObjectURL(objectUrl);
+
+                if (!compressedBase64 || !compressedBase64.startsWith("data:image")) {
+                    throw new Error("Hasil kompresi canvas tidak valid");
+                }
+
                 resolve(compressedBase64);
             } catch (err) {
                 if (objectUrl) URL.revokeObjectURL(objectUrl);
-                reject(err);
+                // Fallback FileReader khusus iOS Safari
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
             }
         };
 
@@ -538,8 +547,10 @@ async function previewPhoto(event) {
 function resetPhoto(event) {
     if (event) event.stopPropagation();
     state.temporaryPhoto = null;
-    const input = document.getElementById('photo-input');
-    if (input) input.value = '';
+    const inputCam = document.getElementById('photo-input-camera');
+    const inputGal = document.getElementById('photo-input-gallery');
+    if (inputCam) inputCam.value = '';
+    if (inputGal) inputGal.value = '';
 
     // Tampilkan kembali dashed trigger box
     const trigger = document.getElementById('camera-trigger');
@@ -550,13 +561,23 @@ function resetPhoto(event) {
     const placeholder = document.getElementById('camera-placeholder');
     if (placeholder) {
         placeholder.innerHTML = `
-            <div class="w-14 h-14 bg-white shadow-sm border border-slate-100 rounded-full flex items-center justify-center text-unair-blue mx-auto">
-                <i class="fa-solid fa-camera text-xl"></i>
+            <p class="text-xs text-slate-600 font-semibold">Pilih cara mengambil bukti foto:</p>
+            <div class="grid grid-cols-2 gap-3 max-w-sm mx-auto">
+                <label for="photo-input-camera" class="bg-white hover:bg-slate-100 border border-slate-200 p-3.5 rounded-xl cursor-pointer flex flex-col items-center justify-center gap-1.5 transition shadow-sm">
+                    <div class="w-10 h-10 bg-blue-50 text-unair-blue rounded-full flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-camera"></i>
+                    </div>
+                    <span class="text-xs font-bold text-slate-800">Foto Kamera</span>
+                    <span class="text-[9px] text-slate-400">Jepret Langsung</span>
+                </label>
+                <label for="photo-input-gallery" class="bg-white hover:bg-slate-100 border border-slate-200 p-3.5 rounded-xl cursor-pointer flex flex-col items-center justify-center gap-1.5 transition shadow-sm">
+                    <div class="w-10 h-10 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-images"></i>
+                    </div>
+                    <span class="text-xs font-bold text-slate-800">File Galeri</span>
+                    <span class="text-[9px] text-slate-400">Pilih Foto HP</span>
+                </label>
             </div>
-            <div class="text-xs">
-                <span class="text-unair-blue font-bold">Pilih file foto</span> atau ambil gambar langsung
-            </div>
-            <p class="text-[10px] text-slate-400 font-sans">Sistem keamanan HP Anda akan mengaktifkan kamera atau galeri secara resmi</p>
         `;
     }
 
