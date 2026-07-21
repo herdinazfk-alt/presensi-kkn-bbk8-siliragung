@@ -917,6 +917,7 @@ function verifyLogbook(logId) {
         showToast(`Seluruh laporan harian ${log.name} hari ini berhasil divalidasi!`, "success");
         renderAdminMemberList();
         renderDashboard();
+        renderLogbooks();
     }
 }
 

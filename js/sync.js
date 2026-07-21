@@ -95,18 +95,25 @@ async function fetchDataFromCloud(isSilent = false) {
         const cloudLogs = await response.json();
         
         if (Array.isArray(cloudLogs)) {
-            // Jadikan data cloud sebagai source of truth utama
-            const newLogs = cloudLogs.map(cloudLog => ({
-                id: cloudLog.id,
-                memberId: String(cloudLog.memberId),
-                name: cloudLog.name,
-                type: cloudLog.type,
-                time: cloudLog.time,
-                date: normalizeLogDate(cloudLog.date),
-                photo: cloudLog.photo || "",
-                text: cloudLog.text,
-                verified: cloudLog.verified === "TRUE" || cloudLog.verified === true
-            }));
+            // Merge data cloud dengan mempertahankan status verifikasi jika sudah diverifikasi secara lokal
+            const newLogs = cloudLogs.map(cloudLog => {
+                const cloudIdStr = String(cloudLog.id);
+                const localLog = state.logs.find(l => String(l.id) === cloudIdStr);
+                const isLocalVerified = localLog ? !!localLog.verified : false;
+                const isCloudVerified = cloudLog.verified === "TRUE" || cloudLog.verified === true || String(cloudLog.verified).toUpperCase() === "TRUE";
+
+                return {
+                    id: cloudLog.id,
+                    memberId: String(cloudLog.memberId),
+                    name: cloudLog.name,
+                    type: cloudLog.type,
+                    time: cloudLog.time,
+                    date: normalizeLogDate(cloudLog.date),
+                    photo: cloudLog.photo || "",
+                    text: cloudLog.text,
+                    verified: isCloudVerified || isLocalVerified
+                };
+            });
 
             // Hitung pertambahan data
             const addedCount = newLogs.filter(nl => !state.logs.some(ol => ol.id === nl.id)).length;
@@ -146,7 +153,7 @@ function verifyLogbookOnCloud(logId) {
 
     const payload = {
         action: "verify",
-        id: logId
+        id: String(logId)
     };
 
     fetch(state.cloudSyncUrl, {
