@@ -432,14 +432,20 @@ function runFallbackSimulation(coordsEl, distEl, targetLat, targetLon) {
     distEl.innerText = state.mockLocation.distance;
 }
 
-// Mengompresi file foto bukti kehadiran ke resolusi rendah agar muat di Google Sheets dan mempercepat upload di HP
+// Mengompresi file foto bukti kehadiran ke resolusi rendah agar muat di Google Sheets dan mempercepat upload di HP (memory-safe)
 function compressImage(file) {
     return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = function (event) {
-            const img = new Image();
-            img.src = event.target.result;
-            img.onload = function () {
+        let objectUrl = null;
+        try {
+            objectUrl = URL.createObjectURL(file);
+        } catch (e) {
+            console.error("URL.createObjectURL gagal, mencoba FileReader:", e);
+        }
+
+        const img = new Image();
+        
+        const processImage = () => {
+            try {
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
 
@@ -467,12 +473,28 @@ function compressImage(file) {
 
                 // Gunakan format JPEG dengan kualitas 80% agar tidak burem
                 const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8);
+                if (objectUrl) URL.revokeObjectURL(objectUrl);
                 resolve(compressedBase64);
-            };
-            img.onerror = reject;
+            } catch (err) {
+                if (objectUrl) URL.revokeObjectURL(objectUrl);
+                reject(err);
+            }
         };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
+
+        img.onload = processImage;
+        img.onerror = (err) => {
+            if (objectUrl) URL.revokeObjectURL(objectUrl);
+            reject(err);
+        };
+
+        if (objectUrl) {
+            img.src = objectUrl;
+        } else {
+            const reader = new FileReader();
+            reader.onload = (e) => { img.src = e.target.result; };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        }
     });
 }
 
@@ -507,7 +529,7 @@ async function previewPhoto(event) {
         }
     } catch (err) {
         console.error("Gagal memproses gambar:", err);
-        showToast("Gagal memproses foto. Silakan coba foto lain.", "error");
+        showToast("Gagal memproses foto. Silakan coba pilih foto lain dari galeri.", "error");
         resetPhoto();
     }
 }
@@ -549,7 +571,7 @@ function handleAttendanceSubmit(event) {
     const logbookTextEl = document.getElementById('logbook-text');
     const logbookText = logbookTextEl ? logbookTextEl.value.trim() : '';
 
-    // Validasi Geo-Lokasi (Batas Maksimal 1 km / 1000 meter dari Posko KKN Desa Siliragung)
+    // Validasi Geo-Lokasi (Batas Maksimal 1.2 km / 1200 meter toleransi GPS indoor)
     if (!state.mockLocation || state.mockLocation.latitude === null) {
         showToast("Silakan deteksi lokasi GPS Anda terlebih dahulu sebelum absen!", "error");
         return;
@@ -564,7 +586,7 @@ function handleAttendanceSubmit(event) {
         distanceInMeters = parseFloat(distStr);
     }
 
-    if (distanceInMeters > 1000) {
+    if (distanceInMeters > 1200) {
         showToast(`Gagal: Anda berada di luar radius posko KKN (${(distanceInMeters / 1000).toFixed(1)} km). Batas maksimal absensi adalah 1 km!`, "error");
         return;
     }
